@@ -1,8 +1,9 @@
-const CACHE_NAME = 'union-app-v1';
+const CACHE_NAME = 'union-app-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './firebase-config.js',
   './images/logo.png',
   './images/building.jpg',
   './images/icon-192.png',

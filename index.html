@@ -16,6 +16,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<!-- بيانات مشروع Firebase بتاعك -->
+<script src="firebase-config.js"></script>
+<!-- مكتبات Firebase (تسجيل الدخول + قاعدة البيانات + تخزين الصور) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --navy-950:#eef3fb;
@@ -461,6 +467,24 @@ main::-webkit-scrollbar{display:none;}
 }
 .admin-box input::placeholder{color:var(--muted-dim);}
 .admin-box input:focus, .admin-box select:focus{outline:none;border-color:var(--gold);}
+.admin-box input[type=file]{padding:9px 6px;}
+.admin-item-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px;border-bottom:1px solid var(--line);}
+.admin-item-row:last-child{border-bottom:none;}
+.ai-info b{display:block;font-size:12.5px;}
+.ai-info span{font-size:10.5px;color:var(--muted);}
+.ai-actions{display:flex;gap:6px;flex:none;}
+.mini-btn{padding:6px 12px;border-radius:9px;border:1px solid var(--line);background:var(--navy-900);color:var(--ink);font-size:11px;font-weight:700;cursor:pointer;}
+.mini-btn.danger{color:#d1435b;border-color:rgba(209,67,91,.35);}
+.member-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.member-card{background:var(--navy-800);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 10px;text-align:center;}
+.member-card img,.member-card .ph{width:60px;height:60px;border-radius:50%;object-fit:cover;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;}
+.member-card b{display:block;font-size:12px;}
+.member-card span{font-size:10px;color:var(--muted);}
+.news-card{display:flex;gap:12px;}
+.news-card img,.news-card .ph{width:74px;height:74px;border-radius:12px;object-fit:cover;flex:none;}
+.news-card .ph{display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;}
+.news-body b{display:block;font-size:13px;margin-bottom:3px;}
+.news-body p{font-size:11.5px;color:var(--muted);margin:4px 0 0;line-height:1.5;}
 
 /* toast */
 #toast{
@@ -553,7 +577,7 @@ main::-webkit-scrollbar{display:none;}
         <div class="quick-item" onclick="goPage('magazines')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div><span>المجلات</span></div>
         <div class="quick-item" onclick="goPage('campaigns')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11 13.5v5a2 2 0 002 2h.5"/></svg></div><span>حملات التوعية</span></div>
         <div class="quick-item" onclick="goPage('ranking')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/><path d="M5 4H3v2a4 4 0 004 4M19 4h2v2a4 4 0 01-4 4"/></svg></div><span>الترتيب</span></div>
-        <div class="quick-item" onclick="goPage('activities')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>الأخبار</span></div>
+        <div class="quick-item" onclick="goPage('news')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>الأخبار</span></div>
         <div class="quick-item" onclick="openArchive()"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div><span>الميديا</span></div>
       </div>
 
@@ -588,6 +612,7 @@ main::-webkit-scrollbar{display:none;}
         <div class="lead-tab active" data-lt="dean" onclick="switchLead('dean')">العميدة</div>
         <div class="lead-tab" data-lt="vice" onclick="switchLead('vice')">الوكيلة</div>
         <div class="lead-tab" data-lt="committees" onclick="switchLead('committees')">اللجان</div>
+        <div class="lead-tab" data-lt="members" onclick="switchLead('members')">الأعضاء</div>
       </div>
       <div id="leadContent"></div>
     </section>
@@ -604,6 +629,12 @@ main::-webkit-scrollbar{display:none;}
       <div class="section-title" style="margin-top:6px;">حملات التوعية والبرامج العلمية</div>
       <div class="pill-tabs" id="campFilterTabs"></div>
       <div id="campList"></div>
+    </section>
+
+    <!-- ---------------- NEWS ---------------- -->
+    <section class="page" id="page-news">
+      <div class="section-title" style="margin-top:6px;">أخبار الاتحاد</div>
+      <div id="newsList"></div>
     </section>
 
     <!-- ---------------- PROFILE ---------------- -->
@@ -643,103 +674,156 @@ main::-webkit-scrollbar{display:none;}
     <!-- ---------------- ADMIN / CONTROL PANEL ---------------- -->
     <section class="page" id="page-admin">
       <div class="section-title" style="margin-top:6px;">⚙️ لوحة التحكم</div>
-      <div class="card" style="margin-bottom:16px;">
-        <p class="bio-text" style="margin:0;">من هنا تقدر تضيف وتعدّل محتوى التطبيق مباشرة من على موبايلك — من غير ما تلمس أي كود. التعديلات بتتحفظ في نفس الجهاز اللي فاتح منه.</p>
+
+      <div class="card" id="adminLogin">
+        <p class="bio-text" style="margin:0 0 12px;">لوحة التحكم مخصصة لأعضاء اتحاد الكلية بس. سجّل دخولك بالإيميل والباسورد اللي اتعمللك في Firebase.</p>
+        <form onsubmit="return adminLogin(event)" style="display:flex;flex-direction:column;gap:9px;">
+          <input required type="email" id="admLoginEmail" placeholder="الإيميل">
+          <input required type="password" id="admLoginPass" placeholder="كلمة السر">
+          <button class="btn-primary" type="submit">دخول</button>
+        </form>
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+          <div style="flex:1;height:1px;background:var(--line);"></div>
+          <span class="bio-text" style="margin:0;">أو</span>
+          <div style="flex:1;height:1px;background:var(--line);"></div>
+        </div>
+        <button type="button" onclick="adminLoginGoogle()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:#1f1f1f;font-size:13px;font-weight:700;cursor:pointer;">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.5-2.1 14.2-5.6l-6.6-5.4C29.6 34.9 26.9 36 24 36c-5.3 0-9.7-3.3-11.3-8H6v6.4C9.3 39.6 16.1 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.4-5.8 6.9l6.6 5.4C39.9 37.5 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+          الدخول بحساب Google
+        </button>
+        <p class="bio-text" id="adminLoginError" style="margin:10px 0 0;color:#d1435b;"></p>
       </div>
 
-      <details class="admin-box" open>
-        <summary>🔥 الحدث القادم (العداد التنازلي)</summary>
-        <form onsubmit="return saveNextEvent(event)">
-          <input required id="af-evName" placeholder="اسم الفعالية" value="">
-          <input required id="af-evPlace" placeholder="المكان">
-          <input required id="af-evDate" type="datetime-local">
-          <input id="af-evImage" placeholder="رابط صورة الفعالية (اختياري)">
-          <button class="btn-primary" type="submit">حفظ</button>
-        </form>
-      </details>
+      <div id="adminPanel" style="display:none;">
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <span class="bio-text" style="margin:0;">مسجل دخول كـ <b id="adminUserEmail"></b></span>
+          <button type="button" class="mini-btn" onclick="adminLogout()">خروج</button>
+        </div>
 
-      <details class="admin-box">
-        <summary>⭐ طالب الأسبوع</summary>
-        <form onsubmit="return saveStudentOfWeek(event)">
-          <input required id="af-sowName" placeholder="اسم الطالب">
-          <input required id="af-sowLevel" placeholder="المستوى / الفرقة">
-          <input required id="af-sowPoints" type="number" placeholder="عدد النقاط">
-          <button class="btn-primary" type="submit">حفظ</button>
-        </form>
-      </details>
+        <details class="admin-box" open>
+          <summary>🔥 الحدث القادم (العداد التنازلي)</summary>
+          <form onsubmit="return saveNextEvent(event)">
+            <input required id="af-evName" placeholder="اسم الفعالية">
+            <input required id="af-evPlace" placeholder="المكان">
+            <input required id="af-evDate" type="datetime-local">
+            <input id="af-evImage" placeholder="رابط صورة الفعالية (اختياري)">
+            <button class="btn-primary" type="submit">حفظ</button>
+          </form>
+        </details>
 
-      <details class="admin-box">
-        <summary>🗓️ إضافة نشاط / فعالية</summary>
-        <form onsubmit="return addActivity(event)">
-          <input required id="af-actTitle" placeholder="اسم النشاط">
-          <select id="af-actCat">
-            <option value="scientific">علمي</option>
-            <option value="cultural">ثقافي</option>
-            <option value="sports">رياضي</option>
-            <option value="artistic">فني</option>
-            <option value="social">اجتماعي</option>
-          </select>
-          <input required id="af-actDate" placeholder="التاريخ (مثال: 10 أكتوبر 2026)">
-          <input required id="af-actPlace" placeholder="المكان">
-          <button class="btn-primary" type="submit">إضافة</button>
-        </form>
-      </details>
+        <details class="admin-box">
+          <summary>⭐ طالب الأسبوع</summary>
+          <form onsubmit="return saveStudentOfWeek(event)">
+            <input required id="af-sowName" placeholder="اسم الطالب">
+            <input required id="af-sowLevel" placeholder="المستوى / الفرقة">
+            <input required id="af-sowPoints" type="number" placeholder="عدد النقاط">
+            <button class="btn-primary" type="submit">حفظ</button>
+          </form>
+        </details>
 
-      <details class="admin-box">
-        <summary>📢 إضافة حملة توعية</summary>
-        <form onsubmit="return addCampaign(event)">
-          <input required id="af-campTitle" placeholder="عنوان الحملة">
-          <input required id="af-campDesc" placeholder="وصف قصير">
-          <input required id="af-campDate" placeholder="التاريخ">
-          <input required id="af-campPlace" placeholder="المكان">
-          <input required id="af-campCat" placeholder="تصنيف (مثال: صحي)">
-          <select id="af-campStatus">
-            <option value="current">حالية</option>
-            <option value="upcoming">قادمة</option>
-            <option value="past">سابقة</option>
-          </select>
-          <button class="btn-primary" type="submit">إضافة</button>
-        </form>
-      </details>
+        <details class="admin-box">
+          <summary>🗓️ الأنشطة والفعاليات</summary>
+          <form onsubmit="return saveActivity(event)">
+            <input type="hidden" id="af-actId">
+            <input required id="af-actTitle" placeholder="اسم النشاط">
+            <select id="af-actCat">
+              <option value="scientific">علمي</option>
+              <option value="cultural">ثقافي</option>
+              <option value="sports">رياضي</option>
+              <option value="artistic">فني</option>
+              <option value="social">اجتماعي</option>
+            </select>
+            <input required id="af-actDate" placeholder="التاريخ (مثال: 10 أكتوبر 2026)">
+            <input required id="af-actPlace" placeholder="المكان">
+            <button class="btn-primary" type="submit" id="af-actSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-actList"></div>
+        </details>
 
-      <details class="admin-box">
-        <summary>📖 إضافة مقال في المجلة</summary>
-        <form onsubmit="return addMagazine(event)">
-          <input required id="af-magTitle" placeholder="عنوان المقال">
-          <input required id="af-magDesc" placeholder="وصف قصير">
-          <input required id="af-magDate" placeholder="التاريخ">
-          <select id="af-magType">
-            <option value="scientific">المجلة العلمية</option>
-            <option value="cultural">المجلة الثقافية</option>
-          </select>
-          <button class="btn-primary" type="submit">إضافة</button>
-        </form>
-      </details>
+        <details class="admin-box">
+          <summary>📢 حملات التوعية</summary>
+          <form onsubmit="return saveCampaign(event)">
+            <input type="hidden" id="af-campId">
+            <input required id="af-campTitle" placeholder="عنوان الحملة">
+            <input required id="af-campDesc" placeholder="وصف قصير">
+            <input required id="af-campDate" placeholder="التاريخ">
+            <input required id="af-campPlace" placeholder="المكان">
+            <input required id="af-campCat" placeholder="تصنيف (مثال: صحي)">
+            <select id="af-campStatus">
+              <option value="current">حالية</option>
+              <option value="upcoming">قادمة</option>
+              <option value="past">سابقة</option>
+            </select>
+            <button class="btn-primary" type="submit" id="af-campSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-campList"></div>
+        </details>
 
-      <details class="admin-box">
-        <summary>👥 إضافة عضو للجنة</summary>
-        <form onsubmit="return addCommittee(event)">
-          <input required id="af-comName" placeholder="اسم اللجنة (مثال: اللجنة العلمية)">
-          <input required id="af-comHead" placeholder="اسم رئيس اللجنة">
-          <button class="btn-primary" type="submit">إضافة</button>
-        </form>
-      </details>
+        <details class="admin-box">
+          <summary>📖 المجلات (علمي / ثقافي)</summary>
+          <form onsubmit="return saveMagazine(event)">
+            <input type="hidden" id="af-magId">
+            <input required id="af-magTitle" placeholder="عنوان المقال">
+            <input required id="af-magDesc" placeholder="وصف قصير">
+            <input required id="af-magDate" placeholder="التاريخ">
+            <select id="af-magType">
+              <option value="scientific">المجلة العلمية</option>
+              <option value="cultural">المجلة الثقافية</option>
+            </select>
+            <button class="btn-primary" type="submit" id="af-magSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-magList"></div>
+        </details>
 
-      <details class="admin-box">
-        <summary>🏆 إضافة طالب لقائمة الترتيب</summary>
-        <form onsubmit="return addLeaderboard(event)">
-          <input required id="af-rankName" placeholder="اسم الطالب">
-          <input required id="af-rankPoints" type="number" placeholder="النقاط">
-          <button class="btn-primary" type="submit">إضافة</button>
-        </form>
-      </details>
+        <details class="admin-box">
+          <summary>👥 اللجان ورؤسائها</summary>
+          <form onsubmit="return saveCommittee(event)">
+            <input type="hidden" id="af-comId">
+            <input required id="af-comName" placeholder="اسم اللجنة (مثال: اللجنة العلمية)">
+            <input required id="af-comHead" placeholder="اسم رئيس اللجنة">
+            <button class="btn-primary" type="submit" id="af-comSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-comList"></div>
+        </details>
 
-      <button class="btn-ghost" style="margin:18px 0 30px;color:var(--art);border-color:var(--art);" onclick="resetAppData()">إعادة ضبط كل البيانات للوضع الافتراضي</button>
-    </section>
+        <details class="admin-box">
+          <summary>🏆 ترتيب الطلاب</summary>
+          <form onsubmit="return saveLeaderboard(event)">
+            <input type="hidden" id="af-rankId">
+            <input required id="af-rankName" placeholder="اسم الطالب">
+            <input required id="af-rankPoints" type="number" placeholder="النقاط">
+            <button class="btn-primary" type="submit" id="af-rankSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-rankList"></div>
+        </details>
 
-  </main>
+        <details class="admin-box">
+          <summary>🧑‍🤝‍🧑 أعضاء الاتحاد (بالصورة)</summary>
+          <form onsubmit="return saveMember(event)">
+            <input type="hidden" id="af-memId">
+            <input required id="af-memName" placeholder="اسم العضو">
+            <input required id="af-memRole" placeholder="المنصب (مثال: أمين اللجنة العلمية)">
+            <input type="file" id="af-memPhoto" accept="image/*">
+            <button class="btn-primary" type="submit" id="af-memSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-memList"></div>
+        </details>
 
-  <!-- ============ BOTTOM NAV ============ -->
+        <details class="admin-box">
+          <summary>📰 الأخبار (بالصورة)</summary>
+          <form onsubmit="return saveNews(event)">
+            <input type="hidden" id="af-newsId">
+            <input required id="af-newsTitle" placeholder="عنوان الخبر">
+            <input required id="af-newsDesc" placeholder="تفاصيل الخبر">
+            <input required id="af-newsDate" placeholder="التاريخ">
+            <input type="file" id="af-newsPhoto" accept="image/*">
+            <button class="btn-primary" type="submit" id="af-newsSubmitBtn">إضافة</button>
+          </form>
+          <div id="admin-newsList"></div>
+        </details>
+
+      </div>
+    </section  <!-- ============ BOTTOM NAV ============ -->
   <nav class="bottomnav">
     <div class="nav-item active" data-nav="home" onclick="goPage('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
@@ -749,7 +833,7 @@ main::-webkit-scrollbar{display:none;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       <span>الفعاليات</span>
     </div>
-    <div class="nav-fab" onclick="openQuickMenu()">
+    <div class="nav-fab" onclick="goPage('admin')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
     </div>
     <div class="nav-item" data-nav="ranking" onclick="goPage('ranking')">
@@ -774,9 +858,11 @@ main::-webkit-scrollbar{display:none;}
     <div class="sm-link" onclick="goPage('activities')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>الأنشطة والفعاليات</div>
     <div class="sm-link" onclick="goPage('ranking')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/></svg>ترتيب الطلاب</div>
     <div class="sm-link" onclick="goPage('magazines')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>المجلات العلمية والثقافية</div>
+    <div class="sm-link" onclick="goPage('news')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>أخبار الاتحاد</div>
     <div class="sm-link" onclick="goPage('campaigns')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/></svg>حملات التوعية</div>
     <div class="sm-link" onclick="goPage('leadership')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a4 4 0 00-3-3.87"/><path d="M9 20H4v-2a4 4 0 013-3.87"/><circle cx="9" cy="7" r="4"/></svg>القيادات واللجان</div>
     <div class="sm-link" onclick="openArchive()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>أرشيف طالب الأسبوع</div>
+    <div class="sm-link" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>لوحة التحكم</div>
     <div class="sm-divider"></div>
     <div class="sm-link" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>الإعدادات</div>
     <div class="sm-link" onclick="showToast('تحتاج مساعدة؟ تواصل مع لجنة الميديا')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>المساعدة والدعم</div>
@@ -788,9 +874,8 @@ main::-webkit-scrollbar{display:none;}
 
 <script>
 /* =========================================================================
-   بيانات التطبيق — عدّل هنا لإضافة أعضاء / فعاليات / مجلات / حملات جديدة
+   إعداد ثابت (تصنيفات، ألوان) — مش بيانات، ده شكل التطبيق بس
    ========================================================================= */
-
 const CATS = {
   scientific:{label:'علمي', color:'#4d8dff'},
   cultural:{label:'ثقافي', color:'#b27cff'},
@@ -804,61 +889,6 @@ const CURRENT_STUDENT = {
   events:12, workshops:5, competitions:3, campaigns:2, activeLevel:'مرتفع'
 };
 
-const NEXT_EVENT = {
-  name:'اليوم العلمي 2026', place:'القاعة الرئيسية',
-  image:'images/building.jpg',
-  // set the target date/time for the countdown
-  date: new Date(Date.now() + (3*86400 + 14*3600 + 27*60)*1000).toISOString()
-};
-
-const STUDENT_OF_WEEK = { name:'أحمد محمد', initial:'أ', level:'مستوى 3 - تمريض', points:680 };
-
-/* صور وفيديوهات فعاليات الكلية — الكاروسيل المتحرك في الرئيسية
-   type: "image" أو "video"
-   src: مسار الصورة/الفيديو (حط أي ملف جوه مجلد images/ وحط اسمه هنا)
-   لو سبت src فاضي هيظهر شكل بديل بلون متدرج لحد ما تضيف الملف الحقيقي */
-const MEDIA_ITEMS = [
-  {type:'image', src:'images/building.jpg', tag:'المقر', title:'مبنى كلية التمريض', sub:'جامعة الريادة'},
-  {type:'image', src:'', color1:'#4d8dff', color2:'#0d1836', tag:'علمي', title:'اليوم العلمي 2026', sub:'فعاليات وورش تفاعلية'},
-  {type:'video', src:'', color1:'#33c77b', color2:'#0d1836', tag:'رياضي', title:'بطولة كرة القدم', sub:'شاهد ملخص المباراة'},
-  {type:'image', src:'', color1:'#b27cff', color2:'#0d1836', tag:'ثقافي', title:'مسابقة الشعر', sub:'أجمل اللحظات'},
-  {type:'video', src:'', color1:'#caa53d', color2:'#0d1836', tag:'تطوعي', title:'حملة التبرع بالدم', sub:'فيديو توعوي قصير'},
-];
-
-const ACTIVITIES = [
-  {cat:'scientific', title:'ورشة الابتكار الطبي', date:'28 سبتمبر 2026', place:'القاعة الرئيسية'},
-  {cat:'cultural', title:'مسابقة الشعر', date:'30 سبتمبر 2026', place:'قاعة المكتبة'},
-  {cat:'sports', title:'بطولة كرة القدم', date:'5 أكتوبر 2026', place:'الملعب'},
-  {cat:'artistic', title:'معرض الفنون', date:'8 أكتوبر 2026', place:'حديقة الكلية'},
-  {cat:'social', title:'يوم التعارف للدفعة الجديدة', date:'12 أكتوبر 2026', place:'الفناء الخارجي'},
-  {cat:'scientific', title:'محاضرة: مستجدات التمريض الحرج', date:'16 أكتوبر 2026', place:'المدرج الكبير'},
-];
-
-const MAGAZINES = {
-  scientific:[
-    {title:'دور الذكاء الاصطناعي في التمريض', date:'12 سبتمبر 2026', desc:'استعراض لأحدث تطبيقات الذكاء الاصطناعي في الرعاية التمريضية.'},
-    {title:'أحدث تطورات أمراض القلب', date:'5 سبتمبر 2026', desc:'ملخص علمي لأحدث الأبحاث في مجال أمراض القلب والرعاية الحرجة.'},
-    {title:'أبحاث الطلاب', date:'28 أغسطس 2026', desc:'مجموعة من أبحاث طلاب الكلية المتميزة لهذا الفصل الدراسي.'},
-  ],
-  cultural:[
-    {title:'التثقيف الصحي المجتمعي', date:'20 أغسطس 2026', desc:'دور طالب التمريض في نشر الوعي الصحي داخل المجتمع.'},
-    {title:'حكايات من غرفة العناية', date:'10 أغسطس 2026', desc:'قصص إنسانية من تجارب طلاب التدريب العملي.'},
-  ]
-};
-
-const CAMPAIGNS = {
-  current:[
-    {title:'حملة التوعية بمرض السكري', date:'15 سبتمبر 2026', place:'حديقة الكلية', desc:'تعلّم. احمِ. اتقِ.', cat:'صحي', color1:'#1b3a6b', color2:'#0d1836'},
-    {title:'التوعية بالصحة النفسية', date:'22 سبتمبر 2026', place:'القاعة الرئيسية', desc:'اهتم بصحتك النفسية', cat:'نفسي', color1:'#4a2f7a', color2:'#1b2c5c'},
-  ],
-  upcoming:[
-    {title:'حملة التبرع بالدم', date:'30 سبتمبر 2026', place:'بنك الدم', desc:'تبرع بالدم... أنقذ حياة', cat:'تطوعي', color1:'#7a1f2f', color2:'#1b2c5c'},
-  ],
-  past:[
-    {title:'أسبوع غسل الأيدي العالمي', date:'12 أغسطس 2026', place:'مدخل الكلية', desc:'انتهت الحملة بنجاح', cat:'صحي', color1:'#1f6b4a', color2:'#132147'},
-  ]
-};
-
 const DEAN = {
   name:'أ.د. هناء محمد', role:'عميدة كلية التمريض', initial:'هـ',
   bio:'تشغل أ.د. هناء محمد منصب عميدة كلية التمريض، وتمتلك خبرة تتجاوز 20 عاماً في القيادة الأكاديمية والبحث العلمي والرعاية الصحية. تسعى دائماً لتطوير بيئة تعليمية داعمة للطلاب.',
@@ -870,187 +900,142 @@ const VICE = {
   quote:'"طاقة الطلاب هي وقود أي إنجاز حقيقي."'
 };
 
-const COMMITTEES = [
-  {name:'اللجنة العلمية', head:'مصطفى كامل'},
-  {name:'اللجنة الثقافية', head:'نور الهدى'},
-  {name:'اللجنة الرياضية', head:'يوسف علي'},
-  {name:'اللجنة الفنية', head:'ملك حسن'},
-  {name:'اللجنة الاجتماعية', head:'ريم أحمد'},
-  {name:'لجنة الميديا', head:'كيمو'},
+const MEDIA_ITEMS = [
+  {type:'image', src:'images/building.jpg', tag:'المقر', title:'مبنى كلية التمريض', sub:'جامعة الريادة'},
+  {type:'image', src:'', color1:'#4d8dff', color2:'#0d1836', tag:'علمي', title:'اليوم العلمي 2026', sub:'فعاليات وورش تفاعلية'},
+  {type:'video', src:'', color1:'#33c77b', color2:'#0d1836', tag:'رياضي', title:'بطولة كرة القدم', sub:'شاهد ملخص المباراة'},
+  {type:'image', src:'', color1:'#b27cff', color2:'#0d1836', tag:'ثقافي', title:'مسابقة الشعر', sub:'أجمل اللحظات'},
+  {type:'video', src:'', color1:'#caa53d', color2:'#0d1836', tag:'تطوعي', title:'حملة التبرع بالدم', sub:'فيديو توعوي قصير'},
 ];
 
-const LEADERBOARD = [
-  {name:'سارة مصطفى', points:810},
-  {name:'أحمد علي', points:850, isMe:false},
-  {name:'كيمو', points:850, isMe:true},
-  {name:'محمد صلاح', points:760},
-  {name:'فاطمة وائل', points:720},
-  {name:'عمر خالد', points:690},
-  {name:'ريم أحمد', points:670},
-  {name:'ندى حسن', points:620},
-  {name:'يوسف علي', points:600},
-  {name:'هالة عصام', points:580},
-];
+/* =========================================================================
+   Firebase — الاتصال بقاعدة البيانات + تسجيل الدخول + تخزين الصور
+   ========================================================================= */
+let fbReady = false, auth = null, db = null;
+try{
+  if(typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.includes('ضع_')){
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    fbReady = true;
+  }
+}catch(e){ console.error('Firebase init error:', e); }
 
-/* ========================= لوحة التحكم — تخزين محلي (localStorage) =========================
-   أي حاجة تضيفها من صفحة "لوحة التحكم" جوه التطبيق بتتحفظ في متصفح/جهاز نفس الشخص اللي بيضيفها،
-   وهي بتضاف فوق البيانات الافتراضية اللي في أعلى الملف. لو عايزين البيانات تبقى مشتركة بين كل
-   طلاب الاتحاد (كل حد فاتح التطبيق من جهازه يشوف نفس التحديثات) لازم نربط التطبيق بقاعدة بيانات
-   حقيقية — قولّي لو عايز أعملها كذلك. */
-const STORAGE_KEY = 'unionAppData_v1';
+/* الحالة الحيّة اللي بتتحدث تلقائي من قاعدة البيانات */
+const STATE = {
+  nextEvent:{name:'اليوم العلمي 2026', place:'القاعة الرئيسية', image:'images/building.jpg',
+    date:new Date(Date.now()+(3*86400+14*3600+27*60)*1000).toISOString()},
+  studentOfWeek:{name:'—', initial:'-', level:'—', points:0},
+  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[]
+};
 
-function loadStore(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){ return {}; }
-}
-function saveStore(store){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }catch(e){}
-}
-function applyStoredData(){
-  const s = loadStore();
-  if(s.nextEvent) Object.assign(NEXT_EVENT, s.nextEvent);
-  if(s.studentOfWeek) Object.assign(STUDENT_OF_WEEK, s.studentOfWeek);
-  (s.activities||[]).forEach(a=>ACTIVITIES.push(a));
-  (s.magazinesScientific||[]).forEach(m=>MAGAZINES.scientific.push(m));
-  (s.magazinesCultural||[]).forEach(m=>MAGAZINES.cultural.push(m));
-  (s.campaignsCurrent||[]).forEach(c=>CAMPAIGNS.current.push(c));
-  (s.campaignsUpcoming||[]).forEach(c=>CAMPAIGNS.upcoming.push(c));
-  (s.campaignsPast||[]).forEach(c=>CAMPAIGNS.past.push(c));
-  (s.committees||[]).forEach(c=>COMMITTEES.push(c));
-  (s.leaderboard||[]).forEach(l=>LEADERBOARD.push(l));
-}
-function resetAppData(){
-  if(!confirm('هيتم مسح كل التعديلات اللي ضفتها والرجوع للبيانات الافتراضية. متابعة؟')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
+function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
+
+function initFirestoreListeners(){
+  if(!fbReady){
+    showToast('التطبيق مش متوصل بقاعدة بيانات لسه — راجع ملف firebase-config.js');
+    return;
+  }
+  db.collection('config').doc('nextEvent').onSnapshot(doc=>{
+    if(doc.exists) Object.assign(STATE.nextEvent, doc.data());
+    renderHome(); startCountdown();
+  });
+  db.collection('config').doc('studentOfWeek').onSnapshot(doc=>{
+    if(doc.exists) Object.assign(STATE.studentOfWeek, doc.data());
+    renderHome();
+  });
+  db.collection('activities').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.activities = snap.docs.map(docToItem);
+    renderActivities(); renderHome(); renderAdminActivities();
+  }, ()=>{});
+  db.collection('magazines').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.magazines = snap.docs.map(docToItem);
+    renderMags(); renderAdminMagazines();
+  }, ()=>{});
+  db.collection('campaigns').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.campaigns = snap.docs.map(docToItem);
+    renderCamps(); renderHome(); renderAdminCampaigns();
+  }, ()=>{});
+  db.collection('committees').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.committees = snap.docs.map(docToItem);
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='committees') switchLead('committees');
+    renderAdminCommittees();
+  }, ()=>{});
+  db.collection('leaderboard').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.leaderboard = snap.docs.map(docToItem);
+    renderRanking(); renderAdminLeaderboard();
+  }, ()=>{});
+  db.collection('members').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.members = snap.docs.map(docToItem);
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
+    renderAdminMembers();
+  }, ()=>{});
+  db.collection('news').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.news = snap.docs.map(docToItem);
+    renderNews(); renderAdminNews();
+  }, ()=>{});
 }
 
-function saveNextEvent(ev){
+/* ========================= تسجيل دخول الأدمن ========================= */
+function adminLogin(ev){
   ev.preventDefault();
-  const name = document.getElementById('af-evName').value.trim();
-  const place = document.getElementById('af-evPlace').value.trim();
-  const dateVal = document.getElementById('af-evDate').value;
-  const imageVal = document.getElementById('af-evImage').value.trim();
-  if(!name || !place || !dateVal) return false;
-  const iso = new Date(dateVal).toISOString();
-  const s = loadStore();
-  s.nextEvent = {name, place, date: iso, image: imageVal || NEXT_EVENT.image};
-  saveStore(s);
-  Object.assign(NEXT_EVENT, s.nextEvent);
-  renderHome(); startCountdown();
-  showToast('تم تحديث الحدث القادم ✔');
-  ev.target.reset();
+  if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return false; }
+  const email = document.getElementById('admLoginEmail').value.trim();
+  const pass = document.getElementById('admLoginPass').value;
+  document.getElementById('adminLoginError').textContent = '';
+  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    document.getElementById('adminLoginError').textContent = 'الإيميل أو كلمة السر غلط، أو الحساب ده مش متعمل في Firebase.';
+  });
   return false;
 }
-function saveStudentOfWeek(ev){
-  ev.preventDefault();
-  const name = document.getElementById('af-sowName').value.trim();
-  const level = document.getElementById('af-sowLevel').value.trim();
-  const points = Number(document.getElementById('af-sowPoints').value)||0;
-  if(!name || !level) return false;
-  const initial = name.trim()[0];
-  const s = loadStore();
-  s.studentOfWeek = {name, initial, level, points};
-  saveStore(s);
-  Object.assign(STUDENT_OF_WEEK, s.studentOfWeek);
-  renderHome();
-  showToast('تم تحديث طالب الأسبوع ✔');
-  ev.target.reset();
-  return false;
+function adminLoginGoogle(){
+  if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return; }
+  document.getElementById('adminLoginError').textContent = '';
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err=>{
+    document.getElementById('adminLoginError').textContent = 'حصل خطأ في تسجيل الدخول بجوجل، جرّب تاني.';
+  });
 }
-function addActivity(ev){
-  ev.preventDefault();
-  const item = {
-    cat: document.getElementById('af-actCat').value,
-    title: document.getElementById('af-actTitle').value.trim(),
-    date: document.getElementById('af-actDate').value.trim(),
-    place: document.getElementById('af-actPlace').value.trim(),
-  };
-  if(!item.title||!item.date||!item.place) return false;
-  ACTIVITIES.push(item);
-  const s = loadStore(); s.activities = s.activities||[]; s.activities.push(item); saveStore(s);
-  renderActivities(); renderHome();
-  showToast('تمت إضافة النشاط ✔');
-  ev.target.reset();
-  goPage('activities');
-  return false;
-}
-function addCampaign(ev){
-  ev.preventDefault();
-  const status = document.getElementById('af-campStatus').value;
-  const palettes = {current:['#1b3a6b','#0d1836'], upcoming:['#7a1f2f','#1b2c5c'], past:['#1f6b4a','#132147']};
-  const item = {
-    title: document.getElementById('af-campTitle').value.trim(),
-    desc: document.getElementById('af-campDesc').value.trim(),
-    date: document.getElementById('af-campDate').value.trim(),
-    place: document.getElementById('af-campPlace').value.trim(),
-    cat: document.getElementById('af-campCat').value.trim(),
-    color1: palettes[status][0], color2: palettes[status][1]
-  };
-  if(!item.title||!item.desc) return false;
-  CAMPAIGNS[status].push(item);
-  const s = loadStore();
-  const key = 'campaigns'+status[0].toUpperCase()+status.slice(1);
-  s[key] = s[key]||[]; s[key].push(item); saveStore(s);
-  renderCamps(); renderHome();
-  showToast('تمت إضافة الحملة ✔');
-  ev.target.reset();
-  goPage('campaigns');
-  return false;
-}
-function addMagazine(ev){
-  ev.preventDefault();
-  const type = document.getElementById('af-magType').value;
-  const item = {
-    title: document.getElementById('af-magTitle').value.trim(),
-    desc: document.getElementById('af-magDesc').value.trim(),
-    date: document.getElementById('af-magDate').value.trim(),
-  };
-  if(!item.title||!item.desc) return false;
-  MAGAZINES[type].push(item);
-  const s = loadStore();
-  const key = type==='scientific' ? 'magazinesScientific' : 'magazinesCultural';
-  s[key] = s[key]||[]; s[key].push(item); saveStore(s);
-  renderMags();
-  showToast('تمت إضافة المقال ✔');
-  ev.target.reset();
-  goPage('magazines');
-  return false;
-}
-function addCommittee(ev){
-  ev.preventDefault();
-  const item = {
-    name: document.getElementById('af-comName').value.trim(),
-    head: document.getElementById('af-comHead').value.trim(),
-  };
-  if(!item.name||!item.head) return false;
-  COMMITTEES.push(item);
-  const s = loadStore(); s.committees = s.committees||[]; s.committees.push(item); saveStore(s);
-  switchLead('committees');
-  showToast('تمت إضافة العضو ✔');
-  ev.target.reset();
-  goPage('leadership');
-  return false;
-}
-function addLeaderboard(ev){
-  ev.preventDefault();
-  const item = {
-    name: document.getElementById('af-rankName').value.trim(),
-    points: Number(document.getElementById('af-rankPoints').value)||0,
-  };
-  if(!item.name) return false;
-  LEADERBOARD.push(item);
-  const s = loadStore(); s.leaderboard = s.leaderboard||[]; s.leaderboard.push(item); saveStore(s);
-  renderRanking();
-  showToast('تمت الإضافة لقائمة الترتيب ✔');
-  ev.target.reset();
-  goPage('ranking');
-  return false;
+function adminLogout(){ if(fbReady) auth.signOut(); }
+const ADMIN_EMAILS = ['alikimo1942@gmail.com'];
+if(fbReady){
+  auth.onAuthStateChanged(user=>{
+    const loginBox = document.getElementById('adminLogin');
+    const panel = document.getElementById('adminPanel');
+    if(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase())){
+      loginBox.style.display='none'; panel.style.display='block';
+      document.getElementById('adminUserEmail').textContent = user.email;
+    }else{
+      if(user){
+        auth.signOut();
+        document.getElementById('adminLoginError').textContent = 'الحساب ده مش من ضمن حسابات الأدمن المسموح لها.';
+      }
+      loginBox.style.display='block'; panel.style.display='none';
+    }
+  });
 }
 
 /* ========================= أدوات مساعدة عامة ========================= */
+async function uploadImage(file, folder){
+  if(!file) return '';
+  if(typeof CLOUDINARY_CLOUD_NAME === 'undefined' || CLOUDINARY_CLOUD_NAME.includes('ضع_')){
+    showToast('لازم تحط بيانات Cloudinary الأول في firebase-config.js'); return '';
+  }
+  showToast('جاري رفع الصورة...');
+  try{
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('folder', folder);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method:'POST', body: fd });
+    const data = await res.json();
+    if(!data.secure_url) throw new Error('no url in response');
+    return data.secure_url;
+  }catch(err){
+    showToast('حصل خطأ في رفع الصورة، جرّب تاني');
+    return '';
+  }
+}
 function avatarGradient(seed){
   const palettes=[['#4d8dff','#1b2c5c'],['#b27cff','#1b2c5c'],['#33c77b','#132147'],['#ff6fa0','#1b2c5c'],['#caa53d','#1b2c5c']];
   const idx = Math.abs(hashStr(seed)) % palettes.length;
@@ -1064,6 +1049,7 @@ function showToast(msg){
   clearTimeout(showToast._tm);
   showToast._tm=setTimeout(()=>t.classList.remove('show'),2200);
 }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
 /* ========================= التنقل بين الصفحات ========================= */
 function goPage(name){
@@ -1077,57 +1063,55 @@ function openMenu(){document.getElementById('sideMenu').classList.add('show');do
 function closeMenu(){document.getElementById('sideMenu').classList.remove('show');document.getElementById('overlay').classList.remove('show');}
 document.getElementById('openMenuBtn').addEventListener('click', openMenu);
 
-function openQuickMenu(){
-  showToast('اختر من القائمة السفلية: إضافة فعالية أو نشاط جديد قريباً');
-}
 function openArchive(){
   showToast('أرشيف طالب الأسبوع — قريباً هيتم عرض كل الفائزين السابقين هنا');
 }
 function joinNextEvent(){
-  showToast('تم تسجيل انضمامك لفعالية «'+NEXT_EVENT.name+'» ✔');
+  showToast('تم تسجيل انضمامك لفعالية «'+STATE.nextEvent.name+'» ✔');
 }
 
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
   document.getElementById('homeAvatar').textContent = CURRENT_STUDENT.avatarInitial;
   document.getElementById('homeAvatar').style.background = avatarGradient(CURRENT_STUDENT.name);
-  document.getElementById('nextEventName').textContent = NEXT_EVENT.name;
-  document.getElementById('nextEventMeta').textContent = NEXT_EVENT.place;
+  document.getElementById('nextEventName').textContent = STATE.nextEvent.name;
+  document.getElementById('nextEventMeta').textContent = STATE.nextEvent.place;
   document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${NEXT_EVENT.image}')`;
+    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${STATE.nextEvent.image}')`;
 
-  document.getElementById('sowAvatar').textContent = STUDENT_OF_WEEK.initial;
-  document.getElementById('sowAvatar').style.background = avatarGradient(STUDENT_OF_WEEK.name);
-  document.getElementById('sowName').textContent = STUDENT_OF_WEEK.name;
-  document.getElementById('sowLevel').textContent = STUDENT_OF_WEEK.level;
-  document.getElementById('sowPoints').textContent = STUDENT_OF_WEEK.points;
+  document.getElementById('sowAvatar').textContent = STATE.studentOfWeek.initial;
+  document.getElementById('sowAvatar').style.background = avatarGradient(STATE.studentOfWeek.name);
+  document.getElementById('sowName').textContent = STATE.studentOfWeek.name;
+  document.getElementById('sowLevel').textContent = STATE.studentOfWeek.level;
+  document.getElementById('sowPoints').textContent = STATE.studentOfWeek.points;
 
   const scroll = document.getElementById('homeEventsScroll');
   scroll.innerHTML='';
-  ACTIVITIES.slice(0,6).forEach(a=>{
-    const c = CATS[a.cat];
+  STATE.activities.slice(0,6).forEach(a=>{
+    const c = CATS[a.cat]||CATS.scientific;
     scroll.appendChild(el(`
       <div class="mini-event">
         <div class="mini-thumb" style="background:linear-gradient(135deg, ${c.color}, #0d1836)">
-          <span class="chip" style="background:rgba(255,255,255,.92)">${c.label}</span>
+          <span class="chip" style="background:rgba(255,255,255,.92)">${esc(c.label)}</span>
         </div>
         <div class="body">
-          <b>${a.title}</b>
-          <div class="meta">📅 ${a.date}</div>
+          <b>${esc(a.title)}</b>
+          <div class="meta">📅 ${esc(a.date)}</div>
         </div>
       </div>
     `));
   });
+  if(!STATE.activities.length) scroll.appendChild(el('<div class="empty-note">لسه مفيش فعاليات مضافة</div>'));
 
   const cp = document.getElementById('homeCampaignPreview');
   cp.innerHTML='';
-  CAMPAIGNS.current.slice(0,1).forEach(c=>{
+  STATE.campaigns.filter(c=>c.status==='current').slice(0,1).forEach(c=>{
     cp.appendChild(el(`
       <div class="campaign-banner" style="background:linear-gradient(135deg, ${c.color1}, ${c.color2})">
-        <span class="cat-tag">${c.cat}</span>
-        <b>${c.title}</b>
-        <p>${c.desc}</p>
-        <div class="meta">📅 ${c.date} &nbsp;·&nbsp; 📍 ${c.place}</div>
+        <span class="cat-tag">${esc(c.cat)}</span>
+        <b>${esc(c.title)}</b>
+        <p>${esc(c.desc)}</p>
+        <div class="meta">📅 ${esc(c.date)} &nbsp;·&nbsp; 📍 ${esc(c.place)}</div>
       </div>
     `));
   });
@@ -1146,7 +1130,7 @@ function renderMediaCarousel(){
   track.innerHTML=''; dots.innerHTML='';
   MEDIA_ITEMS.forEach((m,i)=>{
     let mediaHtml='';
-    if(m.src && m.type==='image') mediaHtml = `<img src="${m.src}" alt="${m.title}">`;
+    if(m.src && m.type==='image') mediaHtml = `<img src="${m.src}" alt="${esc(m.title)}">`;
     else if(m.src && m.type==='video') mediaHtml = `<video src="${m.src}" muted loop autoplay playsinline></video>`;
     else mediaHtml = `<div class="mc-fallback" style="background:linear-gradient(135deg, ${m.color1}, ${m.color2})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${iconFor(m.type)}</svg></div>`;
     track.appendChild(el(`
@@ -1155,9 +1139,9 @@ function renderMediaCarousel(){
         <div class="mc-shade"></div>
         ${m.type==='video' ? '<div class="mc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>' : ''}
         <div class="mc-caption">
-          <span class="mc-tag">${m.tag}</span>
-          <b>${m.title}</b>
-          <span>${m.sub}</span>
+          <span class="mc-tag">${esc(m.tag)}</span>
+          <b>${esc(m.title)}</b>
+          <span>${esc(m.sub)}</span>
         </div>
       </div>
     `));
@@ -1185,8 +1169,10 @@ function mcAutoplay(){
   mcTimer = setInterval(()=>mcGo(mcIndex-1), 4000);
 }
 
+let cdTimer=null;
 function startCountdown(){
-  const target = new Date(NEXT_EVENT.date).getTime();
+  clearInterval(cdTimer);
+  const target = new Date(STATE.nextEvent.date).getTime();
   function tick(){
     const diff = Math.max(0, target - Date.now());
     const d = Math.floor(diff/86400000);
@@ -1199,7 +1185,7 @@ function startCountdown(){
     document.getElementById('cdSec').textContent = String(s).padStart(2,'0');
   }
   tick();
-  setInterval(tick, 1000);
+  cdTimer = setInterval(tick, 1000);
 }
 
 /* ========================= الأنشطة ========================= */
@@ -1226,52 +1212,64 @@ function iconForCat(cat){
 function renderActivities(){
   const wrap = document.getElementById('actList');
   wrap.innerHTML='';
-  const list = ACTIVITIES.filter(a=>actFilter==='all'||a.cat===actFilter);
+  const list = STATE.activities.filter(a=>actFilter==='all'||a.cat===actFilter);
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد أنشطة في هذا التصنيف حالياً</div>'));return;}
   list.forEach(a=>{
-    const c=CATS[a.cat];
+    const c=CATS[a.cat]||CATS.scientific;
     wrap.appendChild(el(`
       <div class="card event-card">
         <div class="ev-thumb" style="background:linear-gradient(135deg, ${c.color}, #0d1836)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg>
         </div>
         <div class="ev-body">
-          <span class="cat" style="background:${c.color}22;color:${c.color}">${c.label}</span>
-          <b>${a.title}</b>
-          <div class="meta"><span>📅 ${a.date}</span><span>📍 ${a.place}</span></div>
+          <span class="cat" style="background:${c.color}22;color:${c.color}">${esc(c.label)}</span>
+          <b>${esc(a.title)}</b>
+          <div class="meta"><span>📅 ${esc(a.date)}</span><span>📍 ${esc(a.place)}</span></div>
         </div>
       </div>
     `));
   });
 }
 
-/* ========================= القيادات واللجان ========================= */
+/* ========================= القيادات، اللجان، الأعضاء ========================= */
 function switchLead(which){
   document.querySelectorAll('.lead-tab').forEach(t=>t.classList.toggle('active', t.dataset.lt===which));
   const wrap = document.getElementById('leadContent');
   if(which==='committees'){
+    if(!STATE.committees.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش لجان مضافة</div>'; return; }
     let rows='';
-    COMMITTEES.forEach(c=>{
+    STATE.committees.forEach(c=>{
       rows+=`<div class="committee-row">
-        <div class="c-avatar" style="background:${avatarGradient(c.head)}">${c.head[0]}</div>
-        <div><div class="name">${c.name}</div><div class="role">رئيس اللجنة: ${c.head}</div></div>
-        <svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        <div class="c-avatar" style="background:${avatarGradient(c.head)}">${esc((c.head||'?')[0])}</div>
+        <div><div class="name">${esc(c.name)}</div><div class="role">رئيس اللجنة: ${esc(c.head)}</div></div>
       </div>`;
     });
     wrap.innerHTML = `<div class="card" style="padding:6px 14px;">${rows}</div>`;
+    return;
+  }
+  if(which==='members'){
+    if(!STATE.members.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش أعضاء مضافين</div>'; return; }
+    let cards='';
+    STATE.members.forEach(m=>{
+      const ph = m.photoURL
+        ? `<img src="${m.photoURL}" alt="${esc(m.name)}">`
+        : `<div class="ph" style="background:${avatarGradient(m.name)}">${esc((m.name||'?')[0])}</div>`;
+      cards += `<div class="member-card">${ph}<b>${esc(m.name)}</b><span>${esc(m.role)}</span></div>`;
+    });
+    wrap.innerHTML = `<div class="member-grid">${cards}</div>`;
     return;
   }
   const p = which==='dean' ? DEAN : VICE;
   wrap.innerHTML = `
     <div class="profile-hero">
       <div class="big-avatar" style="background:${avatarGradient(p.name)}">${p.initial}</div>
-      <b>${p.name}</b>
-      <div class="role">${p.role}</div>
+      <b>${esc(p.name)}</b>
+      <div class="role">${esc(p.role)}</div>
     </div>
     <div class="section-title" style="margin-top:14px;">نبذة</div>
-    <div class="card"><p class="bio-text" style="margin:0;">${p.bio}</p></div>
+    <div class="card"><p class="bio-text" style="margin:0;">${esc(p.bio)}</p></div>
     <div class="section-title">آخر رسالة</div>
-    <div class="card"><p class="bio-text" style="margin:0;">${p.quote}</p></div>
+    <div class="card"><p class="bio-text" style="margin:0;">${esc(p.quote)}</p></div>
   `;
 }
 
@@ -1288,16 +1286,18 @@ function renderMagTabs(){
 function renderMags(){
   const wrap = document.getElementById('magList');
   wrap.innerHTML='';
-  MAGAZINES[magFilter].forEach(m=>{
+  const list = STATE.magazines.filter(m=>m.type===magFilter);
+  if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد مقالات هنا حالياً</div>'));return;}
+  list.forEach(m=>{
     wrap.appendChild(el(`
       <div class="card mag-card">
         <div class="mag-cover" style="background:linear-gradient(160deg, ${magFilter==='scientific'?'#4d8dff':'#b27cff'}, #0d1836)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
         </div>
         <div class="mag-body">
-          <b>${m.title}</b>
-          <div class="meta">📅 ${m.date}</div>
-          <p>${m.desc}</p>
+          <b>${esc(m.title)}</b>
+          <div class="meta">📅 ${esc(m.date)}</div>
+          <p>${esc(m.desc)}</p>
         </div>
       </div>
     `));
@@ -1318,15 +1318,37 @@ function renderCampTabs(){
 function renderCamps(){
   const wrap = document.getElementById('campList');
   wrap.innerHTML='';
-  const list = CAMPAIGNS[campFilter];
+  const list = STATE.campaigns.filter(c=>c.status===campFilter);
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد حملات هنا حالياً</div>'));return;}
   list.forEach(c=>{
     wrap.appendChild(el(`
       <div class="campaign-banner" style="background:linear-gradient(135deg, ${c.color1}, ${c.color2})">
-        <span class="cat-tag">${c.cat}</span>
-        <b>${c.title}</b>
-        <p>${c.desc}</p>
-        <div class="meta">📅 ${c.date} &nbsp;·&nbsp; 📍 ${c.place}</div>
+        <span class="cat-tag">${esc(c.cat)}</span>
+        <b>${esc(c.title)}</b>
+        <p>${esc(c.desc)}</p>
+        <div class="meta">📅 ${esc(c.date)} &nbsp;·&nbsp; 📍 ${esc(c.place)}</div>
+      </div>
+    `));
+  });
+}
+
+/* ========================= الأخبار ========================= */
+function renderNews(){
+  const wrap = document.getElementById('newsList');
+  wrap.innerHTML='';
+  if(!STATE.news.length){ wrap.appendChild(el('<div class="empty-note">لسه مفيش أخبار</div>')); return; }
+  STATE.news.forEach(n=>{
+    const ph = n.photoURL
+      ? `<img src="${n.photoURL}" alt="${esc(n.title)}">`
+      : `<div class="ph" style="background:linear-gradient(135deg,#caa53d,#0d1836)">📰</div>`;
+    wrap.appendChild(el(`
+      <div class="card news-card">
+        ${ph}
+        <div class="news-body">
+          <b>${esc(n.title)}</b>
+          <div class="meta">📅 ${esc(n.date)}</div>
+          <p>${esc(n.desc)}</p>
+        </div>
       </div>
     `));
   });
@@ -1376,25 +1398,417 @@ function renderRankTabs(){
   wrap.querySelectorAll('.pill-tab').forEach(t=>t.addEventListener('click',()=>{rankFilter=t.dataset.r; renderRankTabs(); renderRanking();}));
 }
 function renderRanking(){
-  const sorted = [...LEADERBOARD].sort((a,b)=>b.points-a.points);
-
+  const sorted = [...STATE.leaderboard].sort((a,b)=>b.points-a.points);
   const podium = document.getElementById('podium');
+  const listCard = document.getElementById('rankListCard');
+  if(!sorted.length){
+    podium.innerHTML='';
+    listCard.innerHTML = '<div class="empty-note">لسه مفيش طلاب في الترتيب</div>';
+    return;
+  }
   const [p1,p2,p3] = sorted;
   podium.innerHTML = `
-    <div class="pod silver"><div class="rank-avatar" style="background:${avatarGradient(p2.name)}">${p2.name[0]}</div><b>${p2.name}</b><div class="pts">${p2.points} نقطة</div></div>
-    <div class="pod gold"><div class="crown">👑</div><div class="rank-avatar" style="background:${avatarGradient(p1.name)}">${p1.name[0]}</div><b>${p1.name}</b><div class="pts">${p1.points} نقطة</div></div>
-    <div class="pod bronze"><div class="rank-avatar" style="background:${avatarGradient(p3.name)}">${p3.name[0]}</div><b>${p3.name}</b><div class="pts">${p3.points} نقطة</div></div>
+    ${p2?`<div class="pod silver"><div class="rank-avatar" style="background:${avatarGradient(p2.name)}">${esc((p2.name||'?')[0])}</div><b>${esc(p2.name)}</b><div class="pts">${p2.points} نقطة</div></div>`:''}
+    <div class="pod gold"><div class="crown">👑</div><div class="rank-avatar" style="background:${avatarGradient(p1.name)}">${esc((p1.name||'?')[0])}</div><b>${esc(p1.name)}</b><div class="pts">${p1.points} نقطة</div></div>
+    ${p3?`<div class="pod bronze"><div class="rank-avatar" style="background:${avatarGradient(p3.name)}">${esc((p3.name||'?')[0])}</div><b>${esc(p3.name)}</b><div class="pts">${p3.points} نقطة</div></div>`:''}
   `;
-
-  const listCard = document.getElementById('rankListCard');
   listCard.innerHTML='';
   sorted.forEach((s,i)=>{
+    const isMe = s.name===CURRENT_STUDENT.name;
     listCard.appendChild(el(`
-      <div class="rank-list-row ${s.isMe?'me':''}">
+      <div class="rank-list-row ${isMe?'me':''}">
         <div class="rank-num">${i+1}</div>
-        <div class="r-avatar" style="background:${avatarGradient(s.name)}">${s.name[0]}</div>
-        <div class="rname">${s.name}${s.isMe?' (أنت)':''}</div>
+        <div class="r-avatar" style="background:${avatarGradient(s.name)}">${esc((s.name||'?')[0])}</div>
+        <div class="rname">${esc(s.name)}${isMe?' (أنت)':''}</div>
         <div class="rpts">${s.points} نقطة</div>
+      </div>
+    `));
+  });
+}
+
+/* =========================================================================
+   لوحة التحكم — حفظ/تعديل/حذف كل نوع محتوى في Firestore
+   ========================================================================= */
+function requireFB(){ if(!fbReady){ showToast('لازم تحط بيانات Firebase في firebase-config.js الأول'); return false; } return true; }
+
+/* --- الحدث القادم --- */
+function saveNextEvent(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const name = document.getElementById('af-evName').value.trim();
+  const place = document.getElementById('af-evPlace').value.trim();
+  const dateVal = document.getElementById('af-evDate').value;
+  const imageVal = document.getElementById('af-evImage').value.trim();
+  if(!name || !place || !dateVal) return false;
+  const iso = new Date(dateVal).toISOString();
+  const data = {name, place, date: iso};
+  if(imageVal) data.image = imageVal;
+  db.collection('config').doc('nextEvent').set(data, {merge:true})
+    .then(()=>showToast('تم تحديث الحدث القادم ✔'));
+  return false;
+}
+
+/* --- طالب الأسبوع --- */
+function saveStudentOfWeek(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const name = document.getElementById('af-sowName').value.trim();
+  const level = document.getElementById('af-sowLevel').value.trim();
+  const points = Number(document.getElementById('af-sowPoints').value)||0;
+  if(!name || !level) return false;
+  const initial = name.trim()[0];
+  db.collection('config').doc('studentOfWeek').set({name, initial, level, points})
+    .then(()=>showToast('تم تحديث طالب الأسبوع ✔'));
+  return false;
+}
+
+/* --- الأنشطة --- */
+function editActivity(id){
+  const a = STATE.activities.find(x=>x.id===id); if(!a) return;
+  document.getElementById('af-actId').value = id;
+  document.getElementById('af-actTitle').value = a.title;
+  document.getElementById('af-actCat').value = a.cat;
+  document.getElementById('af-actDate').value = a.date;
+  document.getElementById('af-actPlace').value = a.place;
+  document.getElementById('af-actSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(3)').open = true;
+}
+function deleteActivity(id){
+  if(!confirm('حذف النشاط ده؟')) return;
+  db.collection('activities').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function saveActivity(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    cat: document.getElementById('af-actCat').value,
+    title: document.getElementById('af-actTitle').value.trim(),
+    date: document.getElementById('af-actDate').value.trim(),
+    place: document.getElementById('af-actPlace').value.trim(),
+  };
+  if(!item.title||!item.date||!item.place) return false;
+  const id = document.getElementById('af-actId').value;
+  const p = id ? db.collection('activities').doc(id).update(item)
+               : db.collection('activities').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة النشاط ✔');
+    ev.target.reset(); document.getElementById('af-actId').value='';
+    document.getElementById('af-actSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminActivities(){
+  const wrap = document.getElementById('admin-actList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.activities.forEach(a=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(a.title)}</b><span>${esc((CATS[a.cat]||{}).label||a.cat)} · ${esc(a.date)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editActivity('${a.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteActivity('${a.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- حملات التوعية --- */
+function editCampaign(id){
+  const c = STATE.campaigns.find(x=>x.id===id); if(!c) return;
+  document.getElementById('af-campId').value = id;
+  document.getElementById('af-campTitle').value = c.title;
+  document.getElementById('af-campDesc').value = c.desc;
+  document.getElementById('af-campDate').value = c.date;
+  document.getElementById('af-campPlace').value = c.place;
+  document.getElementById('af-campCat').value = c.cat;
+  document.getElementById('af-campStatus').value = c.status;
+  document.getElementById('af-campSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(4)').open = true;
+}
+function deleteCampaign(id){
+  if(!confirm('حذف الحملة دي؟')) return;
+  db.collection('campaigns').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function saveCampaign(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const status = document.getElementById('af-campStatus').value;
+  const palettes = {current:['#1b3a6b','#0d1836'], upcoming:['#7a1f2f','#1b2c5c'], past:['#1f6b4a','#132147']};
+  const item = {
+    status,
+    title: document.getElementById('af-campTitle').value.trim(),
+    desc: document.getElementById('af-campDesc').value.trim(),
+    date: document.getElementById('af-campDate').value.trim(),
+    place: document.getElementById('af-campPlace').value.trim(),
+    cat: document.getElementById('af-campCat').value.trim(),
+    color1: palettes[status][0], color2: palettes[status][1]
+  };
+  if(!item.title||!item.desc) return false;
+  const id = document.getElementById('af-campId').value;
+  const p = id ? db.collection('campaigns').doc(id).update(item)
+               : db.collection('campaigns').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة الحملة ✔');
+    ev.target.reset(); document.getElementById('af-campId').value='';
+    document.getElementById('af-campSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminCampaigns(){
+  const wrap = document.getElementById('admin-campList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.campaigns.forEach(c=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(c.title)}</b><span>${esc(c.status)} · ${esc(c.date)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editCampaign('${c.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteCampaign('${c.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- المجلات --- */
+function editMagazine(id){
+  const m = STATE.magazines.find(x=>x.id===id); if(!m) return;
+  document.getElementById('af-magId').value = id;
+  document.getElementById('af-magTitle').value = m.title;
+  document.getElementById('af-magDesc').value = m.desc;
+  document.getElementById('af-magDate').value = m.date;
+  document.getElementById('af-magType').value = m.type;
+  document.getElementById('af-magSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(5)').open = true;
+}
+function deleteMagazine(id){
+  if(!confirm('حذف المقال ده؟')) return;
+  db.collection('magazines').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function saveMagazine(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    type: document.getElementById('af-magType').value,
+    title: document.getElementById('af-magTitle').value.trim(),
+    desc: document.getElementById('af-magDesc').value.trim(),
+    date: document.getElementById('af-magDate').value.trim(),
+  };
+  if(!item.title||!item.desc) return false;
+  const id = document.getElementById('af-magId').value;
+  const p = id ? db.collection('magazines').doc(id).update(item)
+               : db.collection('magazines').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة المقال ✔');
+    ev.target.reset(); document.getElementById('af-magId').value='';
+    document.getElementById('af-magSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminMagazines(){
+  const wrap = document.getElementById('admin-magList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.magazines.forEach(m=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(m.title)}</b><span>${m.type==='scientific'?'علمي':'ثقافي'} · ${esc(m.date)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editMagazine('${m.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteMagazine('${m.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- اللجان --- */
+function editCommittee(id){
+  const c = STATE.committees.find(x=>x.id===id); if(!c) return;
+  document.getElementById('af-comId').value = id;
+  document.getElementById('af-comName').value = c.name;
+  document.getElementById('af-comHead').value = c.head;
+  document.getElementById('af-comSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(6)').open = true;
+}
+function deleteCommittee(id){
+  if(!confirm('حذف اللجنة دي؟')) return;
+  db.collection('committees').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function saveCommittee(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    name: document.getElementById('af-comName').value.trim(),
+    head: document.getElementById('af-comHead').value.trim(),
+  };
+  if(!item.name||!item.head) return false;
+  const id = document.getElementById('af-comId').value;
+  const p = id ? db.collection('committees').doc(id).update(item)
+               : db.collection('committees').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة اللجنة ✔');
+    ev.target.reset(); document.getElementById('af-comId').value='';
+    document.getElementById('af-comSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminCommittees(){
+  const wrap = document.getElementById('admin-comList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.committees.forEach(c=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(c.name)}</b><span>رئيس: ${esc(c.head)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editCommittee('${c.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteCommittee('${c.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- الترتيب --- */
+function editLeaderboard(id){
+  const r = STATE.leaderboard.find(x=>x.id===id); if(!r) return;
+  document.getElementById('af-rankId').value = id;
+  document.getElementById('af-rankName').value = r.name;
+  document.getElementById('af-rankPoints').value = r.points;
+  document.getElementById('af-rankSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(7)').open = true;
+}
+function deleteLeaderboard(id){
+  if(!confirm('حذف الطالب ده من الترتيب؟')) return;
+  db.collection('leaderboard').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function saveLeaderboard(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    name: document.getElementById('af-rankName').value.trim(),
+    points: Number(document.getElementById('af-rankPoints').value)||0,
+  };
+  if(!item.name) return false;
+  const id = document.getElementById('af-rankId').value;
+  const p = id ? db.collection('leaderboard').doc(id).update(item)
+               : db.collection('leaderboard').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت الإضافة لقائمة الترتيب ✔');
+    ev.target.reset(); document.getElementById('af-rankId').value='';
+    document.getElementById('af-rankSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminLeaderboard(){
+  const wrap = document.getElementById('admin-rankList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.leaderboard.forEach(r=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(r.name)}</b><span>${r.points} نقطة</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editLeaderboard('${r.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteLeaderboard('${r.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- أعضاء الاتحاد (بالصورة) --- */
+function editMember(id){
+  const m = STATE.members.find(x=>x.id===id); if(!m) return;
+  document.getElementById('af-memId').value = id;
+  document.getElementById('af-memName').value = m.name;
+  document.getElementById('af-memRole').value = m.role;
+  document.getElementById('af-memSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(8)').open = true;
+}
+function deleteMember(id){
+  if(!confirm('حذف العضو ده؟')) return;
+  db.collection('members').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+async function saveMember(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const name = document.getElementById('af-memName').value.trim();
+  const role = document.getElementById('af-memRole').value.trim();
+  const fileInput = document.getElementById('af-memPhoto');
+  if(!name||!role) return false;
+  const id = document.getElementById('af-memId').value;
+  const item = {name, role};
+  if(fileInput.files[0]) item.photoURL = await uploadImage(fileInput.files[0], 'members');
+  const p = id ? db.collection('members').doc(id).update(item)
+               : db.collection('members').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة العضو ✔');
+    ev.target.reset(); document.getElementById('af-memId').value='';
+    document.getElementById('af-memSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminMembers(){
+  const wrap = document.getElementById('admin-memList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.members.forEach(m=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(m.name)}</b><span>${esc(m.role)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editMember('${m.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteMember('${m.id}')">حذف</button>
+        </div>
+      </div>
+    `));
+  });
+}
+
+/* --- الأخبار (بالصورة) --- */
+function editNews(id){
+  const n = STATE.news.find(x=>x.id===id); if(!n) return;
+  document.getElementById('af-newsId').value = id;
+  document.getElementById('af-newsTitle').value = n.title;
+  document.getElementById('af-newsDesc').value = n.desc;
+  document.getElementById('af-newsDate').value = n.date;
+  document.getElementById('af-newsSubmitBtn').textContent = 'حفظ التعديل';
+  document.querySelector('#page-admin details:nth-of-type(9)').open = true;
+}
+function deleteNews(id){
+  if(!confirm('حذف الخبر ده؟')) return;
+  db.collection('news').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+async function saveNews(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const title = document.getElementById('af-newsTitle').value.trim();
+  const desc = document.getElementById('af-newsDesc').value.trim();
+  const date = document.getElementById('af-newsDate').value.trim();
+  const fileInput = document.getElementById('af-newsPhoto');
+  if(!title||!desc||!date) return false;
+  const id = document.getElementById('af-newsId').value;
+  const item = {title, desc, date};
+  if(fileInput.files[0]) item.photoURL = await uploadImage(fileInput.files[0], 'news');
+  const p = id ? db.collection('news').doc(id).update(item)
+               : db.collection('news').add({...item, createdAt:Date.now()});
+  p.then(()=>{
+    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة الخبر ✔');
+    ev.target.reset(); document.getElementById('af-newsId').value='';
+    document.getElementById('af-newsSubmitBtn').textContent='إضافة';
+  });
+  return false;
+}
+function renderAdminNews(){
+  const wrap = document.getElementById('admin-newsList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.news.forEach(n=>{
+    wrap.appendChild(el(`
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(n.title)}</b><span>${esc(n.date)}</span></div>
+        <div class="ai-actions">
+          <button type="button" class="mini-btn" onclick="editNews('${n.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteNews('${n.id}')">حذف</button>
+        </div>
       </div>
     `));
   });
@@ -1402,7 +1816,6 @@ function renderRanking(){
 
 /* ========================= التهيئة ========================= */
 function initApp(){
-  applyStoredData();
   renderHome();
   startCountdown();
   renderMediaCarousel();
@@ -1411,8 +1824,10 @@ function initApp(){
   switchLead('dean');
   renderMagTabs(); renderMags();
   renderCampTabs(); renderCamps();
+  renderNews();
   renderProfile();
   renderRankTabs(); renderRanking();
+  initFirestoreListeners();
 
   const hr = new Date().getHours();
   const greet = hr<12 ? 'صباح الخير' : (hr<18 ? 'مساء الخير' : 'مساء الخير');
