@@ -314,6 +314,56 @@ main::-webkit-scrollbar{display:none;}
 .ev-body .meta{font-size:10.5px;color:var(--muted);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;}
 .ev-body .meta span{display:flex;align-items:center;gap:3px;}
 
+/* ---------- Card entrance animation + tap feedback ---------- */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.card, .mini-event, .member-card, .org-node, .committee-row{
+  animation:fadeInUp .38s ease both;
+}
+.card:active{transform:scale(.985);transition:transform .12s ease;}
+.event-card{cursor:pointer;transition:box-shadow .2s ease, transform .2s ease;}
+.event-card:active{transform:scale(.98);}
+.pill-tab, .lead-tab, .nav-item, .btn-primary{transition:background .2s ease, color .2s ease, transform .12s ease;}
+.btn-primary:active{transform:scale(.97);}
+.nav-item{transition:color .2s ease;}
+
+/* ---------- Real activity photo ---------- */
+.ev-thumb img{width:100%;height:100%;object-fit:cover;border-radius:14px;}
+.ev-thumb .interest-badge{
+  position:absolute;bottom:-6px;left:-6px;background:var(--gold);color:var(--on-accent);
+  font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;border:2px solid var(--navy-900);
+}
+
+/* ---------- Activity detail modal ---------- */
+#activityModal{
+  position:fixed;inset:0;z-index:180;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(6,11,28,.6);opacity:0;visibility:hidden;transition:opacity .25s ease, visibility .25s;
+}
+#activityModal.show{opacity:1;visibility:visible;}
+#activityModal .modal-sheet{
+  width:100%;max-width:480px;max-height:86vh;overflow-y:auto;background:var(--navy-900);
+  border-radius:22px 22px 0 0;padding:0 0 22px;transform:translateY(24px);transition:transform .28s ease;
+}
+#activityModal.show .modal-sheet{transform:translateY(0);}
+.modal-hero{width:100%;height:170px;border-radius:22px 22px 0 0;object-fit:cover;display:block;}
+.modal-hero-fallback{
+  width:100%;height:170px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:center;
+}
+.modal-hero-fallback svg{width:44px;height:44px;color:#fff;opacity:.9;}
+.modal-body{padding:16px 18px 0;}
+.modal-close{
+  position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;
+  background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;font-size:16px;line-height:1;
+}
+.modal-interest-btn{
+  margin-top:16px;width:100%;padding:12px;border-radius:12px;border:none;font-weight:800;font-size:13px;
+  background:linear-gradient(90deg,var(--gold),var(--gold-light));color:var(--on-accent);cursor:pointer;
+}
+.modal-interest-btn[disabled]{opacity:.6;cursor:default;}
+
 /* leadership */
 .lead-tabs{display:flex;gap:8px;margin-bottom:16px;}
 .lead-tab{flex:1;text-align:center;padding:9px 0;border-radius:12px;background:var(--navy-800);border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
@@ -799,6 +849,8 @@ main::-webkit-scrollbar{display:none;}
             </select>
             <input required id="af-actDate" placeholder="التاريخ (مثال: 10 أكتوبر 2026)">
             <input required id="af-actPlace" placeholder="المكان">
+            <textarea id="af-actDesc" placeholder="تفاصيل النشاط (اختياري)" rows="3"></textarea>
+            <input type="file" id="af-actPhoto" accept="image/*">
             <button class="btn-primary" type="submit" id="af-actSubmitBtn">إضافة</button>
           </form>
           <div id="admin-actList"></div>
@@ -948,6 +1000,23 @@ main::-webkit-scrollbar{display:none;}
       <span>حسابي</span>
     </div>
   </nav>
+
+  <!-- ============ ACTIVITY DETAIL MODAL ============ -->
+  <div id="activityModal" onclick="if(event.target===this) closeActivityModal()">
+    <div class="modal-sheet">
+      <button class="modal-close" onclick="closeActivityModal()">✕</button>
+      <div id="modalHeroWrap"></div>
+      <div class="modal-body">
+        <span class="cat" id="modalCat" style="font-size:9.5px;font-weight:800;display:inline-block;padding:2px 8px;border-radius:20px;margin-bottom:8px;"></span>
+        <h2 id="modalTitle" style="font-size:16px;margin:0 0 8px;"></h2>
+        <div class="meta" style="font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <span id="modalDate">📅</span><span id="modalPlace">📍</span>
+        </div>
+        <p class="bio-text" id="modalDesc" style="margin:0;"></p>
+        <button class="modal-interest-btn" id="modalInterestBtn" onclick="markInterested()">أنا مهتم بالحضور ⭐</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ============ SIDE MENU ============ -->
   <div class="overlay" id="overlay" onclick="closeMenu()"></div>
@@ -1439,12 +1508,17 @@ function renderActivities(){
   wrap.innerHTML='';
   const list = STATE.activities.filter(a=>actFilter==='all'||a.cat===actFilter);
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد أنشطة في هذا التصنيف حالياً</div>'));return;}
-  list.forEach(a=>{
+  list.forEach((a,i)=>{
     const c=CATS[a.cat]||CATS.scientific;
-    wrap.appendChild(el(`
-      <div class="card event-card">
+    const interestedCount = (a.interestedUids||[]).length;
+    const thumb = a.photoURL
+      ? `<img src="${a.photoURL}" alt="${esc(a.title)}">`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg>`;
+    const card = el(`
+      <div class="card event-card" style="animation-delay:${Math.min(i*0.05,0.4)}s;">
         <div class="ev-thumb" style="background:linear-gradient(135deg, ${c.color}, #0d1836)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg>
+          ${thumb}
+          ${interestedCount ? `<div class="interest-badge">⭐ ${interestedCount}</div>` : ''}
         </div>
         <div class="ev-body">
           <span class="cat" style="background:${c.color}22;color:${c.color}">${esc(c.label)}</span>
@@ -1452,8 +1526,58 @@ function renderActivities(){
           <div class="meta"><span>📅 ${esc(a.date)}</span><span>📍 ${esc(a.place)}</span></div>
         </div>
       </div>
-    `));
+    `);
+    card.addEventListener('click', ()=>openActivityModal(a.id));
+    wrap.appendChild(card);
   });
+}
+
+/* ========================= مودال تفاصيل النشاط ========================= */
+let modalActivityId = null;
+function openActivityModal(id){
+  const a = STATE.activities.find(x=>x.id===id); if(!a) return;
+  modalActivityId = id;
+  const c = CATS[a.cat]||CATS.scientific;
+  document.getElementById('modalCat').textContent = c.label;
+  document.getElementById('modalCat').style.background = c.color+'22';
+  document.getElementById('modalCat').style.color = c.color;
+  document.getElementById('modalTitle').textContent = a.title;
+  document.getElementById('modalDate').textContent = '📅 '+a.date;
+  document.getElementById('modalPlace').textContent = '📍 '+a.place;
+  document.getElementById('modalDesc').textContent = a.desc || 'مفيش تفاصيل إضافية للنشاط ده لسه.';
+  document.getElementById('modalHeroWrap').innerHTML = a.photoURL
+    ? `<img class="modal-hero" src="${a.photoURL}" alt="${esc(a.title)}">`
+    : `<div class="modal-hero-fallback" style="background:linear-gradient(135deg, ${c.color}, #0d1836)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg></div>`;
+  const uids = a.interestedUids || [];
+  const btn = document.getElementById('modalInterestBtn');
+  const already = STUDENT.uid && uids.includes(STUDENT.uid);
+  btn.textContent = already ? `✔ سجّلت اهتمامك${uids.length?' ('+uids.length+')':''}` : `أنا مهتم بالحضور ⭐${uids.length?' ('+uids.length+')':''}`;
+  btn.disabled = !!already;
+  document.getElementById('activityModal').classList.add('show');
+}
+function closeActivityModal(){
+  document.getElementById('activityModal').classList.remove('show');
+  modalActivityId = null;
+}
+async function markInterested(){
+  if(!STUDENT.uid){ showToast('لازم تسجل دخولك الأول من صفحة حسابي'); closeActivityModal(); goPage('profile'); return; }
+  if(!modalActivityId || !fbReady) return;
+  const btn = document.getElementById('modalInterestBtn');
+  btn.disabled = true;
+  try{
+    await db.collection('activities').doc(modalActivityId).update({
+      interestedUids: firebase.firestore.FieldValue.arrayUnion(STUDENT.uid)
+    });
+    await db.collection('students').doc(STUDENT.uid).update({
+      events: firebase.firestore.FieldValue.increment(1)
+    });
+    STUDENT.events += 1;
+    renderProfile();
+    showToast('تم تسجيل اهتمامك بالنشاط ✔');
+  }catch(e){
+    btn.disabled = false;
+    showToast('حصل خطأ، جرّب تاني');
+  }
 }
 
 /* ========================= القيادات، اللجان، الأعضاء ========================= */
@@ -1724,6 +1848,7 @@ function editActivity(id){
   document.getElementById('af-actCat').value = a.cat;
   document.getElementById('af-actDate').value = a.date;
   document.getElementById('af-actPlace').value = a.place;
+  document.getElementById('af-actDesc').value = a.desc || '';
   document.getElementById('af-actSubmitBtn').textContent = 'حفظ التعديل';
   document.querySelector('#page-admin details:nth-of-type(3)').open = true;
 }
@@ -1731,7 +1856,7 @@ function deleteActivity(id){
   if(!confirm('حذف النشاط ده؟')) return;
   db.collection('activities').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
 }
-function saveActivity(ev){
+async function saveActivity(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
   const item = {
@@ -1739,11 +1864,14 @@ function saveActivity(ev){
     title: document.getElementById('af-actTitle').value.trim(),
     date: document.getElementById('af-actDate').value.trim(),
     place: document.getElementById('af-actPlace').value.trim(),
+    desc: document.getElementById('af-actDesc').value.trim(),
   };
   if(!item.title||!item.date||!item.place) return false;
+  const file = document.getElementById('af-actPhoto').files[0];
+  if(file) item.photoURL = await uploadImage(file, 'activities');
   const id = document.getElementById('af-actId').value;
   const p = id ? db.collection('activities').doc(id).update(item)
-               : db.collection('activities').add({...item, createdAt:Date.now()});
+               : db.collection('activities').add({...item, interestedUids:[], createdAt:Date.now()});
   p.then(()=>{
     showToast(id?'تم حفظ التعديل ✔':'تمت إضافة النشاط ✔');
     ev.target.reset(); document.getElementById('af-actId').value='';
