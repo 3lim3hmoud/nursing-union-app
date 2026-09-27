@@ -461,7 +461,7 @@ main::-webkit-scrollbar{display:none;}
 .admin-box summary::after{content:"+";font-size:16px;color:var(--gold);}
 .admin-box[open] summary::after{content:"–";}
 .admin-box form{padding:0 14px 14px;display:flex;flex-direction:column;gap:9px;}
-.admin-box input, .admin-box select{
+.admin-box input, .admin-box select, .admin-box textarea{
   width:100%;padding:10px 12px;border-radius:10px;background:rgba(21,52,110,0.04);
   border:1px solid var(--line);color:var(--ink);font-family:'Tajawal',sans-serif;font-size:12.5px;
 }
@@ -480,6 +480,38 @@ main::-webkit-scrollbar{display:none;}
 .member-card img,.member-card .ph{width:60px;height:60px;border-radius:50%;object-fit:cover;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;}
 .member-card b{display:block;font-size:12px;}
 .member-card span{font-size:10px;color:var(--muted);}
+
+/* ---------- Org chart (leadership network) ---------- */
+.org-chart{padding:4px 0 8px;}
+.org-top-row{display:flex;justify-content:center;gap:30px;}
+.org-node{display:flex;flex-direction:column;align-items:center;text-align:center;width:96px;}
+.org-node img,.org-node .ph{
+  width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:6px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;
+  border:2px solid var(--line);
+}
+.org-node.president img,.org-node.president .ph,.org-node.vp img,.org-node.vp .ph{
+  width:66px;height:66px;font-size:17px;border-color:var(--gold);
+}
+.org-node b{font-size:11.5px;line-height:1.3;}
+.org-node span{font-size:9.5px;color:var(--muted);margin-top:1px;}
+.org-bus{position:relative;height:24px;}
+.org-bus::before{content:"";position:absolute;top:0;left:50%;width:1px;height:12px;background:var(--line);transform:translateX(-50%);}
+.org-bus::after{content:"";position:absolute;top:12px;left:10%;right:10%;height:1px;background:var(--line);}
+.org-committees-row{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 8px;}
+.org-committees-row .org-node{position:relative;}
+.org-committees-row .org-node::before{content:"";position:absolute;top:-12px;left:50%;width:1px;height:12px;background:var(--line);transform:translateX(-50%);}
+
+/* ---------- Student login / signup (inside profile page) ---------- */
+.gate-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.gate-tab{flex:1;text-align:center;padding:9px 0;border-radius:12px;background:var(--navy-950);border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+.gate-tab.active{background:linear-gradient(90deg,var(--gold),var(--gold-light));color:var(--on-accent);border-color:transparent;}
+.gate-form{display:flex;flex-direction:column;gap:9px;text-align:right;}
+.gate-form input{
+  width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--line);
+  font-family:'Tajawal',sans-serif;font-size:13px;background:var(--navy-950);color:var(--ink);
+}
+.gate-error{margin:10px 0 0;font-size:11.5px;color:#d1435b;min-height:14px;}
 .news-card{display:flex;gap:12px;}
 .news-card img,.news-card .ph{width:74px;height:74px;border-radius:12px;object-fit:cover;flex:none;}
 .news-card .ph{display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;}
@@ -509,6 +541,7 @@ main::-webkit-scrollbar{display:none;}
   <div class="splash-tag" style="margin-top:14px;margin-bottom:0;">معاً نصنع الفرق</div>
   <div class="splash-foot">Together We Make A Difference ♥</div>
 </div>
+
 <div id="appframe">
 
   <!-- ============ TOP BAR ============ -->
@@ -612,7 +645,7 @@ main::-webkit-scrollbar{display:none;}
         <div class="lead-tab active" data-lt="dean" onclick="switchLead('dean')">العميدة</div>
         <div class="lead-tab" data-lt="vice" onclick="switchLead('vice')">الوكيلة</div>
         <div class="lead-tab" data-lt="committees" onclick="switchLead('committees')">اللجان</div>
-        <div class="lead-tab" data-lt="members" onclick="switchLead('members')">الأعضاء</div>
+        <div class="lead-tab" data-lt="members" onclick="switchLead('members')">الهيكل التنظيمي</div>
       </div>
       <div id="leadContent"></div>
     </section>
@@ -639,27 +672,58 @@ main::-webkit-scrollbar{display:none;}
 
     <!-- ---------------- PROFILE ---------------- -->
     <section class="page" id="page-profile">
-      <div class="profile-hero" style="margin-top:6px;">
-        <div class="big-avatar" id="profAvatar">ك</div>
-        <b id="profName">كيمو</b>
-        <div class="role" id="profRole">مستوى 3 - تمريض</div>
+
+      <!-- الحالة: مسجّل دخول بالفعل -->
+      <div id="profileLoggedIn" style="display:none;">
+        <div class="profile-hero" style="margin-top:6px;">
+          <div class="big-avatar" id="profAvatar">ك</div>
+          <b id="profName">كيمو</b>
+          <div class="role" id="profRole">مستوى 3 - تمريض</div>
+          <div class="role" id="profId" style="margin-top:2px;opacity:.8;">ID: —</div>
+        </div>
+        <div class="info-row">
+          <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/></svg><span>نقاطي</span><b id="chipPoints">0</b></div>
+          <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>ترتيبي</span><b id="chipRank">—</b></div>
+          <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>فعاليات</span><b id="chipEvents">0</b></div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M9 14l-3 8 6-3 6 3-3-8"/></svg><b id="statComp">0</b><span>مسابقات</span></div>
+          <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/></svg><b id="statCamp">0</b><span>حملات</span></div>
+          <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg><b id="statVol">0</b><span>تطوع</span></div>
+          <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3L22 9l-5 5 1.2 7-6.2-3.6L5.8 21 7 14 2 9l7.1-.7L12 2z"/></svg><b id="statActive">0</b><span>مستوى النشاط</span></div>
+        </div>
+        <div class="section-title">إنجازاتي</div>
+        <div class="card" id="achievCard" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+        <button type="button" class="btn-primary" style="background:transparent;border:1px solid var(--line);color:#d1435b;margin-top:18px;" onclick="studentLogout()">تسجيل الخروج</button>
       </div>
-      <div class="info-row">
-        <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/></svg><span>نقاطي</span><b id="chipPoints">0</b></div>
-        <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>ترتيبي</span><b id="chipRank">—</b></div>
-        <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>فعاليات</span><b id="chipEvents">0</b></div>
-      </div>
-      <div class="stat-grid">
-        <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M9 14l-3 8 6-3 6 3-3-8"/></svg><b id="statComp">0</b><span>مسابقات</span></div>
-        <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/></svg><b id="statCamp">0</b><span>حملات</span></div>
-        <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg><b id="statVol">0</b><span>تطوع</span></div>
-        <div class="stat-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3L22 9l-5 5 1.2 7-6.2-3.6L5.8 21 7 14 2 9l7.1-.7L12 2z"/></svg><b id="statActive">0</b><span>مستوى النشاط</span></div>
-      </div>
-      <div class="section-title">إنجازاتي</div>
-      <div class="card" id="achievCard" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
-      <div class="section-title">ملاحظة</div>
-      <div class="card">
-        <p class="bio-text" style="margin:0;">البيانات الظاهرة في هذه الصفحة تجريبية للعرض — هتتربط ببياناتك الحقيقية بعد ما نوصل التطبيق بقاعدة بيانات فعلية لكل طلاب الاتحاد.</p>
+
+      <!-- الحالة: مش مسجّل دخول -->
+      <div id="profileLoggedOut" style="margin-top:6px;">
+        <div class="profile-hero" style="margin-bottom:18px;">
+          <div class="big-avatar" style="background:linear-gradient(135deg,var(--gold),#173a86);">؟</div>
+          <b>حسابي</b>
+          <div class="role">سجّل دخولك أو اعمل حساب جديد عشان تشوف نقاطك وترتيبك وإنجازاتك</div>
+        </div>
+        <div class="card">
+          <div class="gate-tabs">
+            <div class="gate-tab active" data-gt="login" onclick="switchGate('login')">تسجيل الدخول</div>
+            <div class="gate-tab" data-gt="signup" onclick="switchGate('signup')">حساب جديد</div>
+          </div>
+          <form class="gate-form" id="gateLoginForm" onsubmit="return studentLogin(event)">
+            <input required type="email" id="gateLoginEmail" placeholder="الإيميل">
+            <input required type="password" id="gateLoginPass" placeholder="كلمة السر">
+            <button class="btn-primary" type="submit">دخول</button>
+          </form>
+          <form class="gate-form" id="gateSignupForm" style="display:none;" onsubmit="return studentSignup(event)">
+            <input required id="gateSignupName" placeholder="الاسم بالكامل">
+            <input required id="gateSignupId" placeholder="الرقم الجامعي (ID) — إجباري" inputmode="numeric">
+            <input required id="gateSignupLevel" placeholder="المستوى / الفرقة (مثال: مستوى 3)">
+            <input required type="email" id="gateSignupEmail" placeholder="الإيميل">
+            <input required type="password" id="gateSignupPass" placeholder="كلمة السر (6 أحرف على الأقل)">
+            <button class="btn-primary" type="submit">إنشاء الحساب</button>
+          </form>
+          <p class="gate-error" id="gateError"></p>
+        </div>
       </div>
     </section>
 
@@ -776,14 +840,50 @@ main::-webkit-scrollbar{display:none;}
         </details>
 
         <details class="admin-box">
+          <summary>🏛️ رئيس ونائب رئيس الاتحاد</summary>
+          <form onsubmit="return saveLeadership(event)">
+            <input required id="af-ldPresName" placeholder="اسم رئيس الاتحاد">
+            <input type="file" id="af-ldPresPhoto" accept="image/*">
+            <input required id="af-ldVpName" placeholder="اسم نائب رئيس الاتحاد">
+            <input type="file" id="af-ldVpPhoto" accept="image/*">
+            <button class="btn-primary" type="submit">حفظ</button>
+          </form>
+        </details>
+
+        <details class="admin-box">
           <summary>👥 اللجان ورؤسائها</summary>
           <form onsubmit="return saveCommittee(event)">
             <input type="hidden" id="af-comId">
             <input required id="af-comName" placeholder="اسم اللجنة (مثال: اللجنة العلمية)">
             <input required id="af-comHead" placeholder="اسم رئيس اللجنة">
+            <input type="file" id="af-comPhoto" accept="image/*">
             <button class="btn-primary" type="submit" id="af-comSubmitBtn">إضافة</button>
           </form>
           <div id="admin-comList"></div>
+        </details>
+
+        <details class="admin-box">
+          <summary>🎓 عميدة الكلية</summary>
+          <form onsubmit="return saveDean(event)">
+            <input required id="af-deanName" placeholder="الاسم">
+            <input required id="af-deanRole" placeholder="المنصب">
+            <textarea required id="af-deanBio" placeholder="نبذة" rows="3"></textarea>
+            <input id="af-deanQuote" placeholder="آخر رسالة (اختياري)">
+            <input type="file" id="af-deanPhoto" accept="image/*">
+            <button class="btn-primary" type="submit">حفظ</button>
+          </form>
+        </details>
+
+        <details class="admin-box">
+          <summary>🎓 وكيلة الكلية</summary>
+          <form onsubmit="return saveViceDean(event)">
+            <input required id="af-viceName" placeholder="الاسم">
+            <input required id="af-viceRole" placeholder="المنصب">
+            <textarea required id="af-viceBio" placeholder="نبذة" rows="3"></textarea>
+            <input id="af-viceQuote" placeholder="آخر رسالة (اختياري)">
+            <input type="file" id="af-vicePhoto" accept="image/*">
+            <button class="btn-primary" type="submit">حفظ</button>
+          </form>
         </details>
 
         <details class="admin-box">
@@ -823,7 +923,10 @@ main::-webkit-scrollbar{display:none;}
         </details>
 
       </div>
-    </section  <!-- ============ BOTTOM NAV ============ -->
+    </section>
+
+  </main>
+  <!-- ============ BOTTOM NAV ============ -->
   <nav class="bottomnav">
     <div class="nav-item active" data-nav="home" onclick="goPage('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
@@ -850,8 +953,8 @@ main::-webkit-scrollbar{display:none;}
   <div class="overlay" id="overlay" onclick="closeMenu()"></div>
   <div class="side-menu" id="sideMenu">
     <div class="sm-profile">
-      <div class="big-avatar">ك</div>
-      <div><b>كيمو</b><span>مستوى 3 - تمريض</span></div>
+      <div class="big-avatar" id="smAvatar">ك</div>
+      <div><b id="smName">كيمو</b><span id="smLevel">مستوى 3 - تمريض</span></div>
     </div>
     <div class="sm-link" onclick="goPage('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>الرئيسية</div>
     <div class="sm-link" onclick="goPage('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>حسابي الشخصي</div>
@@ -866,7 +969,7 @@ main::-webkit-scrollbar{display:none;}
     <div class="sm-divider"></div>
     <div class="sm-link" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>الإعدادات</div>
     <div class="sm-link" onclick="showToast('تحتاج مساعدة؟ تواصل مع لجنة الميديا')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>المساعدة والدعم</div>
-    <div class="sm-link sm-logout" onclick="showToast('تسجيل الخروج غير مفعل في النسخة التجريبية')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</div>
+    <div class="sm-link sm-logout" onclick="studentLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</div>
   </div>
 
   <div id="toast"></div>
@@ -884,18 +987,20 @@ const CATS = {
   social:{label:'اجتماعي', color:'#caa53d'}
 };
 
-const CURRENT_STUDENT = {
-  name:'كيمو', avatarInitial:'ك', level:'مستوى 3 - تمريض', points:850, rank:1,
-  events:12, workshops:5, competitions:3, campaigns:2, activeLevel:'مرتفع'
+const GUEST_STUDENT = {
+  uid:null, name:'زائر', studentId:'', avatarInitial:'؟', level:'', points:0, rank:'—',
+  events:0, workshops:0, competitions:0, campaigns:0, activeLevel:'—'
 };
+let STUDENT = {...GUEST_STUDENT};
 
-const DEAN = {
-  name:'أ.د. هناء محمد', role:'عميدة كلية التمريض', initial:'هـ',
+/* القيم دي هي الافتراضية بس — الأدمن يقدر يعدلها من لوحة التحكم وهتتحفظ في Firestore */
+const DEFAULT_DEAN = {
+  name:'أ.د. هناء محمد', role:'عميدة كلية التمريض', initial:'هـ', photoURL:'',
   bio:'تشغل أ.د. هناء محمد منصب عميدة كلية التمريض، وتمتلك خبرة تتجاوز 20 عاماً في القيادة الأكاديمية والبحث العلمي والرعاية الصحية. تسعى دائماً لتطوير بيئة تعليمية داعمة للطلاب.',
   quote:'"معاً نبني مستقبلاً أفضل لطلابنا ومجتمعنا."'
 };
-const VICE = {
-  name:'د. سارة علي', role:'وكيلة الكلية لشؤون الطلاب', initial:'س',
+const DEFAULT_VICE = {
+  name:'د. سارة علي', role:'وكيلة الكلية لشؤون الطلاب', initial:'س', photoURL:'',
   bio:'تتولى د. سارة علي متابعة الأنشطة الطلابية وشؤون الاتحاد، وتدعم مبادرات الطلاب العلمية والثقافية بشكل مستمر.',
   quote:'"طاقة الطلاب هي وقود أي إنجاز حقيقي."'
 };
@@ -926,6 +1031,8 @@ const STATE = {
   nextEvent:{name:'اليوم العلمي 2026', place:'القاعة الرئيسية', image:'images/building.jpg',
     date:new Date(Date.now()+(3*86400+14*3600+27*60)*1000).toISOString()},
   studentOfWeek:{name:'—', initial:'-', level:'—', points:0},
+  leadership:{presidentName:'—', presidentPhoto:'', vpName:'—', vpPhoto:''},
+  dean:{...DEFAULT_DEAN}, viceDean:{...DEFAULT_VICE},
   activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[]
 };
 
@@ -944,6 +1051,34 @@ function initFirestoreListeners(){
     if(doc.exists) Object.assign(STATE.studentOfWeek, doc.data());
     renderHome();
   });
+  db.collection('config').doc('leadership').onSnapshot(doc=>{
+    if(doc.exists) Object.assign(STATE.leadership, doc.data());
+    if(['members','committees'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
+    if(document.getElementById('af-ldPresName') && !document.getElementById('af-ldPresName').value){
+      document.getElementById('af-ldPresName').value = STATE.leadership.presidentName||'';
+      document.getElementById('af-ldVpName').value = STATE.leadership.vpName||'';
+    }
+  });
+  db.collection('config').doc('dean').onSnapshot(doc=>{
+    if(doc.exists) Object.assign(STATE.dean, doc.data());
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='dean') switchLead('dean');
+    if(document.getElementById('af-deanName') && !document.getElementById('af-deanName').value){
+      document.getElementById('af-deanName').value = STATE.dean.name||'';
+      document.getElementById('af-deanRole').value = STATE.dean.role||'';
+      document.getElementById('af-deanBio').value = STATE.dean.bio||'';
+      document.getElementById('af-deanQuote').value = STATE.dean.quote||'';
+    }
+  });
+  db.collection('config').doc('viceDean').onSnapshot(doc=>{
+    if(doc.exists) Object.assign(STATE.viceDean, doc.data());
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='vice') switchLead('vice');
+    if(document.getElementById('af-viceName') && !document.getElementById('af-viceName').value){
+      document.getElementById('af-viceName').value = STATE.viceDean.name||'';
+      document.getElementById('af-viceRole').value = STATE.viceDean.role||'';
+      document.getElementById('af-viceBio').value = STATE.viceDean.bio||'';
+      document.getElementById('af-viceQuote').value = STATE.viceDean.quote||'';
+    }
+  });
   db.collection('activities').orderBy('createdAt','desc').onSnapshot(snap=>{
     STATE.activities = snap.docs.map(docToItem);
     renderActivities(); renderHome(); renderAdminActivities();
@@ -958,7 +1093,7 @@ function initFirestoreListeners(){
   }, ()=>{});
   db.collection('committees').orderBy('createdAt','desc').onSnapshot(snap=>{
     STATE.committees = snap.docs.map(docToItem);
-    if(document.querySelector('.lead-tab.active')?.dataset.lt==='committees') switchLead('committees');
+    if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
     renderAdminCommittees();
   }, ()=>{});
   db.collection('leaderboard').orderBy('createdAt','desc').onSnapshot(snap=>{
@@ -977,13 +1112,16 @@ function initFirestoreListeners(){
 }
 
 /* ========================= تسجيل دخول الأدمن ========================= */
+let adminLoginAttempted = false;
 function adminLogin(ev){
   ev.preventDefault();
   if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return false; }
   const email = document.getElementById('admLoginEmail').value.trim();
   const pass = document.getElementById('admLoginPass').value;
   document.getElementById('adminLoginError').textContent = '';
+  adminLoginAttempted = true;
   auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    adminLoginAttempted = false;
     document.getElementById('adminLoginError').textContent = 'الإيميل أو كلمة السر غلط، أو الحساب ده مش متعمل في Firebase.';
   });
   return false;
@@ -991,8 +1129,10 @@ function adminLogin(ev){
 function adminLoginGoogle(){
   if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return; }
   document.getElementById('adminLoginError').textContent = '';
+  adminLoginAttempted = true;
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch(err=>{
+    adminLoginAttempted = false;
     document.getElementById('adminLoginError').textContent = 'حصل خطأ في تسجيل الدخول بجوجل، جرّب تاني.';
   });
 }
@@ -1006,13 +1146,95 @@ if(fbReady){
       loginBox.style.display='none'; panel.style.display='block';
       document.getElementById('adminUserEmail').textContent = user.email;
     }else{
-      if(user){
-        auth.signOut();
+      /* المستخدم مسجل دخول كطالب عادي (مش أدمن) — منسيبه في التطبيق، بس ملوش صلاحية يشوف لوحة التحكم */
+      if(user && adminLoginAttempted){
         document.getElementById('adminLoginError').textContent = 'الحساب ده مش من ضمن حسابات الأدمن المسموح لها.';
       }
       loginBox.style.display='block'; panel.style.display='none';
     }
+    adminLoginAttempted = false;
   });
+}
+
+/* ========================= تسجيل دخول / حساب الطالب ========================= */
+function switchGate(which){
+  document.querySelectorAll('.gate-tab').forEach(t=>t.classList.toggle('active', t.dataset.gt===which));
+  document.getElementById('gateLoginForm').style.display = which==='login' ? 'flex' : 'none';
+  document.getElementById('gateSignupForm').style.display = which==='signup' ? 'flex' : 'none';
+  document.getElementById('gateError').textContent = '';
+}
+function gateErrorMsg(err){
+  const code = (err && err.code) || '';
+  if(code.includes('email-already-in-use')) return 'الإيميل ده متسجل قبل كده — جرّب تسجيل الدخول بدل الحساب الجديد.';
+  if(code.includes('weak-password')) return 'كلمة السر لازم تكون 6 أحرف على الأقل.';
+  if(code.includes('invalid-email')) return 'الإيميل مش صحيح.';
+  if(code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) return 'الإيميل أو كلمة السر غلط.';
+  return 'حصل خطأ، جرّب تاني.';
+}
+function studentLogin(ev){
+  ev.preventDefault();
+  document.getElementById('gateError').textContent = '';
+  if(!fbReady){ document.getElementById('gateError').textContent = 'التطبيق مش متوصل بقاعدة بيانات لسه — راجع ملف firebase-config.js'; return false; }
+  const email = document.getElementById('gateLoginEmail').value.trim();
+  const pass = document.getElementById('gateLoginPass').value;
+  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
+    document.getElementById('gateError').textContent = gateErrorMsg(err);
+  });
+  return false;
+}
+async function studentSignup(ev){
+  ev.preventDefault();
+  document.getElementById('gateError').textContent = '';
+  if(!fbReady){ document.getElementById('gateError').textContent = 'التطبيق مش متوصل بقاعدة بيانات لسه — راجع ملف firebase-config.js'; return false; }
+  const name = document.getElementById('gateSignupName').value.trim();
+  const studentId = document.getElementById('gateSignupId').value.trim();
+  const level = document.getElementById('gateSignupLevel').value.trim();
+  const email = document.getElementById('gateSignupEmail').value.trim();
+  const pass = document.getElementById('gateSignupPass').value;
+  if(!studentId){ document.getElementById('gateError').textContent = 'الرقم الجامعي (ID) إجباري.'; return false; }
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    await db.collection('students').doc(cred.user.uid).set({
+      name, studentId, level, points:0, events:0, workshops:0, competitions:0, campaigns:0,
+      activeLevel:'منخفض', email, createdAt:Date.now()
+    });
+  }catch(err){
+    document.getElementById('gateError').textContent = gateErrorMsg(err);
+  }
+  return false;
+}
+function studentLogout(){
+  if(fbReady) auth.signOut();
+  else { resetStudentToGuest(); renderHome(); renderProfile(); }
+  closeMenu();
+}
+async function loadStudentProfile(user){
+  if(!db) return;
+  const ref = db.collection('students').doc(user.uid);
+  let snap;
+  try{ snap = await ref.get(); }catch(e){ return; }
+  if(!snap.exists){
+    const fallbackName = user.displayName || (user.email||'طالب').split('@')[0];
+    const initial = {
+      name:fallbackName, studentId:'', level:'غير محدد', points:0, events:0, workshops:0,
+      competitions:0, campaigns:0, activeLevel:'منخفض', email:user.email||'', createdAt:Date.now()
+    };
+    try{ await ref.set(initial); }catch(e){}
+    snap = { data:()=>initial };
+  }
+  const d = snap.data();
+  STUDENT.uid = user.uid;
+  STUDENT.name = d.name || 'طالب';
+  STUDENT.studentId = d.studentId || '';
+  STUDENT.level = d.level || 'غير محدد';
+  STUDENT.points = d.points||0;
+  STUDENT.events = d.events||0;
+  STUDENT.workshops = d.workshops||0;
+  STUDENT.competitions = d.competitions||0;
+  STUDENT.campaigns = d.campaigns||0;
+  STUDENT.activeLevel = d.activeLevel || 'منخفض';
+  STUDENT.rank = STUDENT.rank && STUDENT.rank!=='—' ? STUDENT.rank : '—';
+  STUDENT.avatarInitial = (STUDENT.name.trim()[0]) || '؟';
 }
 
 /* ========================= أدوات مساعدة عامة ========================= */
@@ -1072,8 +1294,11 @@ function joinNextEvent(){
 
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
-  document.getElementById('homeAvatar').textContent = CURRENT_STUDENT.avatarInitial;
-  document.getElementById('homeAvatar').style.background = avatarGradient(CURRENT_STUDENT.name);
+  document.getElementById('homeAvatar').textContent = STUDENT.avatarInitial;
+  document.getElementById('homeAvatar').style.background = avatarGradient(STUDENT.uid ? STUDENT.name : 'guest');
+  const hr = new Date().getHours();
+  const greet = hr<12 ? 'صباح الخير' : 'مساء الخير';
+  document.getElementById('homeGreeting').textContent = STUDENT.uid ? `${greet}، ${STUDENT.name} 👋` : `${greet} 👋`;
   document.getElementById('nextEventName').textContent = STATE.nextEvent.name;
   document.getElementById('nextEventMeta').textContent = STATE.nextEvent.place;
   document.getElementById('eventStrip').style.backgroundImage =
@@ -1248,21 +1473,40 @@ function switchLead(which){
     return;
   }
   if(which==='members'){
-    if(!STATE.members.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش أعضاء مضافين</div>'; return; }
-    let cards='';
-    STATE.members.forEach(m=>{
-      const ph = m.photoURL
-        ? `<img src="${m.photoURL}" alt="${esc(m.name)}">`
-        : `<div class="ph" style="background:${avatarGradient(m.name)}">${esc((m.name||'?')[0])}</div>`;
-      cards += `<div class="member-card">${ph}<b>${esc(m.name)}</b><span>${esc(m.role)}</span></div>`;
-    });
-    wrap.innerHTML = `<div class="member-grid">${cards}</div>`;
+    const L = STATE.leadership;
+    const nodeHtml = (name, photo, label, extraClass)=>{
+      const ph = photo
+        ? `<img src="${photo}" alt="${esc(name)}">`
+        : `<div class="ph" style="background:${avatarGradient(name||label)}">${esc((name||'؟')[0])}</div>`;
+      return `<div class="org-node ${extraClass||''}">${ph}<b>${esc(name||'—')}</b><span>${esc(label)}</span></div>`;
+    };
+    let committeesHtml = '';
+    if(!STATE.committees.length){
+      committeesHtml = '<div class="empty-note">لسه مفيش لجان مضافة</div>';
+    }else{
+      committeesHtml = `<div class="org-committees-row">${STATE.committees.map(c=>
+        nodeHtml(c.head, c.photoURL, c.name, 'committee')
+      ).join('')}</div>`;
+    }
+    wrap.innerHTML = `
+      <div class="org-chart">
+        <div class="org-top-row">
+          ${nodeHtml(L.presidentName, L.presidentPhoto, 'رئيس الاتحاد', 'president')}
+          ${nodeHtml(L.vpName, L.vpPhoto, 'نائب رئيس الاتحاد', 'vp')}
+        </div>
+        <div class="org-bus"></div>
+        ${committeesHtml}
+      </div>
+    `;
     return;
   }
-  const p = which==='dean' ? DEAN : VICE;
+  const p = which==='dean' ? STATE.dean : STATE.viceDean;
+  const bigPh = p.photoURL
+    ? `<img src="${p.photoURL}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    : p.initial;
   wrap.innerHTML = `
     <div class="profile-hero">
-      <div class="big-avatar" style="background:${avatarGradient(p.name)}">${p.initial}</div>
+      <div class="big-avatar" style="background:${avatarGradient(p.name)};overflow:hidden;">${bigPh}</div>
       <b>${esc(p.name)}</b>
       <div class="role">${esc(p.role)}</div>
     </div>
@@ -1356,17 +1600,27 @@ function renderNews(){
 
 /* ========================= الحساب الشخصي ========================= */
 function renderProfile(){
-  document.getElementById('profAvatar').textContent = CURRENT_STUDENT.avatarInitial;
-  document.getElementById('profAvatar').style.background = avatarGradient(CURRENT_STUDENT.name);
-  document.getElementById('profName').textContent = CURRENT_STUDENT.name;
-  document.getElementById('profRole').textContent = CURRENT_STUDENT.level;
-  document.getElementById('chipPoints').textContent = CURRENT_STUDENT.points;
-  document.getElementById('chipRank').textContent = '#'+CURRENT_STUDENT.rank;
-  document.getElementById('chipEvents').textContent = CURRENT_STUDENT.events;
-  document.getElementById('statComp').textContent = CURRENT_STUDENT.competitions;
-  document.getElementById('statCamp').textContent = CURRENT_STUDENT.campaigns;
-  document.getElementById('statVol').textContent = CURRENT_STUDENT.workshops;
-  document.getElementById('statActive').textContent = CURRENT_STUDENT.activeLevel;
+  const loggedIn = !!STUDENT.uid;
+  document.getElementById('profileLoggedIn').style.display = loggedIn ? 'block' : 'none';
+  document.getElementById('profileLoggedOut').style.display = loggedIn ? 'none' : 'block';
+  document.getElementById('smName').textContent = loggedIn ? STUDENT.name : 'زائر';
+  document.getElementById('smLevel').textContent = loggedIn ? STUDENT.level : 'سجّل دخولك من صفحة حسابي';
+  document.getElementById('smAvatar').textContent = loggedIn ? STUDENT.avatarInitial : '؟';
+  document.getElementById('smAvatar').style.background = loggedIn ? avatarGradient(STUDENT.name) : 'linear-gradient(135deg,var(--gold),#173a86)';
+  if(!loggedIn) return;
+
+  document.getElementById('profAvatar').textContent = STUDENT.avatarInitial;
+  document.getElementById('profAvatar').style.background = avatarGradient(STUDENT.name);
+  document.getElementById('profName').textContent = STUDENT.name;
+  document.getElementById('profRole').textContent = STUDENT.level;
+  document.getElementById('profId').textContent = 'ID: ' + (STUDENT.studentId || '—');
+  document.getElementById('chipPoints').textContent = STUDENT.points;
+  document.getElementById('chipRank').textContent = '#'+STUDENT.rank;
+  document.getElementById('chipEvents').textContent = STUDENT.events;
+  document.getElementById('statComp').textContent = STUDENT.competitions;
+  document.getElementById('statCamp').textContent = STUDENT.campaigns;
+  document.getElementById('statVol').textContent = STUDENT.workshops;
+  document.getElementById('statActive').textContent = STUDENT.activeLevel;
 
   const badges = [
     {icon:'🏅', label:'طالب نشط'},
@@ -1414,7 +1668,7 @@ function renderRanking(){
   `;
   listCard.innerHTML='';
   sorted.forEach((s,i)=>{
-    const isMe = s.name===CURRENT_STUDENT.name;
+    const isMe = s.name===STUDENT.name;
     listCard.appendChild(el(`
       <div class="rank-list-row ${isMe?'me':''}">
         <div class="rank-num">${i+1}</div>
@@ -1622,6 +1876,58 @@ function renderAdminMagazines(){
   });
 }
 
+/* --- رئيس ونائب رئيس الاتحاد --- */
+async function saveLeadership(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    presidentName: document.getElementById('af-ldPresName').value.trim(),
+    vpName: document.getElementById('af-ldVpName').value.trim(),
+  };
+  const presFile = document.getElementById('af-ldPresPhoto').files[0];
+  const vpFile = document.getElementById('af-ldVpPhoto').files[0];
+  if(presFile) item.presidentPhoto = await uploadImage(presFile, 'leadership');
+  if(vpFile) item.vpPhoto = await uploadImage(vpFile, 'leadership');
+  db.collection('config').doc('leadership').set(item, {merge:true}).then(()=>{
+    showToast('تم حفظ بيانات رئيس ونائب الاتحاد ✔');
+  });
+  return false;
+}
+
+/* --- عميدة ووكيلة الكلية --- */
+async function saveDean(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    name: document.getElementById('af-deanName').value.trim(),
+    role: document.getElementById('af-deanRole').value.trim(),
+    bio: document.getElementById('af-deanBio').value.trim(),
+    quote: document.getElementById('af-deanQuote').value.trim(),
+  };
+  const file = document.getElementById('af-deanPhoto').files[0];
+  if(file) item.photoURL = await uploadImage(file, 'leadership');
+  db.collection('config').doc('dean').set(item, {merge:true}).then(()=>{
+    showToast('تم حفظ بيانات عميدة الكلية ✔');
+  });
+  return false;
+}
+async function saveViceDean(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const item = {
+    name: document.getElementById('af-viceName').value.trim(),
+    role: document.getElementById('af-viceRole').value.trim(),
+    bio: document.getElementById('af-viceBio').value.trim(),
+    quote: document.getElementById('af-viceQuote').value.trim(),
+  };
+  const file = document.getElementById('af-vicePhoto').files[0];
+  if(file) item.photoURL = await uploadImage(file, 'leadership');
+  db.collection('config').doc('viceDean').set(item, {merge:true}).then(()=>{
+    showToast('تم حفظ بيانات وكيلة الكلية ✔');
+  });
+  return false;
+}
+
 /* --- اللجان --- */
 function editCommittee(id){
   const c = STATE.committees.find(x=>x.id===id); if(!c) return;
@@ -1629,20 +1935,22 @@ function editCommittee(id){
   document.getElementById('af-comName').value = c.name;
   document.getElementById('af-comHead').value = c.head;
   document.getElementById('af-comSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(6)').open = true;
+  document.querySelector('#page-admin details:nth-of-type(7)').open = true;
 }
 function deleteCommittee(id){
   if(!confirm('حذف اللجنة دي؟')) return;
   db.collection('committees').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
 }
-function saveCommittee(ev){
+async function saveCommittee(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
+  const fileInput = document.getElementById('af-comPhoto');
   const item = {
     name: document.getElementById('af-comName').value.trim(),
     head: document.getElementById('af-comHead').value.trim(),
   };
   if(!item.name||!item.head) return false;
+  if(fileInput.files[0]) item.photoURL = await uploadImage(fileInput.files[0], 'committees');
   const id = document.getElementById('af-comId').value;
   const p = id ? db.collection('committees').doc(id).update(item)
                : db.collection('committees').add({...item, createdAt:Date.now()});
@@ -1676,7 +1984,7 @@ function editLeaderboard(id){
   document.getElementById('af-rankName').value = r.name;
   document.getElementById('af-rankPoints').value = r.points;
   document.getElementById('af-rankSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(7)').open = true;
+  document.querySelector('#page-admin details:nth-of-type(10)').open = true;
 }
 function deleteLeaderboard(id){
   if(!confirm('حذف الطالب ده من الترتيب؟')) return;
@@ -1723,7 +2031,7 @@ function editMember(id){
   document.getElementById('af-memName').value = m.name;
   document.getElementById('af-memRole').value = m.role;
   document.getElementById('af-memSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(8)').open = true;
+  document.querySelector('#page-admin details:nth-of-type(11)').open = true;
 }
 function deleteMember(id){
   if(!confirm('حذف العضو ده؟')) return;
@@ -1772,7 +2080,7 @@ function editNews(id){
   document.getElementById('af-newsDesc').value = n.desc;
   document.getElementById('af-newsDate').value = n.date;
   document.getElementById('af-newsSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(9)').open = true;
+  document.querySelector('#page-admin details:nth-of-type(12)').open = true;
 }
 function deleteNews(id){
   if(!confirm('حذف الخبر ده؟')) return;
@@ -1828,12 +2136,19 @@ function initApp(){
   renderProfile();
   renderRankTabs(); renderRanking();
   initFirestoreListeners();
-
-  const hr = new Date().getHours();
-  const greet = hr<12 ? 'صباح الخير' : (hr<18 ? 'مساء الخير' : 'مساء الخير');
-  document.getElementById('homeGreeting').textContent = `${greet}، ${CURRENT_STUDENT.name} 👋`;
 }
-initApp();
+function resetStudentToGuest(){ STUDENT = {...GUEST_STUDENT}; }
+function bootAuthGate(){
+  initApp();
+  if(fbReady){
+    auth.onAuthStateChanged(async user=>{
+      if(user){ await loadStudentProfile(user); }
+      else{ resetStudentToGuest(); }
+      renderHome(); renderProfile();
+    });
+  }
+}
+bootAuthGate();
 
 window.addEventListener('load', ()=>{
   setTimeout(()=>{ document.getElementById('splash').classList.add('hide'); }, 1400);
