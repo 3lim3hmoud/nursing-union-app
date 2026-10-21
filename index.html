@@ -580,6 +580,17 @@ main::-webkit-scrollbar{display:none;}
 /* misc */
 .empty-note{text-align:center;color:var(--muted);font-size:12px;padding:30px 10px;}
 @media (prefers-color-scheme: light){ /* app already uses a bright white/blue palette — no override needed */ }
+
+/* ---- Polls ---- */
+.poll-q{font-weight:800;font-size:14px;line-height:1.7;margin-bottom:10px;}
+.poll-opt{position:relative;overflow:hidden;display:block;width:100%;text-align:right;margin-bottom:8px;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--line);background:var(--navy-900);color:var(--ink);font:inherit;font-size:13px;font-weight:600;}
+button.poll-opt{cursor:pointer;}
+button.poll-opt:active{border-color:var(--gold);}
+.poll-opt .pbar{position:absolute;top:0;bottom:0;right:0;width:0;background:var(--gold);opacity:.16;transition:width .5s;}
+.poll-opt.mine{border-color:var(--gold);}
+.poll-opt .prow{position:relative;display:flex;justify-content:space-between;gap:8px;}
+.poll-opt .ppct{color:var(--muted);font-weight:700;}
+.poll-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -658,7 +669,8 @@ main::-webkit-scrollbar{display:none;}
         <div class="quick-item" onclick="goPage('leadership')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a4 4 0 00-3-3.87"/><path d="M9 20H4v-2a4 4 0 013-3.87"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><span>القيادات</span></div>
         <div class="quick-item" onclick="goPage('activities')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><span>الفعاليات</span></div>
         <div class="quick-item" onclick="goPage('magazines')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div><span>المجلات</span></div>
-        <div class="quick-item" onclick="goPage('campaigns')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11 13.5v5a2 2 0 002 2h.5"/></svg></div><span>حملات التوعية</span></div>
+        <div class="quick-item" onclick="goPage('campaigns')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11 13.5v5a2 2 0 002 2h.5"/></svg></div>
+    <div class="sm-link" onclick="goPage('polls')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>التصويت</div><span>حملات التوعية</span></div>
         <div class="quick-item" onclick="goPage('ranking')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/><path d="M5 4H3v2a4 4 0 004 4M19 4h2v2a4 4 0 01-4 4"/></svg></div><span>الترتيب</span></div>
         <div class="quick-item" onclick="goPage('news')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>الأخبار</span></div>
         <div class="quick-item" onclick="openArchive()"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div><span>الميديا</span></div>
@@ -718,6 +730,12 @@ main::-webkit-scrollbar{display:none;}
     <section class="page" id="page-news">
       <div class="section-title" style="margin-top:6px;">أخبار الاتحاد</div>
       <div id="newsList"></div>
+    </section>
+
+    <!-- ---------------- POLLS ---------------- -->
+    <section class="page" id="page-polls">
+      <div class="section-title" style="margin-top:6px;">🗳️ التصويت</div>
+      <div id="pollList"></div>
     </section>
 
     <!-- ---------------- PROFILE ---------------- -->
@@ -962,6 +980,17 @@ main::-webkit-scrollbar{display:none;}
         </details>
 
         <details class="admin-box">
+          <summary>🗳️ التصويت</summary>
+          <form onsubmit="return savePoll(event)">
+            <input required id="af-pollQ" placeholder="سؤال التصويت">
+            <textarea required id="af-pollOpts" rows="4" placeholder="كل اختيار في سطر (اختيارين على الأقل، وحد أقصى 6)"></textarea>
+            <input id="af-pollEnds" type="datetime-local">
+            <button class="btn-primary" type="submit">نشر التصويت</button>
+          </form>
+          <div id="admin-pollList" style="padding:0 14px 12px;"></div>
+        </details>
+
+        <details class="admin-box">
           <summary>📰 الأخبار (بالصورة)</summary>
           <form onsubmit="return saveNews(event)">
             <input type="hidden" id="af-newsId">
@@ -1102,7 +1131,7 @@ const STATE = {
   studentOfWeek:{name:'—', initial:'-', level:'—', points:0},
   leadership:{presidentName:'—', presidentPhoto:'', vpName:'—', vpPhoto:''},
   dean:{...DEFAULT_DEAN}, viceDean:{...DEFAULT_VICE},
-  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[]
+  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}
 };
 
 function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
@@ -1178,6 +1207,10 @@ function initFirestoreListeners(){
     STATE.news = snap.docs.map(docToItem);
     renderNews(); renderAdminNews();
   }, ()=>{});
+  db.collection('polls').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.polls = snap.docs.map(docToItem);
+    syncPollVotes(); renderPolls(); renderAdminPolls();
+  }, ()=>{});
 }
 
 /* ========================= تسجيل دخول الأدمن ========================= */
@@ -1222,6 +1255,102 @@ if(fbReady){
       loginBox.style.display='block'; panel.style.display='none';
     }
     adminLoginAttempted = false;
+  });
+}
+
+/* ========================= التصويت ========================= */
+const pollVoteUnsubs = {};
+function pollClosed(p){ return !!(p.endsAt && p.endsAt.toDate && p.endsAt.toDate() < new Date()); }
+
+function syncPollVotes(force){
+  if(!fbReady) return;
+  if(force){ Object.keys(pollVoteUnsubs).forEach(id=>{ pollVoteUnsubs[id](); delete pollVoteUnsubs[id]; }); }
+  const ids = new Set(STATE.polls.map(p=>p.id));
+  Object.keys(pollVoteUnsubs).forEach(id=>{
+    if(!ids.has(id)){ pollVoteUnsubs[id](); delete pollVoteUnsubs[id]; delete STATE.pollVotes[id]; }
+  });
+  if(!auth.currentUser) return; /* قراية الأصوات للمسجلين بس */
+  STATE.polls.forEach(p=>{
+    if(pollVoteUnsubs[p.id]) return;
+    pollVoteUnsubs[p.id] = db.collection('polls').doc(p.id).collection('votes').onSnapshot(snap=>{
+      const m = {}; snap.forEach(v=>{ m[v.id] = v.data().option; });
+      STATE.pollVotes[p.id] = m;
+      renderPolls(); renderAdminPolls();
+    }, ()=>{});
+  });
+}
+
+function renderPolls(){
+  const wrap = document.getElementById('pollList'); if(!wrap) return;
+  wrap.innerHTML='';
+  if(!STATE.polls.length){ wrap.appendChild(el('<div class="empty-note">مفيش تصويتات حالياً</div>')); return; }
+  const me = fbReady && auth.currentUser ? auth.currentUser.uid : null;
+  STATE.polls.forEach(p=>{
+    const votes = STATE.pollVotes[p.id] || {};
+    const counts = p.options.map(()=>0);
+    Object.values(votes).forEach(i=>{ if(counts[i]!==undefined) counts[i]++; });
+    const total = counts.reduce((a,b)=>a+b,0);
+    const mine = me ? votes[me] : undefined;
+    const closed = pollClosed(p);
+    const showRes = mine!==undefined || closed || IS_ADMIN;
+    const opts = p.options.map((o,i)=>{
+      if(!showRes) return `<button type="button" class="poll-opt" onclick="castVote('${p.id}',${i})"><span class="prow"><span>${esc(o)}</span></span></button>`;
+      const pct = total ? Math.round(counts[i]*100/total) : 0;
+      return `<div class="poll-opt ${mine===i?'mine':''}"><span class="pbar" style="width:${pct}%"></span><span class="prow"><span>${mine===i?'✓ ':''}${esc(o)}</span><span class="ppct">${pct}% · ${counts[i]}</span></span></div>`;
+    }).join('');
+    const endTxt = p.endsAt && p.endsAt.toDate ? (closed ? 'انتهى التصويت' : 'ينتهي: '+p.endsAt.toDate().toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})) : '';
+    wrap.appendChild(el(`<div class="card"><div class="poll-q">${esc(p.question)}</div>${opts}<div class="poll-meta"><span>${total} صوت</span><span>${endTxt}</span></div></div>`));
+  });
+}
+
+function castVote(pollId, idx){
+  if(!fbReady) return;
+  const u = auth.currentUser;
+  if(!u){ showToast('لازم تسجل دخولك الأول من صفحة حسابي'); goPage('profile'); return; }
+  const p = STATE.polls.find(x=>x.id===pollId);
+  if(!p || pollClosed(p)) return showToast('التصويت منتهي');
+  if((STATE.pollVotes[pollId]||{})[u.uid]!==undefined) return showToast('صوّتّ قبل كده');
+  db.collection('polls').doc(pollId).collection('votes').doc(u.uid)
+    .set({ option: idx, createdAt: Date.now() })
+    .then(()=>showToast('تم تسجيل صوتك ✔'))
+    .catch(()=>showToast('مقدرتش أسجل صوتك، جرب تاني'));
+}
+
+function savePoll(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const question = document.getElementById('af-pollQ').value.trim();
+  const options = document.getElementById('af-pollOpts').value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,6);
+  const ends = document.getElementById('af-pollEnds').value;
+  if(!question || options.length<2){ showToast('اكتب السؤال واختيارين على الأقل'); return false; }
+  const item = { question, options, createdAt: Date.now() };
+  if(ends) item.endsAt = firebase.firestore.Timestamp.fromDate(new Date(ends));
+  db.collection('polls').add(item).then(()=>{
+    showToast('تم نشر التصويت ✔'); ev.target.reset();
+  }).catch(()=>showToast('حصل خطأ، اتأكد إنك داخل بحساب الأدمن'));
+  return false;
+}
+function closePoll(id){
+  if(!requireFB()) return;
+  db.collection('polls').doc(id).update({ endsAt: firebase.firestore.Timestamp.now() }).then(()=>showToast('تم إغلاق التصويت'));
+}
+function deletePoll(id){
+  if(!requireFB() || !confirm('تحذف التصويت ده؟')) return;
+  db.collection('polls').doc(id).delete().then(()=>showToast('تم الحذف'));
+}
+function renderAdminPolls(){
+  const wrap = document.getElementById('admin-pollList'); if(!wrap) return;
+  wrap.innerHTML='';
+  STATE.polls.forEach(p=>{
+    const n = Object.keys(STATE.pollVotes[p.id]||{}).length;
+    wrap.appendChild(el(`<div class="admin-item-row"><div class="ai-info"><b>${esc(p.question)}</b><span>${n} صوت${pollClosed(p)?' · منتهي':''}</span></div><div class="ai-actions">${pollClosed(p)?'':`<button type="button" class="mini-btn" onclick="closePoll('${p.id}')">إغلاق</button>`}<button type="button" class="mini-btn" onclick="deletePoll('${p.id}')">حذف</button></div></div>`));
+  });
+}
+let IS_ADMIN = false;
+if(fbReady){
+  auth.onAuthStateChanged(user=>{
+    IS_ADMIN = !!(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase()));
+    syncPollVotes(true); renderPolls(); renderAdminPolls();
   });
 }
 
