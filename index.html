@@ -581,16 +581,84 @@ main::-webkit-scrollbar{display:none;}
 .empty-note{text-align:center;color:var(--muted);font-size:12px;padding:30px 10px;}
 @media (prefers-color-scheme: light){ /* app already uses a bright white/blue palette — no override needed */ }
 
-/* ---- Polls ---- */
-.poll-q{font-weight:800;font-size:14px;line-height:1.7;margin-bottom:10px;}
-.poll-opt{position:relative;overflow:hidden;display:block;width:100%;text-align:right;margin-bottom:8px;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--line);background:var(--navy-900);color:var(--ink);font:inherit;font-size:13px;font-weight:600;}
+/* ---- Polls v2 ---- */
+.poll-card{padding:0;overflow:hidden;margin-bottom:14px;}
+.poll-cover{display:block;width:100%;height:150px;object-fit:cover;}
+.poll-body{padding:16px;}
+.poll-status{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.poll-status.live{background:rgba(31,174,106,.12);color:#12874f;}
+.poll-status.live i{width:7px;height:7px;border-radius:50%;background:#1fae6a;animation:pulseDot 1.6s infinite;}
+.poll-status.closed{background:rgba(92,107,138,.12);color:var(--muted);}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(31,174,106,.5);}70%{box-shadow:0 0 0 7px rgba(31,174,106,0);}100%{box-shadow:0 0 0 0 rgba(31,174,106,0);}}
+.poll-q{font-weight:800;font-size:15px;line-height:1.7;}
+.poll-desc{font-size:12px;color:var(--muted);line-height:1.8;margin:4px 0 6px;}
+.poll-opt{position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;width:100%;text-align:right;margin-top:9px;padding:11px 12px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:13px;font-weight:700;transition:border-color .2s,transform .15s,box-shadow .2s;}
 button.poll-opt{cursor:pointer;}
-button.poll-opt:active{border-color:var(--gold);}
-.poll-opt .pbar{position:absolute;top:0;bottom:0;right:0;width:0;background:var(--gold);opacity:.16;transition:width .5s;}
-.poll-opt.mine{border-color:var(--gold);}
-.poll-opt .prow{position:relative;display:flex;justify-content:space-between;gap:8px;}
-.poll-opt .ppct{color:var(--muted);font-weight:700;}
-.poll-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted);}
+button.poll-opt:active{transform:scale(.985);border-color:var(--gold);}
+.poll-opt .pbar{position:absolute;top:0;bottom:0;right:0;width:0;background:linear-gradient(270deg,rgba(33,89,201,.10),rgba(33,89,201,.24));transition:width .6s cubic-bezier(.2,.8,.2,1);}
+.poll-opt.mine{border-color:var(--gold);box-shadow:0 0 0 3px rgba(33,89,201,.10);}
+.poll-opt.win{border-color:#caa53d;}
+.poll-opt .poi{position:relative;width:46px;height:46px;border-radius:12px;object-fit:cover;flex:none;}
+.poll-opt .prow{position:relative;flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:right;}
+.poll-opt .ppct{color:var(--muted);font-weight:800;font-size:12px;white-space:nowrap;}
+.poll-opt .pdot{width:18px;height:18px;border-radius:50%;border:2px solid #c3cde3;flex:none;}
+.poll-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:12px;}
+.poll-note{font-size:11.5px;color:var(--muted);margin-top:10px;}
+.poll-opt-row{display:flex;gap:8px;align-items:center;}
+.poll-opt-row .po-text{flex:1;}
+.po-img{flex:none;width:44px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid var(--line);background:var(--navy-900);cursor:pointer;font-size:16px;}
+.po-img input{display:none;}
+.po-img.has{background:rgba(31,174,106,.15);border-color:#1fae6a;}
+.admin-box textarea{resize:vertical;font-family:inherit;}
+
+/* ---- Home poll banner (إعلان) ---- */
+.poll-banner{position:relative;margin-top:16px;padding:16px;border-radius:20px;color:#fff;overflow:hidden;cursor:pointer;background:linear-gradient(135deg,#1c4fb8,#0f2a66 70%);background-size:cover;background-position:center;box-shadow:0 12px 28px rgba(21,52,110,.28);transition:transform .15s;}
+.poll-banner:active{transform:scale(.985);}
+.poll-banner::after{content:"";position:absolute;left:-30px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);}
+.pb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative;z-index:1;}
+.pb-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.22);}
+.pb-badge i{width:7px;height:7px;border-radius:50%;background:#5dffa8;animation:pulseDot 1.6s infinite;}
+.pb-more{font-size:10.5px;opacity:.85;font-weight:700;}
+.pb-q{position:relative;z-index:1;font-weight:800;font-size:16px;line-height:1.65;margin-bottom:6px;}
+.pb-meta{position:relative;z-index:1;font-size:11px;opacity:.82;margin-bottom:12px;}
+.pb-cta{position:relative;z-index:1;display:inline-block;padding:9px 16px;border-radius:12px;background:#fff;color:var(--gold);font-weight:800;font-size:12.5px;}
+
+/* ---- Profile edit ---- */
+.has-photo{color:transparent !important;}
+.pe-bio{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7;max-width:290px;margin-inline:auto;}
+.pe-edit-btn{margin-top:12px;padding:8px 18px;border-radius:20px;border:1.5px solid var(--line);background:#fff;color:var(--gold);font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;position:relative;z-index:2;}
+.pe-overlay{position:fixed;inset:0;z-index:80;background:rgba(10,22,50,.5);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;}
+.pe-overlay.show{display:flex;}
+.pe-sheet{width:100%;max-width:480px;max-height:92vh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));animation:sheetUp .3s ease;}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.pe-handle{width:42px;height:4px;border-radius:4px;background:var(--line);margin:4px auto 14px;}
+.pe-sheet h3{margin:0 0 14px;font-size:16px;font-weight:800;text-align:center;}
+.pe-photo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:10px;}
+.pe-photo .big-avatar{width:88px;height:88px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;box-shadow:0 8px 20px rgba(21,52,110,.2);overflow:hidden;}
+.pe-photo-btn{padding:7px 16px;border-radius:20px;background:rgba(33,89,201,.10);color:var(--gold);font-weight:800;font-size:12px;cursor:pointer;}
+.pe-link{background:none;border:none;color:#d1435b;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pe-l{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin:10px 0 5px;}
+.pe-sheet input[type=text],.pe-sheet textarea{width:100%;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line);font:inherit;font-size:13px;color:var(--ink);background:#fff;resize:none;}
+.pe-sheet input:focus,.pe-sheet textarea:focus{outline:none;border-color:var(--gold);}
+.pe-actions{display:flex;gap:10px;margin-top:16px;}
+.pe-actions .btn-primary{flex:2;}
+.pe-actions .btn-ghost{flex:1;}
+
+/* ---- Premium polish ---- */
+html{-webkit-font-smoothing:antialiased;}
+#pages{scroll-behavior:smooth;}
+.card{border-radius:20px;border:1px solid rgba(21,52,110,.07);box-shadow:0 1px 2px rgba(21,52,110,.04),0 10px 28px rgba(21,52,110,.07);}
+.hello-card{box-shadow:0 14px 34px rgba(21,52,110,.10);}
+.section-title{position:relative;padding-inline-start:12px;}
+.section-title::before{content:"";position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);width:4px;height:16px;border-radius:4px;background:linear-gradient(var(--gold),var(--gold-light));}
+.btn-primary{box-shadow:0 8px 18px rgba(33,89,201,.26);transition:transform .15s,box-shadow .2s;}
+.quick-item{transition:transform .15s;}
+.quick-item:active{transform:scale(.94);}
+.quick-icon{box-shadow:0 6px 16px rgba(21,52,110,.10);}
+.nav-item svg{transition:transform .2s,filter .2s;}
+.nav-item.active svg{transform:translateY(-2px) scale(1.08);filter:drop-shadow(0 4px 8px rgba(33,89,201,.35));}
+.mini-avatar{box-shadow:0 6px 14px rgba(21,52,110,.18);overflow:hidden;}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
 </style>
 </head>
 <body>
@@ -655,6 +723,8 @@ button.poll-opt:active{border-color:var(--gold);}
           <button class="btn-primary" onclick="joinNextEvent()">انضم للفعالية</button>
         </div>
       </div>
+
+      <div id="homePollBanner"></div>
 
       <div class="section-title">من فعاليات الكلية 🎬</div>
       <div class="media-carousel" id="mediaCarousel">
@@ -743,10 +813,12 @@ button.poll-opt:active{border-color:var(--gold);}
       <!-- الحالة: مسجّل دخول بالفعل -->
       <div id="profileLoggedIn" style="display:none;">
         <div class="profile-hero" style="margin-top:6px;">
-          <div class="big-avatar" id="profAvatar">ك</div>
+          <div class="big-avatar" id="profAvatar" onclick="openProfileEdit()" style="cursor:pointer;">ك</div>
           <b id="profName">كيمو</b>
           <div class="role" id="profRole">مستوى 3 - تمريض</div>
           <div class="role" id="profId" style="margin-top:2px;opacity:.8;">ID: —</div>
+          <div class="pe-bio" id="profBio" style="display:none;"></div>
+          <button type="button" class="pe-edit-btn" onclick="openProfileEdit()">✏️ تعديل الملف الشخصي</button>
         </div>
         <div class="info-row">
           <div class="info-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10l-1 8a4 4 0 01-8 0L7 4z"/></svg><span>نقاطي</span><b id="chipPoints">0</b></div>
@@ -980,11 +1052,16 @@ button.poll-opt:active{border-color:var(--gold);}
 
         <details class="admin-box">
           <summary>🗳️ التصويت</summary>
-          <form onsubmit="return savePoll(event)">
+          <form onsubmit="return savePoll(event)" id="pollForm">
             <input required id="af-pollQ" placeholder="سؤال التصويت">
-            <textarea required id="af-pollOpts" rows="4" placeholder="كل اختيار في سطر (اختيارين على الأقل، وحد أقصى 6)"></textarea>
+            <textarea id="af-pollDesc" rows="2" placeholder="وصف أو تفاصيل (اختياري)"></textarea>
+            <label style="font-size:11.5px;color:var(--muted);font-weight:700;">صورة الغلاف (اختياري)</label>
+            <input type="file" id="af-pollCover" accept="image/*">
+            <div id="pollOptRows" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <button type="button" class="mini-btn" onclick="addPollOptRow()" id="pollAddOptBtn">+ إضافة اختيار</button>
+            <label style="font-size:11.5px;color:var(--muted);font-weight:700;">ينتهي في (اختياري)</label>
             <input id="af-pollEnds" type="datetime-local">
-            <button class="btn-primary" type="submit">نشر التصويت</button>
+            <button class="btn-primary" type="submit" id="pollSubmitBtn">نشر التصويت</button>
           </form>
           <div id="admin-pollList" style="padding:0 14px 12px;"></div>
         </details>
@@ -1070,7 +1147,29 @@ button.poll-opt:active{border-color:var(--gold);}
     <div class="sm-link sm-logout" onclick="studentLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</div>
   </div>
 
-  <div id="toast"></div>
+  <div class="pe-overlay" id="profileEditModal" onclick="if(event.target===this)closeProfileEdit()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3>تعديل الملف الشخصي</h3>
+    <div class="pe-photo">
+      <div class="big-avatar" id="peAvatar">؟</div>
+      <label class="pe-photo-btn">📷 تغيير الصورة<input type="file" accept="image/*" id="peFile" hidden onchange="previewProfilePhoto(this)"></label>
+      <button type="button" class="pe-link" id="peRemove" onclick="removeProfilePhoto()">حذف الصورة</button>
+    </div>
+    <label class="pe-l">الاسم</label>
+    <input type="text" id="peName" maxlength="40" placeholder="اسمك">
+    <label class="pe-l">المستوى / الفرقة</label>
+    <input type="text" id="peLevel" maxlength="30" placeholder="مثال: مستوى 3">
+    <label class="pe-l">نبذة عنك (اختياري)</label>
+    <textarea id="peBio" rows="3" maxlength="140" placeholder="جملة قصيرة عنك..."></textarea>
+    <div class="pe-actions">
+      <button type="button" class="btn-primary" id="peSave" onclick="saveProfileEdit()">حفظ</button>
+      <button type="button" class="btn-ghost" onclick="closeProfileEdit()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
 </div>
 
 <script>
@@ -1208,9 +1307,10 @@ function initFirestoreListeners(){
     renderNews(); renderAdminNews();
   }, ()=>{});
   db.collection('polls').orderBy('createdAt','desc').onSnapshot(snap=>{
+    STATE.pollErr = '';
     STATE.polls = snap.docs.map(docToItem);
     syncPollVotes(); renderPolls(); renderAdminPolls();
-  }, ()=>{});
+  }, err=>pollLoadError(err));
 }
 
 /* ========================= تسجيل دخول الأدمن ========================= */
@@ -1260,7 +1360,22 @@ if(fbReady){
 
 /* ========================= التصويت ========================= */
 const pollVoteUnsubs = {};
+let IS_ADMIN = false;
+
+function optText(o){ return typeof o==='string' ? o : ((o && o.text) || ''); }
+function optImg(o){ return (o && typeof o==='object') ? (o.imageURL||'') : ''; }
 function pollClosed(p){ return !!(p.endsAt && p.endsAt.toDate && p.endsAt.toDate() < new Date()); }
+function activePolls(){ return STATE.polls.filter(p=>!pollClosed(p)); }
+function pollEndsIn(p){
+  if(!p.endsAt || !p.endsAt.toDate) return 'مفتوح';
+  const ms = p.endsAt.toDate() - Date.now();
+  if(ms<=0) return 'انتهى';
+  const m=Math.floor(ms/60000), h=Math.floor(m/60), d=Math.floor(h/24);
+  if(d>=1) return 'باقي '+d+' يوم';
+  if(h>=1) return 'باقي '+h+' ساعة';
+  return 'باقي '+Math.max(m,1)+' دقيقة';
+}
+function myUid(){ return (fbReady && auth.currentUser) ? auth.currentUser.uid : null; }
 
 function syncPollVotes(force){
   if(!fbReady) return;
@@ -1280,27 +1395,81 @@ function syncPollVotes(force){
   });
 }
 
+function pollLoadError(err){
+  STATE.pollErr = (err && err.code) || 'error';
+  renderPolls();
+}
+
 function renderPolls(){
-  const wrap = document.getElementById('pollList'); if(!wrap) return;
-  wrap.innerHTML='';
-  if(!STATE.polls.length){ wrap.appendChild(el('<div class="empty-note">مفيش تصويتات حالياً</div>')); return; }
-  const me = fbReady && auth.currentUser ? auth.currentUser.uid : null;
-  STATE.polls.forEach(p=>{
-    const votes = STATE.pollVotes[p.id] || {};
-    const counts = p.options.map(()=>0);
-    Object.values(votes).forEach(i=>{ if(counts[i]!==undefined) counts[i]++; });
-    const total = counts.reduce((a,b)=>a+b,0);
-    const mine = me ? votes[me] : undefined;
-    const closed = pollClosed(p);
-    const showRes = mine!==undefined || closed || IS_ADMIN;
-    const opts = p.options.map((o,i)=>{
-      if(!showRes) return `<button type="button" class="poll-opt" onclick="castVote('${p.id}',${i})"><span class="prow"><span>${esc(o)}</span></span></button>`;
-      const pct = total ? Math.round(counts[i]*100/total) : 0;
-      return `<div class="poll-opt ${mine===i?'mine':''}"><span class="pbar" style="width:${pct}%"></span><span class="prow"><span>${mine===i?'✓ ':''}${esc(o)}</span><span class="ppct">${pct}% · ${counts[i]}</span></span></div>`;
-    }).join('');
-    const endTxt = p.endsAt && p.endsAt.toDate ? (closed ? 'انتهى التصويت' : 'ينتهي: '+p.endsAt.toDate().toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'})) : '';
-    wrap.appendChild(el(`<div class="card"><div class="poll-q">${esc(p.question)}</div>${opts}<div class="poll-meta"><span>${total} صوت</span><span>${endTxt}</span></div></div>`));
-  });
+  const wrap = document.getElementById('pollList');
+  if(wrap){
+    wrap.innerHTML='';
+    if(!STATE.polls.length){
+      const msg = STATE.pollErr
+        ? `تعذر تحميل التصويتات (${esc(STATE.pollErr)}).<br>اتأكد إن قواعد Firestore اتنشرت وإنك متصل بالإنترنت.`
+        : (IS_ADMIN ? 'مفيش تصويتات لسه — ضيف أول تصويت من لوحة الأدمن 🗳️' : 'مفيش تصويتات حالياً');
+      wrap.appendChild(el(`<div class="empty-note">${msg}</div>`));
+    } else {
+      const me = myUid();
+      const list = [...activePolls(), ...STATE.polls.filter(pollClosed)];
+      list.forEach(p=>{
+        const votes = STATE.pollVotes[p.id] || {};
+        const counts = p.options.map(()=>0);
+        Object.values(votes).forEach(i=>{ if(counts[i]!==undefined) counts[i]++; });
+        const total = counts.reduce((a,b)=>a+b,0);
+        const max = Math.max(0,...counts);
+        const mine = me ? votes[me] : undefined;
+        const closed = pollClosed(p);
+        const canVote = !closed && mine===undefined;
+        const canSee = !!me;
+        const showBars = canSee && (mine!==undefined || closed || IS_ADMIN);
+        const opts = p.options.map((o,i)=>{
+          const img = optImg(o) ? `<img class="poi" src="${esc(optImg(o))}" alt="" loading="lazy">` : '';
+          const pct = total ? Math.round(counts[i]*100/total) : 0;
+          const win = closed && showBars && max>0 && counts[i]===max;
+          const bar = showBars ? `<span class="pbar" style="width:${pct}%"></span>` : '';
+          const right = showBars ? `<span class="ppct">${win?'🏆 ':''}${pct}% · ${counts[i]}</span>` : (canVote ? '<span class="pdot"></span>' : '');
+          const inner = `${bar}${img}<span class="prow"><span>${mine===i?'✓ ':''}${esc(optText(o))}</span>${right}</span>`;
+          const cls = `poll-opt ${mine===i?'mine':''} ${win?'win':''}`;
+          return canVote
+            ? `<button type="button" class="${cls}" onclick="castVote('${p.id}',${i})">${inner}</button>`
+            : `<div class="${cls}">${inner}</div>`;
+        }).join('');
+        const status = closed ? '<span class="poll-status closed">انتهى التصويت</span>' : '<span class="poll-status live"><i></i>مباشر</span>';
+        const note = (closed && !canSee) ? '<div class="poll-note">سجّل دخولك من صفحة حسابي علشان تشوف النتيجة</div>' : '';
+        wrap.appendChild(el(`<div class="card poll-card">
+          ${p.imageURL ? `<img class="poll-cover" src="${esc(p.imageURL)}" alt="" loading="lazy">` : ''}
+          <div class="poll-body">
+            ${status}
+            <div class="poll-q">${esc(p.question)}</div>
+            ${p.description ? `<div class="poll-desc">${esc(p.description)}</div>` : ''}
+            ${opts}
+            ${note}
+            <div class="poll-meta"><span>${canSee ? total+' صوت' : ''}</span><span>${closed ? '' : pollEndsIn(p)}</span></div>
+          </div>
+        </div>`));
+      });
+    }
+  }
+  renderHomePollBanner();
+}
+
+function renderHomePollBanner(){
+  const box = document.getElementById('homePollBanner'); if(!box) return;
+  const act = activePolls();
+  if(!act.length){ box.innerHTML=''; return; }
+  const p = act[0];
+  const me = myUid();
+  const votes = STATE.pollVotes[p.id] || {};
+  const voted = me && votes[me]!==undefined;
+  const total = Object.keys(votes).length;
+  const bg = p.imageURL ? `background-image:linear-gradient(180deg,rgba(8,20,50,.20),rgba(8,20,50,.90)),url('${esc(p.imageURL)}');` : '';
+  box.innerHTML = `<div class="poll-banner" onclick="goPage('polls')" style="${bg}">
+    <div class="pb-top"><span class="pb-badge"><i></i>تصويت جديد</span>${act.length>1 ? `<span class="pb-more">+${act.length-1} كمان</span>` : ''}</div>
+    <div class="pb-q">${esc(p.question)}</div>
+    <div class="pb-meta">${me ? total+' صوت · ' : ''}${pollEndsIn(p)}</div>
+    <div class="pb-cta">${voted ? '✓ صوّتّ — شوف النتايج' : 'شارك برأيك الآن ←'}</div>
+  </div>`;
 }
 
 function castVote(pollId, idx){
@@ -1316,18 +1485,50 @@ function castVote(pollId, idx){
     .catch(()=>showToast('مقدرتش أسجل صوتك، جرب تاني'));
 }
 
-function savePoll(ev){
+/* ----- لوحة الأدمن: إنشاء تصويت ----- */
+function addPollOptRow(){
+  const rows = document.getElementById('pollOptRows'); if(!rows) return;
+  if(rows.children.length>=6){ showToast('الحد الأقصى 6 اختيارات'); return; }
+  const n = rows.children.length+1;
+  rows.appendChild(el(`<div class="poll-opt-row"><input class="po-text" placeholder="الاختيار ${n}"><label class="po-img" title="صورة للاختيار (اختياري)">🖼️<input type="file" accept="image/*" class="po-file" onchange="this.parentNode.classList.toggle('has', this.files.length>0)"></label></div>`));
+}
+function resetPollForm(){
+  const f = document.getElementById('pollForm'); if(!f) return;
+  f.reset();
+  document.getElementById('pollOptRows').innerHTML='';
+  addPollOptRow(); addPollOptRow();
+}
+async function savePoll(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
+  const btn = document.getElementById('pollSubmitBtn');
   const question = document.getElementById('af-pollQ').value.trim();
-  const options = document.getElementById('af-pollOpts').value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,6);
+  const desc = document.getElementById('af-pollDesc').value.trim();
   const ends = document.getElementById('af-pollEnds').value;
-  if(!question || options.length<2){ showToast('اكتب السؤال واختيارين على الأقل'); return false; }
-  const item = { question, options, createdAt: Date.now() };
-  if(ends) item.endsAt = firebase.firestore.Timestamp.fromDate(new Date(ends));
-  db.collection('polls').add(item).then(()=>{
-    showToast('تم نشر التصويت ✔'); ev.target.reset();
-  }).catch(()=>showToast('حصل خطأ، اتأكد إنك داخل بحساب الأدمن'));
+  const opts = [...document.querySelectorAll('#pollOptRows .poll-opt-row')]
+    .map(r=>({ text:r.querySelector('.po-text').value.trim(), file:r.querySelector('.po-file').files[0] }))
+    .filter(o=>o.text);
+  if(!question || opts.length<2){ showToast('اكتب السؤال واختيارين على الأقل'); return false; }
+  btn.disabled = true; btn.textContent = 'جاري النشر...';
+  try{
+    const item = { question, options:[], createdAt: Date.now() };
+    if(desc) item.description = desc;
+    const cover = document.getElementById('af-pollCover').files[0];
+    if(cover){ const u = await uploadImage(cover,'polls'); if(u) item.imageURL = u; }
+    for(const o of opts){
+      const opt = { text:o.text };
+      if(o.file){ const u = await uploadImage(o.file,'polls'); if(u) opt.imageURL = u; }
+      item.options.push(opt);
+    }
+    if(ends) item.endsAt = firebase.firestore.Timestamp.fromDate(new Date(ends));
+    await db.collection('polls').add(item);
+    showToast('تم نشر التصويت ✔');
+    resetPollForm();
+  }catch(e){
+    showToast('حصل خطأ، اتأكد إنك داخل بحساب الأدمن');
+  }finally{
+    btn.disabled = false; btn.textContent = 'نشر التصويت';
+  }
   return false;
 }
 function closePoll(id){
@@ -1343,10 +1544,10 @@ function renderAdminPolls(){
   wrap.innerHTML='';
   STATE.polls.forEach(p=>{
     const n = Object.keys(STATE.pollVotes[p.id]||{}).length;
-    wrap.appendChild(el(`<div class="admin-item-row"><div class="ai-info"><b>${esc(p.question)}</b><span>${n} صوت${pollClosed(p)?' · منتهي':''}</span></div><div class="ai-actions">${pollClosed(p)?'':`<button type="button" class="mini-btn" onclick="closePoll('${p.id}')">إغلاق</button>`}<button type="button" class="mini-btn" onclick="deletePoll('${p.id}')">حذف</button></div></div>`));
+    wrap.appendChild(el(`<div class="admin-item-row"><div class="ai-info"><b>${esc(p.question)}</b><span>${n} صوت${pollClosed(p)?' · منتهي':''}</span></div><div class="ai-actions">${pollClosed(p)?'':`<button type="button" class="mini-btn" onclick="closePoll('${p.id}')">إغلاق</button> `}<button type="button" class="mini-btn danger" onclick="deletePoll('${p.id}')">حذف</button></div></div>`));
   });
 }
-let IS_ADMIN = false;
+resetPollForm();
 if(fbReady){
   auth.onAuthStateChanged(user=>{
     IS_ADMIN = !!(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase()));
@@ -1354,7 +1555,99 @@ if(fbReady){
   });
 }
 
-/* ========================= تسجيل دخول / حساب الطالب ========================= */
+/* ========================= تعديل الملف الشخصي ========================= */
+let PE_REMOVE = false;
+function setAvatarEl(node, name, photo, initial){
+  if(!node) return;
+  if(photo){
+    node.style.background = 'url("'+String(photo).replace(/"/g,'%22')+'") center/cover no-repeat';
+    node.textContent = ''; node.classList.add('has-photo');
+  } else {
+    node.style.background = avatarGradient(name||'guest');
+    node.textContent = initial || '؟'; node.classList.remove('has-photo');
+  }
+}
+function resizeImage(file, maxPx){
+  return new Promise(resolve=>{
+    try{
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = ()=>{
+        const r = Math.min(1, maxPx/Math.max(img.width, img.height));
+        const w = Math.round(img.width*r), h = Math.round(img.height*r);
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        URL.revokeObjectURL(url);
+        c.toBlob(b=>resolve(b||file),'image/jpeg',0.86);
+      };
+      img.onerror = ()=>{ URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    }catch(e){ resolve(file); }
+  });
+}
+function openProfileEdit(){
+  if(!STUDENT.uid){ showToast('سجّل دخولك الأول'); return; }
+  PE_REMOVE = false;
+  document.getElementById('peName').value = STUDENT.name || '';
+  document.getElementById('peLevel').value = STUDENT.level && STUDENT.level!=='غير محدد' ? STUDENT.level : '';
+  document.getElementById('peBio').value = STUDENT.bio || '';
+  document.getElementById('peFile').value = '';
+  setAvatarEl(document.getElementById('peAvatar'), STUDENT.name, STUDENT.photoURL, STUDENT.avatarInitial);
+  document.getElementById('peRemove').style.display = STUDENT.photoURL ? '' : 'none';
+  document.getElementById('profileEditModal').classList.add('show');
+  closeMenu();
+}
+function closeProfileEdit(){ document.getElementById('profileEditModal').classList.remove('show'); }
+function previewProfilePhoto(input){
+  const f = input.files[0]; if(!f) return;
+  PE_REMOVE = false;
+  const r = new FileReader();
+  r.onload = e=>{
+    const av = document.getElementById('peAvatar');
+    av.style.background = 'url("'+e.target.result+'") center/cover no-repeat';
+    av.textContent=''; av.classList.add('has-photo');
+    document.getElementById('peRemove').style.display='';
+  };
+  r.readAsDataURL(f);
+}
+function removeProfilePhoto(){
+  PE_REMOVE = true;
+  document.getElementById('peFile').value = '';
+  const name = document.getElementById('peName').value.trim() || STUDENT.name;
+  setAvatarEl(document.getElementById('peAvatar'), name, '', (name.trim()[0])||'؟');
+  document.getElementById('peRemove').style.display='none';
+}
+async function saveProfileEdit(){
+  if(!STUDENT.uid || !fbReady) return;
+  const name = document.getElementById('peName').value.trim();
+  const level = document.getElementById('peLevel').value.trim();
+  const bio = document.getElementById('peBio').value.trim();
+  if(!name){ showToast('اكتب اسمك'); return; }
+  const btn = document.getElementById('peSave');
+  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+  try{
+    const upd = { name, level: level || STUDENT.level || 'غير محدد', bio };
+    const f = document.getElementById('peFile').files[0];
+    if(f){
+      const small = await resizeImage(f, 800);
+      const u = await uploadImage(small,'students');
+      if(!u){ btn.disabled=false; btn.textContent='حفظ'; return; }
+      upd.photoURL = u;
+    } else if(PE_REMOVE){ upd.photoURL = ''; }
+    await db.collection('students').doc(STUDENT.uid).update(upd);
+    STUDENT.name = upd.name; STUDENT.level = upd.level; STUDENT.bio = bio;
+    if('photoURL' in upd) STUDENT.photoURL = upd.photoURL;
+    STUDENT.avatarInitial = (STUDENT.name.trim()[0]) || '؟';
+    renderHome(); renderProfile(); closeProfileEdit();
+    showToast('تم حفظ التعديلات ✔');
+  }catch(e){
+    showToast('مقدرتش أحفظ، جرب تاني');
+  }finally{
+    btn.disabled = false; btn.textContent = 'حفظ';
+  }
+}
+
+/* ========================= تسجيل دخول / حساب الطالب/* ========================= تسجيل دخول / حساب الطالب ========================= */
 function switchGate(which){
   document.querySelectorAll('.gate-tab').forEach(t=>t.classList.toggle('active', t.dataset.gt===which));
   document.getElementById('gateLoginForm').style.display = which==='login' ? 'flex' : 'none';
@@ -1431,6 +1724,8 @@ async function loadStudentProfile(user){
   STUDENT.competitions = d.competitions||0;
   STUDENT.campaigns = d.campaigns||0;
   STUDENT.activeLevel = d.activeLevel || 'منخفض';
+  STUDENT.photoURL = d.photoURL || '';
+  STUDENT.bio = d.bio || '';
   STUDENT.rank = STUDENT.rank && STUDENT.rank!=='—' ? STUDENT.rank : '—';
   STUDENT.avatarInitial = (STUDENT.name.trim()[0]) || '؟';
 }
@@ -1492,8 +1787,7 @@ function joinNextEvent(){
 
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
-  document.getElementById('homeAvatar').textContent = STUDENT.avatarInitial;
-  document.getElementById('homeAvatar').style.background = avatarGradient(STUDENT.uid ? STUDENT.name : 'guest');
+  setAvatarEl(document.getElementById('homeAvatar'), STUDENT.uid ? STUDENT.name : 'guest', STUDENT.uid ? STUDENT.photoURL : '', STUDENT.avatarInitial);
   const hr = new Date().getHours();
   const greet = hr<12 ? 'صباح الخير' : 'مساء الخير';
   document.getElementById('homeGreeting').textContent = STUDENT.uid ? `${greet}، ${STUDENT.name} 👋` : `${greet} 👋`;
@@ -1858,12 +2152,12 @@ function renderProfile(){
   document.getElementById('profileLoggedOut').style.display = loggedIn ? 'none' : 'block';
   document.getElementById('smName').textContent = loggedIn ? STUDENT.name : 'زائر';
   document.getElementById('smLevel').textContent = loggedIn ? STUDENT.level : 'سجّل دخولك من صفحة حسابي';
-  document.getElementById('smAvatar').textContent = loggedIn ? STUDENT.avatarInitial : '؟';
-  document.getElementById('smAvatar').style.background = loggedIn ? avatarGradient(STUDENT.name) : 'linear-gradient(135deg,var(--gold),#173a86)';
+  if(loggedIn) setAvatarEl(document.getElementById('smAvatar'), STUDENT.name, STUDENT.photoURL, STUDENT.avatarInitial);
+  else { const sa=document.getElementById('smAvatar'); sa.textContent='؟'; sa.classList.remove('has-photo'); sa.style.background='linear-gradient(135deg,var(--gold),#173a86)'; }
   if(!loggedIn) return;
 
-  document.getElementById('profAvatar').textContent = STUDENT.avatarInitial;
-  document.getElementById('profAvatar').style.background = avatarGradient(STUDENT.name);
+  setAvatarEl(document.getElementById('profAvatar'), STUDENT.name, STUDENT.photoURL, STUDENT.avatarInitial);
+  const pb = document.getElementById('profBio'); pb.textContent = STUDENT.bio || ''; pb.style.display = STUDENT.bio ? '' : 'none';
   document.getElementById('profName').textContent = STUDENT.name;
   document.getElementById('profRole').textContent = STUDENT.level;
   document.getElementById('profId').textContent = 'ID: ' + (STUDENT.studentId || '—');

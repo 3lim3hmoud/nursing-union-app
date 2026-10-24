@@ -1,4 +1,4 @@
-const CACHE_NAME = 'union-app-v3';
+const CACHE_NAME = 'union-app-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -26,19 +26,41 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+/* الصفحة والسكربتات: النسخة الجديدة من النت الأول (عشان التحديثات تظهر فوراً)، والكاش لو أوفلاين.
+   الصور والملفات التانية: من الكاش بسرعة وتتحدث في الخلفية. */
+function isCore(req){
+  const u = new URL(req.url);
+  return req.mode === 'navigate' ||
+    (u.origin === self.location.origin && /\.(html|js|json)$/.test(u.pathname)) ||
+    (u.origin === self.location.origin && u.pathname.endsWith('/'));
+}
+
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  if (isCore(req)) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req).then((m) => m || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request)
-        .then((res) => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
+    caches.match(req).then((cached) => {
+      const network = fetch(req).then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+        }
+        return res;
+      }).catch(() => cached);
       return cached || network;
     })
   );
