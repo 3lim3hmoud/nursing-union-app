@@ -22,12 +22,18 @@ function bindGallery(root, list, title){
     openLightboxList(list.map(u=>({type:'image',url:u,title:title||'',album:''})), Number(im.dataset.i));
   }));
 }
+/* اسم مرتب: أول اسمين، والإنجليزي بحروف عادية (مش ALL CAPS) */
+function niceName(n){
+  const parts = String(n||'').trim().split(/\s+/).slice(0,2);
+  return parts.map(w=>/^[A-Za-z]+$/.test(w) ? w.charAt(0).toUpperCase()+w.slice(1).toLowerCase() : w).join(' ');
+}
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
   setAvatarEl(document.getElementById('homeAvatar'), STUDENT.uid ? STUDENT.name : 'guest', STUDENT.uid ? STUDENT.photoURL : '', STUDENT.avatarInitial);
   const hr = new Date().getHours();
   const greet = hr<12 ? 'صباح الخير' : 'مساء الخير';
-  document.getElementById('homeGreeting').textContent = STUDENT.uid ? `${greet}، ${STUDENT.name} 👋` : `${greet} 👋`;
+  document.getElementById('homeGreetTime').textContent = `${greet} 👋`;
+  document.getElementById('homeGreeting').textContent = STUDENT.uid ? niceName(STUDENT.name) : 'يا صديق الاتحاد';
   const NE = homeNextEvent();
   document.getElementById('nextEventName').textContent = NE.name;
   document.getElementById('nextEventMeta').textContent = NE.place;

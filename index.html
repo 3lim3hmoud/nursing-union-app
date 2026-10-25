@@ -64,7 +64,7 @@
       <div class="hello-card">
         <div class="hello-top">
           <div>
-            <h1 id="homeGreeting">صباح الخير، كيمو 👋</h1>
+            <h1 class="hello-h1"><small id="homeGreetTime">صباح الخير 👋</small><bdi id="homeGreeting">كيمو</bdi></h1>
             <p>مستعد نشارك في أنشطة النهارده؟</p>
           </div>
           <div class="mini-avatar" id="homeAvatar">ك</div>
@@ -214,12 +214,13 @@
 
       <!-- الحالة: مش مسجّل دخول -->
       <div id="profileLoggedOut" style="margin-top:6px;">
-        <div class="profile-hero" style="margin-bottom:18px;">
-          <div class="big-avatar" style="background:linear-gradient(135deg,var(--gold),#173a86);">؟</div>
-          <b>حسابي</b>
-          <div class="role">سجّل دخولك أو اعمل حساب جديد عشان تشوف نقاطك وترتيبك وإنجازاتك</div>
+        <div class="gate-hero">
+          <img src="images/logo.png" alt="" class="gate-logo" width="84" height="84">
+          <h2>أهلاً بيك في اتحاد الطلاب</h2>
+          <p>سجّل دخولك عشان تشوف نقاطك وترتيبك وتسجّل في الفعاليات</p>
+          <div class="gate-perks"><span>⭐ نقاطك</span><span>🏆 ترتيبك</span><span>📅 فعالياتك</span></div>
         </div>
-        <div class="card">
+        <div class="card gate-card">
           <div class="gate-tabs">
             <div class="gate-tab active" data-gt="login" onclick="switchGate('login')">تسجيل الدخول</div>
             <div class="gate-tab" data-gt="signup" onclick="switchGate('signup')">حساب جديد</div>
