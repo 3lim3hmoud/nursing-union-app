@@ -477,7 +477,16 @@ async function saveDean(ev){
   };
   const file = document.getElementById('af-deanPhoto').files[0];
   if(file) item.photoURL = await uploadImage(file, 'leadership');
+  /* توقيع وختم شهادات الحضور: بيترفعوا زي ما هما (من غير تحويل لـ JPEG) عشان الشفافية تفضل */
+  const DELV = firebase.firestore.FieldValue.delete();
+  const sigFile = document.getElementById('af-deanSig').files[0], sealFile = document.getElementById('af-deanSeal').files[0];
+  if(sigFile){ const u = await uploadImage(sigFile, 'leadership'); if(u) item.signatureURL = u; }
+  else if(document.getElementById('af-deanRmSig').checked) item.signatureURL = DELV;
+  if(sealFile){ const u = await uploadImage(sealFile, 'leadership'); if(u) item.sealURL = u; }
+  else if(document.getElementById('af-deanRmSeal').checked) item.sealURL = DELV;
   db.collection('config').doc('dean').set(item, {merge:true}).then(()=>{
+    ['af-deanSig','af-deanSeal'].forEach(i=>{ document.getElementById(i).value = ''; });
+    ['af-deanRmSig','af-deanRmSeal'].forEach(i=>{ document.getElementById(i).checked = false; });
     showToast('تم حفظ بيانات عميدة الكلية ✔');
   });
   return false;

@@ -1391,3 +1391,9 @@ html,body{overflow-x:hidden;}
 .la-bar{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:12.5px;} .la-bar span{flex:0 0 96px;} .la-bar b{flex:0 0 30px;text-align:left;}
 .la-bar div{flex:1;height:8px;border-radius:8px;background:var(--navy-700);overflow:hidden;} .la-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));}
 .la-cm{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;} .la-cm em{color:#f5a623;font-style:normal;} .la-cm p{margin:4px 0 0;overflow-wrap:anywhere;}
+
+/* ===== شهادة الحضور ===== */
+.cert-btn{margin-top:8px;background:linear-gradient(135deg,#8a6a1e,#c9a24a) !important;color:#fff !important;}
+.cert-sheet{max-width:560px;}
+.cert-prev{display:block;width:100%;height:auto;aspect-ratio:2339/1654;border-radius:10px;background:#fdf9ee;border:1px solid var(--line);box-shadow:0 10px 26px rgba(12,47,107,.16);}
+.cert-hint{font-size:11px;color:var(--muted);text-align:center;margin:10px 0 2px;}

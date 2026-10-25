@@ -479,7 +479,15 @@
             <textarea required id="af-deanBio" placeholder="نبذة" rows="3"></textarea>
             <input id="af-deanQuote" placeholder="آخر رسالة (اختياري)">
             <input type="file" id="af-deanPhoto" accept="image/*">
+            <div class="adm-group">🎓 شهادات الحضور</div>
+            <div class="eyebrow">توقيع العميدة (صورة PNG بخلفية شفافة أفضل)</div>
+            <input type="file" id="af-deanSig" accept="image/png,image/jpeg,image/webp">
+            <label class="adm-chk"><input type="checkbox" id="af-deanRmSig"> حذف التوقيع الحالي</label>
+            <div class="eyebrow">ختم الكلية الرسمي (لو مفيش بيترسم ختم افتراضي باسم الكلية)</div>
+            <input type="file" id="af-deanSeal" accept="image/png,image/jpeg,image/webp">
+            <label class="adm-chk"><input type="checkbox" id="af-deanRmSeal"> حذف الختم الحالي</label>
             <button class="btn-primary" type="submit">حفظ</button>
+            <button class="btn-ghost" type="button" onclick="previewCertificate()">👁️ معاينة الشهادة</button>
           </form>
         </details>
 
@@ -642,6 +650,7 @@
           <div class="reg-info" id="regInfo"></div>
           <button class="modal-interest-btn reg-btn" id="regBtn" onclick="toggleRegistration()">سجّل حضورك ✅</button>
           <button type="button" class="modal-interest-btn ticket-btn" id="ticketBtn" style="display:none;" onclick="showTicket()">🎟️ تذكرتي (QR للحضور)</button>
+          <button type="button" class="modal-interest-btn cert-btn" id="certBtn" style="display:none;" onclick="openCertificate()">🎓 شهادة الحضور (PDF)</button>
         </div>
         <button class="modal-interest-btn" id="modalInterestBtn" onclick="markInterested()">أنا مهتم بالحضور ⭐</button>
       </div>
@@ -724,6 +733,18 @@
       <div class="tk-status" id="tkStatus"></div>
     </div>
     <div class="pe-actions"><button type="button" class="btn-primary" onclick="saveTicketImage()">💾 حفظ التذكرة كصورة</button><button type="button" class="btn-ghost" onclick="closeTicket()">إغلاق</button></div>
+  </div>
+</div>
+
+<!-- ============ شهادة الحضور (معاينة + تنزيل) ============ -->
+<div class="pe-overlay" id="certModal" onclick="if(event.target===this)closeCertificate()">
+  <div class="pe-sheet cert-sheet">
+    <div class="pe-handle"></div>
+    <h3>🎓 شهادة الحضور</h3>
+    <img id="certPrev" class="cert-prev" alt="معاينة الشهادة">
+    <div class="cert-hint">الشهادة أفقية — لف الموبايل أو كبّر الصورة لو عايز تشوف التفاصيل</div>
+    <div class="pe-actions"><button type="button" class="btn-primary" onclick="downloadCertificatePdf()">📄 تنزيل PDF</button><button type="button" class="btn-ghost" onclick="downloadCertificateImage()">🖼️ صورة</button></div>
+    <div class="pe-actions" style="margin-top:8px;"><button type="button" class="btn-ghost" onclick="closeCertificate()">إغلاق</button></div>
   </div>
 </div>
 
@@ -825,6 +846,7 @@
 <script src="js/14-students-insights.js" defer></script>
 <script src="js/15-attendance.js" defer></script>
 <script src="js/16-live.js" defer></script>
+<script src="js/17-certificate.js" defer></script>
 <script src="js/13-init.js" defer></script>
 </body>
 </html>
