@@ -19,6 +19,7 @@ const ASSETS = [
   './js/10-profile-ranking.js',
   './js/11-admin.js',
   './js/12-notifications.js',
+  './js/14-students-insights.js',
   './js/13-init.js',
   './images/logo.png',
   './images/building.jpg',

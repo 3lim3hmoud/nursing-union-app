@@ -109,7 +109,7 @@
       <div class="nw-scroll" id="homeNewsScroll"></div>
 
       <div class="section-title">⭐ طالب الأسبوع <span class="more" onclick="openArchive()">الأرشيف</span></div>
-      <div class="sow-card">
+      <div class="sow-card" onclick="openSowCard()" style="cursor:pointer;">
         <div class="sow-avatar" id="sowAvatar">أ</div>
         <div class="sow-info">
           <b id="sowName">—</b>
@@ -242,7 +242,6 @@
     <!-- ---------------- RANKING ---------------- -->
     <section class="page" id="page-ranking">
       <div class="section-title" style="margin-top:6px;">ترتيب الطلاب</div>
-      <div class="pill-tabs" id="rankFilterTabs"></div>
       <div class="rank-podium" id="podium"></div>
       <div class="card" id="rankListCard"></div>
     </section>
@@ -294,12 +293,48 @@
           </form>
         </details>
 
+        <details class="admin-box" data-sec="students">
+          <summary>🎓 الطلاب وملفاتهم</summary>
+          <p class="adm-sub" style="margin:0 0 8px;">دوس على أي طالب تفتح ملفه: الصورة، النبذة، النقاط، ونشاطه كله.</p>
+          <input type="search" id="admStuSearch" placeholder="🔍 ابحث بالاسم أو الرقم الجامعي" oninput="STU_Q=this.value;admRenderStudents()">
+          <div class="adm-sub" id="admStuCount" style="margin:6px 0;"></div>
+          <div id="admStuList"></div>
+        </details>
+
+        <details class="admin-box" data-sec="insights">
+          <summary>📊 التفاعل والإحصائيات</summary>
+          <div class="ins-tabs" id="insTabs">
+            <button type="button" data-t="polls" onclick="insSetTab('polls')">🗳️ التصويت</button>
+            <button type="button" data-t="likes" onclick="insSetTab('likes')">❤ الإعجابات</button>
+            <button type="button" data-t="acts" onclick="insSetTab('acts')">🗓️ الفعاليات</button>
+          </div>
+          <div id="insBody"></div>
+        </details>
+
+        <details class="admin-box" data-sec="rating">
+          <summary>⚙️ التقييم التلقائي للطلاب</summary>
+          <p class="adm-sub" style="margin:0 0 10px;">النقاط بتتحسب من تفاعل الطالب: تصويت، إعجاب، اهتمام بفعالية، تسجيل في فعالية. نقاط الحضور بتتضاف لحظياً من قايمة المسجلين زي ما هي.</p>
+          <label class="se-check"><input type="checkbox" id="rt-enabled"> تحديث تلقائي (كل ما الأدمن يفتح اللوحة، مرة كل 6 ساعات)</label>
+          <div class="rt-grid">
+            <label>نقاط التصويت<input type="number" min="0" id="rt-vote"></label>
+            <label>نقاط الإعجاب<input type="number" min="0" id="rt-like"></label>
+            <label>نقاط الاهتمام<input type="number" min="0" id="rt-interest"></label>
+            <label>نقاط التسجيل<input type="number" min="0" id="rt-register"></label>
+          </div>
+          <button class="btn-primary" type="button" onclick="admSaveRules()">حفظ الإعدادات</button>
+          <button class="btn-ghost" type="button" style="margin-top:8px;width:100%;" onclick="admSyncPoints(true)">🔄 حدّث التقييم دلوقتي</button>
+          <div class="adm-sub" id="rtStatus" style="margin-top:8px;text-align:center;"></div>
+        </details>
+
         <details class="admin-box" data-sec="sow">
           <summary>⭐ طالب الأسبوع</summary>
           <form onsubmit="return saveStudentOfWeek(event)">
+            <select id="af-sowStudent" onchange="sowStudentChanged()"><option value="">— اختار طالب من المسجلين (أو اكتب يدوي) —</option></select>
             <input required id="af-sowName" placeholder="اسم الطالب">
             <input required id="af-sowLevel" placeholder="المستوى / الفرقة">
             <input required id="af-sowPoints" type="number" placeholder="عدد النقاط">
+            <label class="se-check" style="margin:0;">📷 صورة الطالب (اختياري)</label>
+            <input type="file" id="af-sowPhoto" accept="image/*">
             <button class="btn-primary" type="submit">حفظ</button>
           </form>
         </details>
@@ -358,6 +393,7 @@
             <input required id="af-campDate" placeholder="التاريخ">
             <input required id="af-campPlace" placeholder="المكان">
             <input required id="af-campCat" placeholder="تصنيف (مثال: صحي)">
+            <input type="file" id="af-campPhoto" accept="image/*" title="صورة الحملة (اختياري)">
             <select id="af-campStatus">
               <option value="current">حالية</option>
               <option value="upcoming">قادمة</option>
@@ -375,6 +411,7 @@
             <input required id="af-magTitle" placeholder="عنوان المقال">
             <input required id="af-magDesc" placeholder="وصف قصير">
             <input required id="af-magDate" placeholder="التاريخ">
+            <input type="file" id="af-magPhoto" accept="image/*" title="غلاف المقال (اختياري)">
             <select id="af-magType">
               <option value="scientific">المجلة العلمية</option>
               <option value="cultural">المجلة الثقافية</option>
@@ -660,6 +697,44 @@
   </div>
 </div>
 
+<div class="pe-overlay" id="admStuModal" onclick="if(event.target===this)closeStuEditor()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3>ملف الطالب</h3>
+    <div class="pe-photo">
+      <div class="big-avatar" id="seAvatar">؟</div>
+      <label class="pe-photo-btn">📷 تغيير الصورة<input type="file" accept="image/*" id="seFile" hidden onchange="stuPreviewPhoto(this)"></label>
+      <button type="button" class="pe-link" id="seRemove" onclick="stuRemovePhoto()">حذف الصورة</button>
+    </div>
+    <div class="se-meta" id="seMeta"></div>
+    <label class="pe-l">الاسم</label>
+    <input type="text" id="seName" maxlength="60">
+    <label class="pe-l">المستوى / الفرقة</label>
+    <input type="text" id="seLevel" maxlength="40">
+    <label class="pe-l">النبذة / السيرة</label>
+    <textarea id="seBio" rows="3" maxlength="140"></textarea>
+    <label class="pe-l">النقاط</label>
+    <input type="number" id="sePoints" class="se-num">
+    <label class="se-check"><input type="checkbox" id="seHide"> إخفاء من الترتيب العام</label>
+    <div class="se-stats" id="seStats"></div>
+    <label class="pe-l">نشاطه</label>
+    <div id="seHistory"></div>
+    <div class="pe-actions">
+      <button type="button" class="btn-primary" id="seSave" onclick="saveStuEditor()">حفظ</button>
+      <button type="button" class="btn-ghost" onclick="makeSow()">⭐ اجعله طالب الأسبوع</button>
+      <button type="button" class="btn-ghost" onclick="closeStuEditor()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="pe-overlay" id="stuCardModal" onclick="if(event.target===this)closeStuCard()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <div class="sc-body" id="scBody"></div>
+    <div class="pe-actions"><button type="button" class="btn-ghost" onclick="closeStuCard()">إغلاق</button></div>
+  </div>
+</div>
+
 <div class="nr" id="newsReader">
   <div class="nr-top">
     <button type="button" class="lb-btn" onclick="closeNews()" aria-label="إغلاق">✕</button>
@@ -683,6 +758,7 @@
 <script src="js/10-profile-ranking.js" defer></script>
 <script src="js/11-admin.js" defer></script>
 <script src="js/12-notifications.js" defer></script>
+<script src="js/14-students-insights.js" defer></script>
 <script src="js/13-init.js" defer></script>
 </body>
 </html>

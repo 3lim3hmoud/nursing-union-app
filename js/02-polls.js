@@ -32,6 +32,7 @@ function syncPollVotes(force){
       const m = {}; snap.forEach(v=>{ m[v.id] = v.data().option; });
       STATE.pollVotes[p.id] = m;
       renderPolls(); renderAdminPolls();
+      if(IS_ADMIN && INS_VISIBLE()) admRenderInsights();
     }, ()=>{});
   });
 }
@@ -194,7 +195,7 @@ if(fbReady){
   auth.onAuthStateChanged(async user=>{
     IS_ADMIN = await resolveIsAdmin(user);
     document.body.classList.toggle('is-admin', IS_ADMIN);
-    if(IS_ADMIN) loadAdminStats();
+    if(IS_ADMIN){ loadAdminStats(); if(typeof admOnLogin==='function') admOnLogin(); }
     STATE.myRegs = {}; Object.keys(myRegPending).forEach(k=>delete myRegPending[k]);
     syncPollVotes(true); renderPolls(); renderAdminPolls(); renderAdminDash(); renderActivities();
   });

@@ -13,8 +13,7 @@ function renderHome(){
     `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${cssUrl(NE.image)}')`;
   ensureMyRegs();
 
-  document.getElementById('sowAvatar').textContent = STATE.studentOfWeek.initial;
-  document.getElementById('sowAvatar').style.background = avatarGradient(STATE.studentOfWeek.name);
+  setAvatarEl(document.getElementById('sowAvatar'), STATE.studentOfWeek.name, STATE.studentOfWeek.photoURL, STATE.studentOfWeek.initial);
   document.getElementById('sowName').textContent = STATE.studentOfWeek.name;
   document.getElementById('sowLevel').textContent = STATE.studentOfWeek.level;
   document.getElementById('sowPoints').textContent = STATE.studentOfWeek.points;
