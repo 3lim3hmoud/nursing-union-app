@@ -267,7 +267,7 @@ function renderAdminActivities(){
         <div class="ai-info"><b>${esc(a.title)}</b>${pin}<span>${esc(k)} · ${esc(a.date||'')}${reg}</span></div>
         <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
           <button type="button" class="mini-btn ${a.pinnedNext?'on':''}" onclick="toggleNextPin('${a.id}')">${a.pinnedNext?'إلغاء التثبيت':'📌 حدث قادم'}</button>
-          ${a.requiresRegistration ? `<button type="button" class="mini-btn" onclick="openRegList('${a.id}')">المسجلين</button><button type="button" class="mini-btn" onclick="toggleRegClosed('${a.id}')">${a.registrationClosed?'فتح التسجيل':'قفل التسجيل'}</button>` : ''}
+          ${a.requiresRegistration ? `<button type="button" class="mini-btn" onclick="openRegList('${a.id}')">المسجلين</button><button type="button" class="mini-btn" onclick="openLiveAdmin('${a.id}')">⭐ التقييم والأسئلة</button><button type="button" class="mini-btn" onclick="toggleRegClosed('${a.id}')">${a.registrationClosed?'فتح التسجيل':'قفل التسجيل'}</button>` : ''}
           <button type="button" class="mini-btn" onclick="editActivity('${a.id}')">تعديل</button>
           <button type="button" class="mini-btn danger" onclick="deleteActivity('${a.id}')">حذف</button>
         </div>
