@@ -260,7 +260,7 @@ async function uploadImage(file, folder){
   }
 }
 function avatarGradient(seed){
-  const palettes=[['#4d8dff','#1b2c5c'],['#b27cff','#1b2c5c'],['#33c77b','#132147'],['#ff6fa0','#1b2c5c'],['#caa53d','#1b2c5c']];
+  const palettes=[['#47a6ff','#1360d2'],['#38bdf8','#0c4a9e'],['#6c8cff','#1b3a9a'],['#22b8e6','#12409a'],['#5aa0f5','#0c2f6b']];
   const idx = Math.abs(hashStr(seed)) % palettes.length;
   return `linear-gradient(135deg, ${palettes[idx][0]}, ${palettes[idx][1]})`;
 }
