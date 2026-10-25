@@ -27,6 +27,12 @@ service cloud.firestore {
       allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
 
       allow create: if isSignedIn() && request.auth.uid == uid
+        // حقول معروفة بس: يمنع الطالب يكتب autoPoints أو hideFromRanking أو أي حقل إداري وقت التسجيل
+        && request.resource.data.keys().hasOnly(['name','studentId','level','points','events','workshops',
+                                                  'competitions','campaigns','activeLevel','email','createdAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && request.resource.data.get('studentId', '') is string && request.resource.data.get('studentId', '').size() <= 30
+        && request.resource.data.get('level', '') is string && request.resource.data.get('level', '').size() <= 40
         && request.resource.data.get('points', 0) == 0
         && request.resource.data.get('events', 0) == 0
         && request.resource.data.get('workshops', 0) == 0
@@ -44,7 +50,7 @@ service cloud.firestore {
           && request.resource.data.get('bio', '').size() <= 140
           && request.resource.data.get('photoURL', '') is string
           && (request.resource.data.get('photoURL', '') == ''
-              || request.resource.data.get('photoURL', '').matches('https://res\\.cloudinary\\.com/.*')))
+              || request.resource.data.get('photoURL', '').matches('https://res\\.cloudinary\\.com/dju33knsd/.*')))
         ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['events'])
           && request.resource.data.events == resource.data.get('events', 0) + 1)

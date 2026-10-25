@@ -135,6 +135,8 @@ function openActivityModal(id){
     ? `<img class="modal-hero" src="${esc(a.photoURL)}" alt="${esc(a.title)}">`
     : `<div class="modal-hero-fallback" style="background:linear-gradient(135deg, ${c.color}, #0d1836)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>`;
   let extra = '';
+  const aImgs = mediaList(a);
+  if(aImgs.length>1) extra += `<div class="mx-h">🖼️ صور</div>` + galleryHtml(aImgs,'nr-gal');
   if((a.speakers||[]).length){
     extra += `<div class="mx-h">🎤 المتحدثون</div><div class="spk-grid">` + a.speakers.map(sp=>{
       const ph = sp.photoURL ? `style="background-image:url('${esc(sp.photoURL)}')"` : `style="background:${avatarGradient(sp.name)}"`;
@@ -147,6 +149,7 @@ function openActivityModal(id){
     ).join('') + `</div>`;
   }
   document.getElementById('modalExtra').innerHTML = extra;
+  bindGallery(document.getElementById('modalExtra'), aImgs, a.title);
   const needsReg = !!a.requiresRegistration;
   document.getElementById('regBox').style.display = needsReg ? '' : 'none';
   const ib = document.getElementById('modalInterestBtn');

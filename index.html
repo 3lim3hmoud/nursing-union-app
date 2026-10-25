@@ -289,6 +289,8 @@
             <input required id="af-evPlace" placeholder="المكان">
             <input required id="af-evDate" type="datetime-local">
             <input id="af-evImage" placeholder="رابط صورة الفعالية (اختياري)">
+            <label class="adm-sub">أو ارفع صورة من الجهاز (خلفية بانرة العد التنازلي)</label>
+            <input type="file" id="af-evPhoto" accept="image/*">
             <button class="btn-primary" type="submit">حفظ</button>
           </form>
         </details>
@@ -364,8 +366,12 @@
             <input id="af-actDate" placeholder="أو اكتب التاريخ كنص (لو مفيش وقت محدد)">
             <input required id="af-actPlace" placeholder="المكان">
             <textarea id="af-actDesc" placeholder="تفاصيل (اختياري)" rows="3"></textarea>
-            <label class="adm-sub">صورة الغلاف</label>
+            <label class="adm-sub">صورة الغلاف (بتظهر كخلفية في الرئيسية وكارت الفعالية)</label>
             <input type="file" id="af-actPhoto" accept="image/*">
+            <label class="adm-chk"><input type="checkbox" id="af-actRmCover"> حذف صورة الغلاف الحالية (عند التعديل)</label>
+            <label class="adm-sub">صور إضافية (اختار أكتر من صورة مرة واحدة — بتظهر جنب بعض)</label>
+            <input type="file" id="af-actGallery" accept="image/*" multiple>
+            <label class="adm-chk"><input type="checkbox" id="af-actRmImgs"> مسح الصور الإضافية القديمة (عند التعديل)</label>
             <div class="adm-sub" style="margin-top:8px;">التسجيل والحضور</div>
             <label class="adm-chk"><input type="checkbox" id="af-actReg" checked> يحتاج تسجيل حضور مسبق</label>
             <input id="af-actCap" type="number" min="0" placeholder="عدد الأماكن (فاضي = بدون حد)">
@@ -393,7 +399,12 @@
             <input required id="af-campDate" placeholder="التاريخ">
             <input required id="af-campPlace" placeholder="المكان">
             <input required id="af-campCat" placeholder="تصنيف (مثال: صحي)">
+            <label class="adm-sub">صورة الحملة (خلفية باينة)</label>
             <input type="file" id="af-campPhoto" accept="image/*" title="صورة الحملة (اختياري)">
+            <label class="adm-chk"><input type="checkbox" id="af-campRmCover"> حذف الصورة الحالية (عند التعديل)</label>
+            <label class="adm-sub">صور إضافية (اختار أكتر من صورة — بتظهر جنب بعض)</label>
+            <input type="file" id="af-campGallery" accept="image/*" multiple>
+            <label class="adm-chk"><input type="checkbox" id="af-campRmImgs"> مسح الصور الإضافية القديمة (عند التعديل)</label>
             <select id="af-campStatus">
               <option value="current">حالية</option>
               <option value="upcoming">قادمة</option>

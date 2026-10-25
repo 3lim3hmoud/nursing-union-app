@@ -3,8 +3,26 @@
    ========================================================================= */
 function requireFB(){ if(!fbReady){ showToast('لازم تحط بيانات Firebase في firebase-config.js الأول'); return false; } return true; }
 
+/* رفع كذا صورة مرة واحدة + الاحتفاظ بالقديم (أو مسحه) — مشترك بين الفعاليات والحملات */
+async function collectGallery(inputId, rmId, old, id, folder, btn){
+  const DEL = firebase.firestore.FieldValue.delete();
+  const files = [...document.getElementById(inputId).files];
+  const rm = document.getElementById(rmId).checked;
+  const keep = (id && !rm) ? (old.images || []) : [];
+  if(files.length){
+    const urls = [];
+    for(let i=0;i<files.length;i++){
+      if(btn) btn.textContent = `رفع الصور ${i+1} من ${files.length}...`;
+      const u = await uploadImage(await resizeImage(files[i],1400), folder); if(u) urls.push(u);
+    }
+    return { images: [...keep, ...urls] };
+  }
+  if(id && rm) return { images: DEL };
+  return {};
+}
+
 /* --- الحدث القادم --- */
-function saveNextEvent(ev){
+async function saveNextEvent(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
   const name = document.getElementById('af-evName').value.trim();
@@ -12,11 +30,14 @@ function saveNextEvent(ev){
   const dateVal = document.getElementById('af-evDate').value;
   const imageVal = document.getElementById('af-evImage').value.trim();
   if(!name || !place || !dateVal) return false;
-  const iso = new Date(dateVal).toISOString();
-  const data = {name, place, date: iso};
-  if(imageVal) data.image = imageVal;
-  db.collection('config').doc('nextEvent').set(data, {merge:true})
-    .then(()=>showToast('تم تحديث الحدث القادم ✔'));
+  const data = {name, place, date: new Date(dateVal).toISOString()};
+  try{
+    const f = document.getElementById('af-evPhoto').files[0];
+    if(f){ const u = await uploadImage(await resizeImage(f,1400),'events'); if(u) data.image = u; }
+    else if(imageVal) data.image = imageVal;
+    await db.collection('config').doc('nextEvent').set(data, {merge:true});
+    showToast('تم تحديث الحدث القادم ✔');
+  }catch(e){ showToast('مقدرتش أحفظ — اتأكد إنك داخل بحساب الأدمن'); }
   return false;
 }
 
@@ -157,6 +178,8 @@ async function saveActivity(ev){
     })).filter(g=>g.title);
     const file = document.getElementById('af-actPhoto').files[0];
     if(file){ const u = await uploadImage(await resizeImage(file,1400),'activities'); if(u) item.photoURL = u; }
+    else if(id && document.getElementById('af-actRmCover').checked) item.photoURL = DEL;
+    Object.assign(item, await collectGallery('af-actGallery','af-actRmImgs', STATE.activities.find(x=>x.id===id)||{}, id, 'activities', btn));
     if(id) await db.collection('activities').doc(id).update(item);
     else await db.collection('activities').add({ ...item, interestedUids:[], registeredCount:0, createdAt:Date.now() });
     showToast(id ? 'تم حفظ التعديل ✔' : 'تمت الإضافة ✔');
@@ -276,13 +299,15 @@ async function saveCampaign(ev){
   try{
     const f = document.getElementById('af-campPhoto').files[0];
     if(f){ const u = await uploadImage(await resizeImage(f,1400),'campaigns'); if(u) item.photoURL = u; }
+    else if(id && document.getElementById('af-campRmCover').checked) item.photoURL = firebase.firestore.FieldValue.delete();
+    Object.assign(item, await collectGallery('af-campGallery','af-campRmImgs', STATE.campaigns.find(x=>x.id===id)||{}, id, 'campaigns', btn));
     if(id) await db.collection('campaigns').doc(id).update(item);
     else await db.collection('campaigns').add({...item, createdAt:Date.now()});
     showToast(id?'تم حفظ التعديل ✔':'تمت إضافة الحملة ✔');
     form.reset(); document.getElementById('af-campId').value='';
     btn.textContent='إضافة';
   }catch(e){ showToast('مقدرتش أحفظ — اتأكد إنك داخل بحساب الأدمن'); }
-  finally{ btn.disabled = false; }
+  finally{ btn.disabled = false; btn.textContent = document.getElementById('af-campId').value ? 'حفظ التعديل' : 'إضافة'; }
   return false;
 }
 function renderAdminCampaigns(){

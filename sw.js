@@ -1,6 +1,6 @@
 /* غيّر رقم النسخة مع كل تحديث (أو شغّل: sh scripts/bump-sw.sh) —
    ده اللي بيخلي المتصفح يستبدل الـ Service Worker ويمسح الكاش القديم ويظهر شريط "فيه تحديث". */
-const CACHE_NAME = 'union-app-202610251338';
+const CACHE_NAME = 'union-app-202610251358';
 const ASSETS = [
   './',
   './index.html',
@@ -57,6 +57,10 @@ function isCore(req){
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  /* طلبات Firebase/Google APIs (Firestore, Auth) لازم تروح للنت دايماً — مفيش تخزين ليها خالص */
+  const host = new URL(req.url).hostname;
+  if (/(^|\.)(googleapis\.com|firebaseio\.com|identitytoolkit\.googleapis\.com|securetoken\.googleapis\.com)$/.test(host) &&
+      host !== 'fonts.googleapis.com') return;
 
   if (isCore(req)) {
     event.respondWith(

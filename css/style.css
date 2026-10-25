@@ -915,3 +915,11 @@ html{-webkit-font-smoothing:antialiased;}
 .sc-chip{background:rgba(33,89,201,.08);color:var(--ink);font-size:12px;padding:6px 12px;border-radius:20px;}
 .sc-chip b{color:var(--gold);}
 .sow-avatar{overflow:hidden;color:#fff;}
+
+/* ===== صور الفعاليات والحملات (خلفية باينة + معرض صور جنب بعض) ===== */
+.mini-thumb.has-photo{height:96px;}
+.campaign-banner.has-photo{height:auto;min-height:150px;}
+.campaign-banner.has-photo b{text-shadow:0 1px 8px rgba(0,0,0,.45);}
+.gal-strip{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:2px;position:relative;z-index:2;scrollbar-width:none;}
+.gal-strip::-webkit-scrollbar{display:none;}
+.gal-strip img{width:64px;height:48px;object-fit:cover;border-radius:9px;flex:none;cursor:pointer;border:1px solid rgba(255,255,255,.35);}

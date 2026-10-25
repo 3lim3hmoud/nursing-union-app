@@ -146,6 +146,24 @@ function initFirestoreListeners(){
 
 /* ========================= تسجيل دخول الأدمن ========================= */
 let adminLoginAttempted = false;
+/* رسالة واضحة بدل "حصل خطأ" — عشان نعرف المشكلة فين بالظبط */
+function authErrMsg(err){
+  const c = (err && err.code) || '';
+  if(c.includes('unauthorized-domain')) return 'الدومين ده ('+location.hostname+') مش مضاف في Firebase: Authentication ← Settings ← Authorized domains ← Add domain.';
+  if(c.includes('operation-not-allowed')) return 'طريقة الدخول دي مش مفعّلة في Firebase: Authentication ← Sign-in method ← فعّل Google (أو Email/Password).';
+  if(c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) return 'نافذة جوجل اتقفلت قبل ما تكمّل الدخول.';
+  if(c.includes('popup-blocked')) return 'المتصفح منع نافذة جوجل — هجرّب طريقة تانية تلقائي.';
+  if(c.includes('network-request-failed')) return 'مشكلة في الاتصال بالنت، جرّب تاني.';
+  if(c.includes('too-many-requests')) return 'محاولات كتير — استنى شوية وجرّب تاني.';
+  if(c.includes('user-disabled')) return 'الحساب ده متعطّل في Firebase.';
+  if(c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found') || c.includes('invalid-email')) return 'الإيميل أو كلمة السر غلط، أو الحساب ده مش متعمل في Firebase.';
+  return 'حصل خطأ في تسجيل الدخول'+(c?' ('+c+')':'')+'، جرّب تاني.';
+}
+function adminLoginShowErr(err){
+  adminLoginAttempted = false;
+  const b = document.getElementById('adminLoginError'); if(b) b.textContent = authErrMsg(err);
+  console.error('Admin login error:', err);
+}
 function adminLogin(ev){
   ev.preventDefault();
   if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return false; }
@@ -153,22 +171,30 @@ function adminLogin(ev){
   const pass = document.getElementById('admLoginPass').value;
   document.getElementById('adminLoginError').textContent = '';
   adminLoginAttempted = true;
-  auth.signInWithEmailAndPassword(email, pass).catch(err=>{
-    adminLoginAttempted = false;
-    document.getElementById('adminLoginError').textContent = 'الإيميل أو كلمة السر غلط، أو الحساب ده مش متعمل في Firebase.';
-  });
+  auth.signInWithEmailAndPassword(email, pass).catch(adminLoginShowErr);
   return false;
 }
-function adminLoginGoogle(){
+async function adminLoginGoogle(){
   if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return; }
   document.getElementById('adminLoginError').textContent = '';
   adminLoginAttempted = true;
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(err=>{
-    adminLoginAttempted = false;
-    document.getElementById('adminLoginError').textContent = 'حصل خطأ في تسجيل الدخول بجوجل، جرّب تاني.';
-  });
+  provider.setCustomParameters({ prompt:'select_account' });   /* يخليه يسألك تختار الإيميل بدل ما يدخل بحساب قديم */
+  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  try{
+    /* التطبيق المثبّت على الموبايل بيبوّظ النوافذ المنبثقة، فبنستخدم التحويل (redirect) فيه مباشرة */
+    if(standalone){ await auth.signInWithRedirect(provider); return; }
+    await auth.signInWithPopup(provider);
+  }catch(err){
+    const c = (err && err.code) || '';
+    if(c.includes('popup-blocked') || c.includes('operation-not-supported') || c.includes('web-storage-unsupported')){
+      try{ await auth.signInWithRedirect(provider); return; }catch(e2){ err = e2; }
+    }
+    adminLoginShowErr(err);
+  }
 }
+/* نتيجة الدخول بالتحويل (redirect): لازم نلتقط الخطأ لو حصل */
+if(fbReady){ auth.getRedirectResult().catch(adminLoginShowErr); }
 function adminLogout(){ if(fbReady) auth.signOut(); }
 /* ملاحظة: الفحص ده للواجهة بس (يظهر/يخفي لوحة التحكم). الحماية الحقيقية في firestore.rules.
    الأدمن = إيميل من القايمة دي، أو uid موجود في collection اسمها admins (بتتضاف من Firebase Console). */
@@ -195,7 +221,7 @@ if(fbReady){
     }else{
       /* المستخدم مسجل دخول كطالب عادي (مش أدمن) — منسيبه في التطبيق، بس ملوش صلاحية يشوف لوحة التحكم */
       if(user && adminLoginAttempted){
-        document.getElementById('adminLoginError').textContent = 'الحساب ده مش من ضمن حسابات الأدمن المسموح لها.';
+        document.getElementById('adminLoginError').textContent = 'الحساب ده ('+(user.email||'بدون إيميل')+') مش من ضمن حسابات الأدمن. لو ده إيميلك: ضيفه في ADMIN_EMAILS و firestore.rules، أو اعمل وثيقة admins/'+user.uid+' من Firebase Console.';
       }
       loginBox.style.display='block'; panel.style.display='none';
     }

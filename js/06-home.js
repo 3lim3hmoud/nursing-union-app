@@ -1,5 +1,27 @@
 /* يحوّل الرابط لشكل آمن جوه url('...') في CSS */
 function cssUrl(u){ return String(u||'').replace(/['"()\\\s]/g, c=>'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0')); }
+
+/* صورة الغلاف + المعرض (أكتر من صورة جنب بعض) لأي عنصر: فعالية / حملة */
+function mediaList(o){
+  const l = []; if(o && o.photoURL) l.push(o.photoURL);
+  ((o && o.images) || []).forEach(u=>{ if(u && !l.includes(u)) l.push(u); });
+  return l;
+}
+/* خلفية صورة باينة مع تدرج خفيف عشان النص يفضل مقروء (زي كروت الأخبار) */
+function photoBg(url, top){
+  return esc("background:linear-gradient(180deg,rgba(8,20,50,"+(top==null?.18:top)+"),rgba(8,20,50,.85)),url('"+cssUrl(cld(url,'c_fill,w_900,h_600,q_auto,f_auto'))+"') center/cover no-repeat");
+}
+function galleryHtml(list, cls){
+  if(!list || list.length<2) return '';
+  return '<div class="'+(cls||'nr-gal')+'">'+list.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy">`).join('')+'</div>';
+}
+function bindGallery(root, list, title){
+  if(!root) return;
+  root.querySelectorAll('.nr-gal img, .gal-strip img').forEach(im=>im.addEventListener('click', ev=>{
+    ev.stopPropagation();
+    openLightboxList(list.map(u=>({type:'image',url:u,title:title||'',album:''})), Number(im.dataset.i));
+  }));
+}
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
   setAvatarEl(document.getElementById('homeAvatar'), STUDENT.uid ? STUDENT.name : 'guest', STUDENT.uid ? STUDENT.photoURL : '', STUDENT.avatarInitial);
@@ -20,11 +42,15 @@ function renderHome(){
 
   const scroll = document.getElementById('homeEventsScroll');
   scroll.innerHTML='';
-  STATE.activities.slice(0,6).forEach(a=>{
+  /* القادمة الأول (الأقرب موعداً)، وبعدها اللي من غير ميعاد، وبعدها المنتهية */
+  const upc = STATE.activities.filter(x=>actStart(x) && !actIsPast(x)).sort((x,y)=>actStart(x)-actStart(y));
+  const nod = STATE.activities.filter(x=>!actStart(x));
+  const pst = STATE.activities.filter(x=>actStart(x) && actIsPast(x)).sort((x,y)=>actStart(y)-actStart(x));
+  [...upc, ...nod, ...pst].slice(0,6).forEach(a=>{
     const c = CATS[a.cat]||CATS.scientific;
-    scroll.appendChild(el(`
+    const card = el(`
       <div class="mini-event">
-        <div class="mini-thumb" style="background:linear-gradient(135deg, ${c.color}, #0d1836)">
+        <div class="mini-thumb ${a.photoURL?'has-photo':''}" style="${a.photoURL ? photoBg(a.photoURL,.05) : 'background:linear-gradient(135deg, '+c.color+', #0d1836)'}">
           <span class="chip" style="background:rgba(255,255,255,.92)">${esc(c.label)}</span>
         </div>
         <div class="body">
@@ -32,21 +58,31 @@ function renderHome(){
           <div class="meta">📅 ${esc(a.date)}</div>
         </div>
       </div>
-    `));
+    `);
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', ()=>openActivityModal(a.id));
+    scroll.appendChild(card);
   });
   if(!STATE.activities.length) scroll.appendChild(el('<div class="empty-note">لسه مفيش فعاليات مضافة</div>'));
 
   const cp = document.getElementById('homeCampaignPreview');
   cp.innerHTML='';
-  STATE.campaigns.filter(c=>c.status==='current').slice(0,1).forEach(c=>{
-    cp.appendChild(el(`
-      <div class="campaign-banner" style="background:linear-gradient(135deg, ${c.color1}, ${c.color2})">
+  /* أحدث حملة حالية (أو أحدث حملة لو مفيش حالية) */
+  const campPick = STATE.campaigns.filter(c=>c.status==='current').concat(STATE.campaigns.filter(c=>c.status!=='current')).slice(0,1);
+  campPick.forEach(c=>{
+    const imgs = mediaList(c);
+    const bg = imgs.length ? photoBg(imgs[0],.28) : 'background:linear-gradient(135deg, '+c.color1+', '+c.color2+')';
+    const node = el(`
+      <div class="campaign-banner ${imgs.length?'has-photo':''}" style="${bg}">
         <span class="cat-tag">${esc(c.cat)}</span>
         <b>${esc(c.title)}</b>
         <p>${esc(c.desc)}</p>
         <div class="meta">📅 ${esc(c.date)} &nbsp;·&nbsp; 📍 ${esc(c.place)}</div>
+        ${galleryHtml(imgs,'gal-strip')}
       </div>
-    `));
+    `);
+    bindGallery(node, imgs, c.title);
+    cp.appendChild(node);
   });
 }
 

@@ -114,14 +114,19 @@ function renderCamps(){
   const list = STATE.campaigns.filter(c=>c.status===campFilter);
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد حملات هنا حالياً</div>'));return;}
   list.forEach(c=>{
-    wrap.appendChild(el(`
-      <div class="campaign-banner" style="${c.photoURL ? esc("background:linear-gradient(180deg,rgba(8,20,50,.35),rgba(8,20,50,.88)),url('"+cssUrl(c.photoURL)+"') center/cover no-repeat") : 'background:linear-gradient(135deg, '+c.color1+', '+c.color2+')'}">
+    const imgs = mediaList(c);
+    const bg = imgs.length ? photoBg(imgs[0],.35) : 'background:linear-gradient(135deg, '+c.color1+', '+c.color2+')';
+    const node = el(`
+      <div class="campaign-banner ${imgs.length?'has-photo':''}" style="${bg}">
         <span class="cat-tag">${esc(c.cat)}</span>
         <b>${esc(c.title)}</b>
         <p>${esc(c.desc)}</p>
         <div class="meta">📅 ${esc(c.date)} &nbsp;·&nbsp; 📍 ${esc(c.place)}</div>
+        ${galleryHtml(imgs,'gal-strip')}
       </div>
-    `));
+    `);
+    bindGallery(node, imgs, c.title);
+    wrap.appendChild(node);
   });
 }
 

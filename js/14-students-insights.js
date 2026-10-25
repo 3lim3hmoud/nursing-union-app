@@ -325,6 +325,7 @@ async function admSyncPoints(manual){
       sn.forEach(r=>bump(regs, r.id));
     }));
 
+    const boardMap = {}; STATE.leaderboard.forEach(r=>{ boardMap[r.uid||r.id] = r; });
     let batch = db.batch(), ops = 0, changed = 0, total = 0;
     const flush = async ()=>{ if(ops){ await batch.commit(); batch = db.batch(); ops = 0; } };
     for(const s of stu){
@@ -337,9 +338,15 @@ async function admSyncPoints(manual){
         s.points = (Number(s.points)||0) + delta; s.autoPoints = auto; ops++; changed++;
       }
       const visible = !s.hideFromRanking && (Number(s.points)||0) > 0;
-      if(visible) batch.set(admBoardRef(s.id), admMirrorData(s), {merge:true});
-      else batch.delete(admBoardRef(s.id));
-      ops++; total++;
+      const onBoard = boardMap[s.id];
+      /* نكتب في الترتيب بس لو فيه تغيير فعلاً (توفير للكتابات في الخطة المجانية) */
+      if(visible){
+        const m = admMirrorData(s);
+        if(!onBoard || onBoard.name!==m.name || onBoard.level!==m.level || onBoard.photoURL!==m.photoURL || (Number(onBoard.points)||0)!==m.points){
+          batch.set(admBoardRef(s.id), m, {merge:true}); ops++;
+        }
+      }else if(onBoard){ batch.delete(admBoardRef(s.id)); ops++; }
+      total++;
       if(ops >= 400) await flush();
     }
     await flush();
