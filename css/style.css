@@ -1072,7 +1072,7 @@ body{
 .pill-tab.active{background:linear-gradient(135deg,#1360d2,#2d8cf0);border-color:transparent;box-shadow:0 8px 18px rgba(19,96,210,.30);}
 
 /* بانر الحدث والحملات */
-.event-strip{background-image:linear-gradient(135deg,#0c2f6b,#1360d2 60%,#38a6ff) !important;box-shadow:0 18px 38px rgba(19,96,210,.38);}
+.event-strip{background-color:#0c2f6b;background-size:cover;background-position:center;box-shadow:0 18px 38px rgba(12,47,107,.40);}
 .event-strip .tag{color:#bfe4ff;}
 .campaign-banner{box-shadow:0 16px 34px rgba(19,96,210,.28);}
 
@@ -1161,10 +1161,19 @@ main{padding-bottom:118px;}
 .event-card .ev-thumb{border-radius:18px;box-shadow:0 8px 18px rgba(19,70,160,.22);overflow:hidden;}
 .ev-chip{border-radius:20px;font-weight:700;}
 .mini-event{overflow:hidden;}
-.hello-top h1{background:linear-gradient(135deg,#0c2f6b,#1f74e6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hello-top h1{color:var(--ink);}
 .quick-btn,.qa-item{transition:transform .15s ease;}
 .quick-btn:active,.qa-item:active{transform:scale(.93);}
 @media (prefers-reduced-motion:reduce){.skel{animation:none;}}
 .adm-cover-prev{position:relative;border-radius:16px;overflow:hidden;height:120px;box-shadow:var(--float-sh);align-items:flex-end;}
 .adm-cover-prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .adm-cover-prev span{position:relative;margin:8px;font-size:10px;font-weight:800;color:#fff;background:rgba(12,47,107,.7);border-radius:20px;padding:3px 10px;backdrop-filter:blur(6px);}
+
+/* بانر الحدث القادم: الصورة باينة، وخلفية غامقة والكتابة بيضا واضحة */
+.event-strip::before{background:radial-gradient(circle,rgba(56,189,248,.22),transparent 65%);}
+.event-strip .tag{color:#cfe8ff;text-shadow:0 1px 8px rgba(0,0,0,.45);}
+.event-name{color:#fff;font-size:20px;text-shadow:0 2px 12px rgba(0,0,0,.55);}
+.event-meta{color:rgba(255,255,255,.88);text-shadow:0 1px 8px rgba(0,0,0,.5);}
+.cd-cell{background:rgba(8,20,50,.45);border-color:rgba(255,255,255,.22);}
+.cd-cell b{color:#fff;}
+.cd-cell span{color:rgba(255,255,255,.8);}
