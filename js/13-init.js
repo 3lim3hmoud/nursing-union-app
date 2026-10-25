@@ -11,15 +11,28 @@ function initApp(){
   renderNews();
   renderProfile();
   renderRankTabs(); renderRanking();
-  initFirestoreListeners();
+  if(!fbReady) initFirestoreListeners();   /* من غير Firebase: بس يظهر تنبيه الإعداد */
 }
 function resetStudentToGuest(){ STUDENT = {...GUEST_STUDENT}; }
+/* المحتوى (فعاليات، أخبار، حملات...) متاح للمسجّلين بس: الزائر بيشوف صفحة الدخول، والقواعد في Firestore بتمنع القراءة من غير تسجيل */
+let LISTENERS_ON = false;
 function bootAuthGate(){
   initApp();
   if(fbReady){
     auth.onAuthStateChanged(async user=>{
-      if(user){ await loadStudentProfile(user); }
-      else{ resetStudentToGuest(); }
+      if(user){
+        document.body.classList.remove('guest');
+        await loadStudentProfile(user);
+        if(!LISTENERS_ON){ LISTENERS_ON = true; initFirestoreListeners(); }
+        let tryAdmin = false; try{ tryAdmin = sessionStorage.getItem('nuAdminTry')==='1'; sessionStorage.removeItem('nuAdminTry'); sessionStorage.removeItem('nuAuthRedirect'); }catch(_){}
+        if(tryAdmin) goPage('admin');          /* رجّعه للوحة التحكم بعد دخول الأدمن */
+        else if(CUR_PAGE==='profile' && STUDENT.uid && !window.__nuStayProfile) goPage('home');
+      }else{
+        if(LISTENERS_ON){ location.reload(); return; }   /* خروج: إعادة تحميل نضيفة عشان نفصل كل المستمعات */
+        document.body.classList.add('guest');
+        resetStudentToGuest();
+        goPage('profile');
+      }
       renderHome(); renderProfile();
     });
   }

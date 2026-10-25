@@ -923,3 +923,11 @@ html{-webkit-font-smoothing:antialiased;}
 .gal-strip{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:2px;position:relative;z-index:2;scrollbar-width:none;}
 .gal-strip::-webkit-scrollbar{display:none;}
 .gal-strip img{width:64px;height:48px;object-fit:cover;border-radius:9px;flex:none;cursor:pointer;border:1px solid rgba(255,255,255,.35);}
+
+/* ===== بوابة الدخول: الزائر يشوف صفحة الحساب بس ===== */
+body.guest #pages .page{display:none !important;}
+body.guest #pages #page-profile{display:block !important;}
+body.guest .bottomnav, body.guest #openMenuBtn, body.guest #navFab{display:none !important;}
+.gate-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;color:var(--muted);font-size:11px;}
+.gate-or::before,.gate-or::after{content:"";flex:1;height:1px;background:var(--line);}
+.gate-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#1f1f1f;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}

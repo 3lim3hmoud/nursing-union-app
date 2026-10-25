@@ -61,7 +61,7 @@ service cloud.firestore {
 
     // الفعاليات والمؤتمرات والأنشطة
     match /activities/{id} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow create, delete: if isAdmin();
       allow update: if isAdmin() || (isSignedIn() && (
         // "مهتم": الطالب يضيف نفسه بس
@@ -100,7 +100,7 @@ service cloud.firestore {
 
     // الأخبار — قراءة للكل، والطالب يقدر يعمل/يشيل لايك لنفسه بس
     match /news/{id} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow create, delete: if isAdmin();
       allow update: if isAdmin() || (isSignedIn()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeUids'])
@@ -118,17 +118,17 @@ service cloud.firestore {
     }
 
     // محتوى عام — يتقرا من أي حد، والتعديل للأدمن بس
-    match /magazines/{id}   { allow read: if true; allow write: if isAdmin(); }
-    match /campaigns/{id}   { allow read: if true; allow write: if isAdmin(); }
-    match /committees/{id}  { allow read: if true; allow write: if isAdmin(); }
-    match /leaderboard/{id} { allow read: if true; allow write: if isAdmin(); }
-    match /members/{id}     { allow read: if true; allow write: if isAdmin(); }
-    match /media/{id}       { allow read: if true; allow write: if isAdmin(); }
-    match /config/{id}      { allow read: if true; allow write: if isAdmin(); }
+    match /magazines/{id}   { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /campaigns/{id}   { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /committees/{id}  { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /leaderboard/{id} { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /members/{id}     { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /media/{id}       { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /config/{id}      { allow read: if isSignedIn(); allow write: if isAdmin(); }
 
     // التصويت
     match /polls/{pollId} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow write: if isAdmin();
 
       match /votes/{uid} {
