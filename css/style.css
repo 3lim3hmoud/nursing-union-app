@@ -1052,7 +1052,6 @@ body{
   border:1px solid rgba(255,255,255,.9);
   background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,251,255,.92));
 }
-.card,.mini-event,.nw-card,.member-card{content-visibility:auto;contain-intrinsic-size:auto 120px;}
 .card{border-radius:20px;}
 @media (hover:hover){
   .card,.mini-event,.nw-card,.adm-tile{transition:transform .22s ease,box-shadow .22s ease;}
@@ -1234,3 +1233,125 @@ body{color:var(--ink);}
 .gate-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:16px;border:1.5px solid rgba(19,96,210,.18);background:#fff;color:var(--ink);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(19,70,160,.08);transition:transform .15s,box-shadow .2s;}
 .gate-google:active{transform:scale(.98);}
 .gate-error{margin:10px 0 0;font-size:12px;font-weight:700;color:#d1435b;text-align:center;}
+
+/* ===== تذكرة QR ===== */
+.ticket-btn{margin-top:8px;background:linear-gradient(135deg,#0c2f6b,#1360d2) !important;color:#fff !important;}
+.ticket-sheet{padding-bottom:20px;}
+.tk-card{margin:6px 4px 12px;border-radius:24px;overflow:hidden;background:#fff;box-shadow:var(--float-sh);text-align:center;border:1px solid var(--line);}
+.tk-head{display:flex;align-items:center;gap:10px;padding:14px 16px;color:#fff;text-align:right;background:linear-gradient(135deg,#0c2f6b,#1360d2 60%,#47a6ff);}
+.tk-head img{border-radius:50%;border:2px solid rgba(255,255,255,.8);background:#fff;}
+.tk-head b{display:block;font-size:14px;line-height:1.4;}
+.tk-head span{font-size:11px;opacity:.85;}
+.tk-qr{width:230px;max-width:70%;margin:18px auto 8px;padding:10px;border-radius:18px;background:#fff;box-shadow:0 0 0 2px #e3efff;}
+.tk-qr svg{display:block;width:100%;height:auto;}
+.tk-who{padding:6px 16px 4px;}
+.tk-who b{display:block;font-size:16px;color:#0d2247;}
+.tk-who span{font-size:12px;color:#3f5378;}
+.tk-status{margin:10px 16px 16px;padding:10px;border-radius:14px;background:#eef6ff;color:#3f5378;font-size:12.5px;font-weight:700;}
+.tk-status.ok{background:#e4f8ee;color:#12804a;}
+
+/* ===== ماسح الأدمن ===== */
+.scan-modal{position:fixed;inset:0;z-index:120;display:none;flex-direction:column;background:#07122b;color:#fff;}
+.scan-modal.show{display:flex;}
+.scan-top{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 10px;}
+.scan-top div:last-child b{display:block;font-size:14px;}
+.scan-top div:last-child span{font-size:12px;color:#9cc4ff;}
+.scan-view{position:relative;flex:1;min-height:0;overflow:hidden;background:#000;}
+.scan-view video{width:100%;height:100%;object-fit:cover;}
+.scan-frame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.scan-frame i{width:62%;aspect-ratio:1;border-radius:26px;box-shadow:0 0 0 100vmax rgba(5,12,30,.55);border:3px solid #47a6ff;position:relative;}
+.scan-frame i::after{content:"";position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,#38bdf8,transparent);top:10%;animation:scanLine 2s ease-in-out infinite;}
+@keyframes scanLine{0%,100%{top:10%;}50%{top:88%;}}
+.scan-result{position:absolute;left:14px;right:14px;bottom:18px;padding:14px 16px;border-radius:18px;display:none;flex-direction:column;gap:3px;text-align:center;backdrop-filter:blur(10px);box-shadow:0 14px 34px rgba(0,0,0,.45);}
+.scan-result.show{display:flex;animation:fadeUp .25s ease;}
+.scan-result b{font-size:16px;}
+.scan-result span{font-size:12.5px;opacity:.95;}
+.scan-result.ok{background:rgba(18,128,74,.94);}
+.scan-result.warn{background:rgba(194,125,10,.94);}
+.scan-result.bad{background:rgba(190,45,70,.94);}
+.scan-msg{padding:10px 16px 4px;text-align:center;font-size:12.5px;color:#bcd6ff;}
+.scan-manual{display:flex;gap:8px;padding:8px 14px calc(14px + env(safe-area-inset-bottom,0px));}
+.scan-manual input{flex:1;padding:13px 14px;border-radius:14px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:13.5px;}
+.scan-manual input::placeholder{color:#8fb0e6;}
+.scan-manual .btn-primary{width:auto;padding:0 20px;border-radius:14px;}
+
+/* ===== انتقال ناعم بين الصفحات + Skeleton ===== */
+.page.active{animation:pageIn .28s cubic-bezier(.2,.8,.2,1);}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+#actList .skel,#newsList .skel{min-height:104px;}
+@media (prefers-reduced-motion:reduce){.page.active{animation:none;}.scan-frame i::after{animation:none;}}
+
+/* ===== الوضع الداكن ===== */
+[data-theme="dark"]{
+  color-scheme:dark;
+  --navy-950:#091226;--navy-700:#10203f;--navy-600:#16294d;
+  --ink:#e9f1ff;--muted:#b0c2e2;--muted-dim:#8da3c9;
+  --line:rgba(140,180,255,.16);
+  --pine:#2a7be6;--gold:#58aaff;--gold-light:#7cc0ff;
+  --float-sh:0 2px 4px rgba(0,0,0,.35),0 14px 34px rgba(0,0,0,.45);
+}
+[data-theme="dark"] body{background:radial-gradient(560px 380px at 100% -6%,rgba(40,110,220,.35),transparent 62%),radial-gradient(520px 420px at -10% 40%,rgba(20,150,220,.16),transparent 60%),#091226;}
+[data-theme="dark"] #appframe{background:radial-gradient(420px 260px at 85% 0%,rgba(40,110,220,.25),transparent 70%),linear-gradient(180deg,#0b172e,#091226 60%);box-shadow:0 0 70px rgba(0,0,0,.6);}
+[data-theme="dark"] .topbar{background:linear-gradient(135deg,#0b2a63 0%,#124fb0 62%,#1e78d8 100%);}
+[data-theme="dark"] .card,[data-theme="dark"] .stat-box,[data-theme="dark"] .mini-event,[data-theme="dark"] .nw-card,[data-theme="dark"] .member-card,[data-theme="dark"] .org-node,[data-theme="dark"] .committee-row,[data-theme="dark"] .adm-tile,[data-theme="dark"] .admin-box,[data-theme="dark"] .tk-card{
+  background:linear-gradient(180deg,rgba(24,42,80,.96),rgba(16,31,62,.94));border-color:rgba(140,180,255,.12);color:var(--ink);}
+[data-theme="dark"] .bottomnav{background:rgba(13,26,52,.86);border-color:rgba(140,180,255,.16);}
+[data-theme="dark"] .nav-item{color:var(--muted-dim);}
+[data-theme="dark"] .nav-item.active{color:#7cc0ff;}
+[data-theme="dark"] .pill-tab{background:rgba(24,42,80,.9);color:var(--muted);border-color:var(--line);}
+[data-theme="dark"] .pill-tab.active{color:#fff;}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea,[data-theme="dark"] .gate-form input,[data-theme="dark"] .admin-box input,[data-theme="dark"] .admin-box select,[data-theme="dark"] .admin-box textarea,[data-theme="dark"] .adm-search{background-color:#122344;color:var(--ink);}
+[data-theme="dark"] .gate-form input:focus,[data-theme="dark"] .admin-box input:focus,[data-theme="dark"] .adm-search:focus{background-color:#162b52;}
+[data-theme="dark"] .gate-tabs{background:#122344;}
+[data-theme="dark"] .gate-tab{color:var(--muted);}
+[data-theme="dark"] .gate-google,[data-theme="dark"] .mini-btn{background:#16294d;color:var(--ink);border-color:var(--line);}
+[data-theme="dark"] .mini-btn.danger{background:#3a1c2a;}
+[data-theme="dark"] .empty-note{background:rgba(24,42,80,.6);}
+[data-theme="dark"] .skel{background:linear-gradient(90deg,#14264a 25%,#1b3262 50%,#14264a 75%);background-size:200% 100%;}
+[data-theme="dark"] .pe-sheet,[data-theme="dark"] .side-menu,[data-theme="dark"] .modal-sheet,[data-theme="dark"] .modal-card{background:#0f1e3b;color:var(--ink);}
+[data-theme="dark"] .icon-btn{color:#fff;}
+[data-theme="dark"] .tk-who b{color:var(--ink);}
+[data-theme="dark"] .tk-who span,[data-theme="dark"] .tk-status{color:var(--muted);}
+[data-theme="dark"] .tk-status{background:#122344;}
+[data-theme="dark"] .tk-qr{background:#fff;}
+[data-theme="dark"] .hello-h1 bdi,[data-theme="dark"] .section-title,[data-theme="dark"] .hello-top h1{color:var(--ink);}
+[data-theme="dark"] .section-title .more{color:#7cc0ff;}
+[data-theme="dark"] .adm-group{color:#7cc0ff;}
+
+/* الوضع الداكن: كل العناصر اللي كانت بيضا */
+[data-theme="dark"] .adm-back button,
+[data-theme="dark"] .adm-search:focus,
+[data-theme="dark"] .adm-tile,
+[data-theme="dark"] .admin-box input:focus,
+[data-theme="dark"] .admin-box select:focus,
+[data-theme="dark"] .admin-box textarea:focus,
+[data-theme="dark"] .breaking .bk i,
+[data-theme="dark"] .gate-form input:focus,
+[data-theme="dark"] .gate-google,
+[data-theme="dark"] .ins-card,
+[data-theme="dark"] .ins-tabs button,
+[data-theme="dark"] .lb-msg a,
+[data-theme="dark"] .mchip,
+[data-theme="dark"] .mini-btn,
+[data-theme="dark"] .nr,
+[data-theme="dark"] .nr-btn,
+[data-theme="dark"] .nw-card,
+[data-theme="dark"] .pb-cta,
+[data-theme="dark"] .pe-edit-btn,
+[data-theme="dark"] .pe-sheet,
+[data-theme="dark"] .pe-sheet input[type=number],
+[data-theme="dark"] .pe-sheet input[type=text],
+[data-theme="dark"] .pe-sheet textarea,
+[data-theme="dark"] .poll-opt,
+[data-theme="dark"] .reg-btn.cancel,
+[data-theme="dark"] .rl-att,
+[data-theme="dark"] .se-num,
+[data-theme="dark"] .upd-bar button{background:#14264a;color:var(--ink);}
+[data-theme="dark"] .quick-icon{background:linear-gradient(180deg,#1a3262,#142852);color:#7cc0ff;border-color:var(--line);}
+
+[data-theme="dark"] .gate-tab.active,[data-theme="dark"] .pill-tab.active,[data-theme="dark"] .mini-btn.on{color:#fff;}
+
+/* صور: ما تنهارش ولا تتشوّه، وخلفية مكانها بتفضل ظاهرة لحد ما تتحمّل */
+.mc-slide{background:linear-gradient(135deg,#0c2f6b,#1360d2);}
+.mc-slide>img,.nw-feat>img,.ev-thumb img,.nw-card img,.modal-hero{object-fit:cover;background:#dcebff;}
+img{max-width:100%;}

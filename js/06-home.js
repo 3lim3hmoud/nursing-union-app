@@ -22,6 +22,24 @@ function bindGallery(root, list, title){
     openLightboxList(list.map(u=>({type:'image',url:u,title:title||'',album:''})), Number(im.dataset.i));
   }));
 }
+/* خلفية بانر الحدث القادم: بنتأكد إن الصورة بتتحمّل، ولو فشلت نجرّب الأصل ثم صورة المبنى (عمره ما يفضل من غير صورة) */
+const STRIP_SHADE = 'linear-gradient(180deg, rgba(6,16,40,.45), rgba(4,10,28,.90))';
+let _stripKey = '';
+function setStripBg(src){
+  const strip = document.getElementById('eventStrip'); if(!strip) return;
+  const raw = src || 'images/building.jpg';
+  if(_stripKey === raw && strip.style.backgroundImage) return;      /* من غير وميض لو الصورة هي هي */
+  _stripKey = raw;
+  const chain = [cld(raw,'c_fill,w_900,h_700,q_auto,f_auto'), raw, 'images/building.jpg'].filter((u,i,a)=>u && a.indexOf(u)===i);
+  const apply = u => { strip.style.backgroundImage = `${STRIP_SHADE}, url('${cssUrl(u)}')`; };
+  (function tryNext(i){
+    if(i >= chain.length){ apply('images/building.jpg'); return; }
+    const im = new Image();
+    im.onload = ()=>{ if(_stripKey === raw) apply(chain[i]); };
+    im.onerror = ()=>tryNext(i+1);
+    im.src = chain[i];
+  })(0);
+}
 /* اسم مرتب: أول اسمين، والإنجليزي بحروف عادية (مش ALL CAPS) */
 function niceName(n){
   const parts = String(n||'').trim().split(/\s+/).slice(0,2);
@@ -37,8 +55,7 @@ function renderHome(){
   const NE = homeNextEvent();
   document.getElementById('nextEventName').textContent = NE.name;
   document.getElementById('nextEventMeta').textContent = NE.place;
-  document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(6,16,40,.45), rgba(4,10,28,.90)), url('${cssUrl(cld(NE.image,'c_fill,w_900,h_700,q_auto,f_auto'))}')`;
+  setStripBg(NE.image);
   ensureMyRegs();
 
   setAvatarEl(document.getElementById('sowAvatar'), STATE.studentOfWeek.name, STATE.studentOfWeek.photoURL, STATE.studentOfWeek.initial);
@@ -104,17 +121,20 @@ let mcBound = false;
 function renderMediaCarousel(){
   const track = document.getElementById('mcTrack');
   const dots = document.getElementById('mcDots');
-  track.innerHTML=''; dots.innerHTML='';
   const items = STATE.media.slice(0,6);
+  const sig = items.map(m=>m.id+'|'+(mediaThumb(m)||'')+'|'+(m.title||'')).join(',');
+  if(sig && sig===renderMediaCarousel._sig && track.children.length) return;
+  renderMediaCarousel._sig = sig;
+  track.innerHTML=''; dots.innerHTML='';
   MC_SLIDES = items.length ? items : [MEDIA_ITEMS[0]];
   MC_SLIDES.forEach((m,i)=>{
     const real = !!m.id;
     let mediaHtml='';
     if(real){
       const th = mediaThumb(m);
-      mediaHtml = th ? `<img src="${esc(cld(th,'c_fill,w_800,h_450,q_auto,f_auto'))}" alt="${esc(m.title||m.album||'')}">`
+      mediaHtml = th ? `<img decoding="async" ${i===0?'fetchpriority="high" ':''}src="${esc(cld(th,'c_fill,w_800,h_450,q_auto,f_auto'))}" alt="${esc(m.title||m.album||'')}">`
                      : `<div class="mc-fallback" style="background:linear-gradient(135deg,#2159c9,#0f2a66)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${iconFor(m.type)}</svg></div>`;
-    } else if(m.src && m.type==='image') mediaHtml = `<img src="${esc(m.src)}" alt="${esc(m.title)}">`;
+    } else if(m.src && m.type==='image') mediaHtml = `<img decoding="async" src="${esc(m.src)}" alt="${esc(m.title)}">`;
     else mediaHtml = `<div class="mc-fallback" style="background:linear-gradient(135deg, ${m.color1}, ${m.color2})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${iconFor(m.type)}</svg></div>`;
     const tag = real ? (m.album || (m.type==='video'?'فيديو':'صورة')) : m.tag;
     const title = real ? (m.title || m.album || '') : m.title;

@@ -106,27 +106,9 @@ function initFirestoreListeners(){
     if(typeof notifCheck==='function') notifCheck('activities', STATE.activities);
     renderActivities(); renderHome(); renderAdminActivities(); startCountdown(); adminDashRefresh();
   }, ()=>{});
-  db.collection('magazines').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
-    STATE.magazines = snap.docs.map(docToItem);
-    renderMags(); renderAdminMagazines();
-  }, ()=>{});
   db.collection('campaigns').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.campaigns = snap.docs.map(docToItem);
     renderCamps(); renderHome(); renderAdminCampaigns();
-  }, ()=>{});
-  db.collection('committees').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
-    STATE.committees = snap.docs.map(docToItem);
-    if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
-    renderAdminCommittees();
-  }, ()=>{});
-  db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
-    STATE.leaderboard = snap.docs.map(docToItem);
-    renderRanking(); renderAdminLeaderboard(); renderProfile();
-  }, ()=>{});
-  db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
-    STATE.members = snap.docs.map(docToItem);
-    if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
-    renderAdminMembers();
   }, ()=>{});
   db.collection('news').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.news = snap.docs.map(docToItem); adminDashRefresh();
@@ -141,6 +123,30 @@ function initFirestoreListeners(){
   db.collection('media').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.media = snap.docs.map(docToItem);
     renderMediaCarousel(); renderMediaPage(); renderAdminMedia(); adminDashRefresh();
+  }, ()=>{});
+  const later = ()=>initDeferredListeners();
+  if('requestIdleCallback' in window) requestIdleCallback(later, { timeout:2000 }); else setTimeout(later, 1200);
+}
+
+/* مجموعات مش لازمة للصفحة الرئيسية: بتبدأ بعد ما الرئيسية تظهر (بتخفف الطلبات في أول تحميل) */
+function initDeferredListeners(){
+  db.collection('magazines').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
+    STATE.magazines = snap.docs.map(docToItem);
+    renderMags(); renderAdminMagazines();
+  }, ()=>{});
+  db.collection('committees').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
+    STATE.committees = snap.docs.map(docToItem);
+    if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
+    renderAdminCommittees();
+  }, ()=>{});
+  db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
+    STATE.members = snap.docs.map(docToItem);
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
+    renderAdminMembers();
+  }, ()=>{});
+  db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
+    STATE.leaderboard = snap.docs.map(docToItem);
+    renderRanking(); renderAdminLeaderboard(); renderProfile();
   }, ()=>{});
 }
 
@@ -280,3 +286,19 @@ function normAr(s){
     .replace(/[\u064B-\u0652\u0640]/g,'')
     .replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').trim();
 }
+
+/* ========================= حماية الصور =========================
+   لو صورة فشلت: نجرّب الأصل من غير تحويلات Cloudinary، وبعدين إعادة محاولة، وآخر حاجة صورة الكلية — عمر مكان الصورة ما يفضل فاضي. */
+document.addEventListener('error', e=>{
+  const im = e.target; if(!im || im.tagName !== 'IMG') return;
+  const step = +(im.dataset.fb || 0);
+  if(step >= 3) return;
+  im.dataset.fb = step + 1;
+  const cur = im.getAttribute('src') || '';
+  if(step === 0){
+    const orig = cur.replace(/\/upload\/(?:[a-z]{1,4}_[^\/]*\/)+/, '/upload/');
+    if(orig !== cur){ im.src = orig; return; }
+  }
+  if(step <= 1){ setTimeout(()=>{ im.src = cur + (cur.indexOf('?')>-1 ? '&' : '?') + 'r=' + Date.now(); }, 900); return; }
+  im.src = 'images/building.jpg';
+}, true);

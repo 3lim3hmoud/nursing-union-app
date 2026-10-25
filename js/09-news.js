@@ -35,7 +35,7 @@ function renderNews(){
     if(!list.length){ wrap.appendChild(el(NEWS_Q ? '<div class="empty-note">مفيش نتائج للبحث ده 🔍</div>' : '<div class="empty-note">لسه مفيش أخبار</div>')); }
     else {
       const f = list[0];
-      const fe = el(`<div class="nw-feat">${f.photoURL ? `<img src="${esc(cld(f.photoURL,'c_fill,w_900,h_560,q_auto,f_auto'))}" alt="" decoding="async">` : '<div class="nw-ph">📰</div>'}<div class="shade"></div><div class="info"><div>${newsFlags(f)}${newsTag(f)}</div><b>${esc(f.title)}</b><small>📅 ${esc(newsDate(f))}${(f.likeUids||[]).length?` · ❤ ${(f.likeUids||[]).length}`:''}</small></div></div>`);
+      const fe = el(`<div class="nw-feat">${f.photoURL ? `<img loading="lazy" decoding="async" src="${esc(cld(f.photoURL,'c_fill,w_900,h_560,q_auto,f_auto'))}" alt="" decoding="async">` : '<div class="nw-ph">📰</div>'}<div class="shade"></div><div class="info"><div>${newsFlags(f)}${newsTag(f)}</div><b>${esc(f.title)}</b><small>📅 ${esc(newsDate(f))}${(f.likeUids||[]).length?` · ❤ ${(f.likeUids||[]).length}`:''}</small></div></div>`);
       fe.addEventListener('click', ()=>openNews(f.id));
       feat.appendChild(fe);
       const rest = list.slice(1);
@@ -90,7 +90,7 @@ function fillNewsReader(n){
   const likes = n.likeUids || [], liked = !!(STUDENT.uid && likes.includes(STUDENT.uid));
   const gal = (n.images||[]).length ? `<div class="nr-gal">${n.images.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy">`).join('')}</div>` : '';
   document.getElementById('nrBody').innerHTML = `
-    ${n.photoURL ? `<img class="nr-hero" src="${esc(cld(n.photoURL,'c_fill,w_1000,h_690,q_auto,f_auto'))}" alt="">` : '<div class="nr-hero-ph">📰</div>'}
+    ${n.photoURL ? `<img loading="lazy" decoding="async" class="nr-hero" src="${esc(cld(n.photoURL,'c_fill,w_1000,h_690,q_auto,f_auto'))}" alt="">` : '<div class="nr-hero-ph">📰</div>'}
     <div class="nr-body">
       <div>${newsFlags(n)}${newsTag(n)}</div>
       <h1>${esc(n.title)}</h1>
