@@ -471,6 +471,12 @@
           <div id="admin-comList"></div>
         </details>
 
+        <details class="admin-box" data-sec="certificates">
+          <summary>📜 شهادات الحضور</summary>
+          <p class="cert-hint" style="text-align:right;margin:2px 0 12px;line-height:1.8;">صمّم الشهادة بالإنجليزي بالشكل واللوجو والنصوص والختم والتوقيع اللي إنت عايزهم (Canva أو Photoshop أو أي برنامج) واحفظها <b>صورة PNG أو JPG</b>، وارفعها هنا وحدد مكان الاسم. التطبيق بيكتب <b>اسم الطالب بس</b> تلقائياً ويطلّعها PDF لكل طالب اتسجّل حضوره.</p>
+          <div id="certAdminList"></div>
+        </details>
+
         <details class="admin-box" data-sec="dean">
           <summary>🎓 عميدة الكلية</summary>
           <form onsubmit="return saveDean(event)">
@@ -479,15 +485,7 @@
             <textarea required id="af-deanBio" placeholder="نبذة" rows="3"></textarea>
             <input id="af-deanQuote" placeholder="آخر رسالة (اختياري)">
             <input type="file" id="af-deanPhoto" accept="image/*">
-            <div class="adm-group">🎓 شهادات الحضور</div>
-            <div class="eyebrow">توقيع العميدة (صورة PNG بخلفية شفافة أفضل)</div>
-            <input type="file" id="af-deanSig" accept="image/png,image/jpeg,image/webp">
-            <label class="adm-chk"><input type="checkbox" id="af-deanRmSig"> حذف التوقيع الحالي</label>
-            <div class="eyebrow">ختم الكلية الرسمي (لو مفيش بيترسم ختم افتراضي باسم الكلية)</div>
-            <input type="file" id="af-deanSeal" accept="image/png,image/jpeg,image/webp">
-            <label class="adm-chk"><input type="checkbox" id="af-deanRmSeal"> حذف الختم الحالي</label>
             <button class="btn-primary" type="submit">حفظ</button>
-            <button class="btn-ghost" type="button" onclick="previewCertificate()">👁️ معاينة الشهادة</button>
           </form>
         </details>
 
@@ -736,13 +734,42 @@
   </div>
 </div>
 
+<!-- ============ محرر قالب الشهادة (أدمن) ============ -->
+<div class="pe-overlay" id="certEditModal" onclick="if(event.target===this)certEdClose()">
+  <div class="pe-sheet cert-sheet">
+    <div class="pe-handle"></div>
+    <h3 id="ceTitle">📜 قالب الشهادة</h3>
+    <input type="file" id="ceFile" accept="image/png,image/jpeg,image/webp" onchange="certEdFile(this)">
+    <div class="cert-hint">اضغط أو اسحب على الصورة لتحديد مكان الاسم (الشهادة هتتطبع بنفس المكان بالظبط)</div>
+    <div class="ce-stage" id="ceStage">
+      <img id="ceImg" alt="" draggable="false">
+      <div class="ce-empty" id="ceEmpty">ارفع صورة القالب من فوق</div>
+      <div class="ce-box" id="ceBox"></div>
+      <div class="ce-name" id="ceName">Student Name</div>
+    </div>
+    <div class="ce-grid">
+      <label>اسم تجريبي<input type="text" id="ceSample" value="Sara Ahmed" maxlength="60" oninput="certEdUpdate()"></label>
+      <label>الخط<select id="ceFont" onchange="certEdUpdate()"></select></label>
+      <label>حجم الخط<input type="range" id="ceSize" min="1.5" max="14" step="0.1" oninput="certEdUpdate()"></label>
+      <label>أقصى عرض للاسم<input type="range" id="ceMaxW" min="15" max="95" step="1" oninput="certEdUpdate()"></label>
+      <label>المكان أفقي (X)<input type="range" id="ceX" min="0" max="100" step="0.1" oninput="certEdUpdate()"></label>
+      <label>المكان رأسي (Y)<input type="range" id="ceY" min="0" max="100" step="0.1" oninput="certEdUpdate()"></label>
+      <label>اللون<input type="color" id="ceColor" value="#1a2b52" oninput="certEdUpdate()"></label>
+      <label>المحاذاة<select id="ceAlign" onchange="certEdUpdate()"><option value="center">وسط</option><option value="left">يسار</option><option value="right">يمين</option></select></label>
+    </div>
+    <label class="adm-chk" style="margin-top:8px;"><input type="checkbox" id="ceUpper" onchange="certEdUpdate()"> كل الحروف كابيتال (للأسماء الإنجليزي)</label>
+    <div class="pe-actions"><button type="button" class="btn-primary" id="ceSave" onclick="certEdSave()">💾 حفظ القالب</button><button type="button" class="btn-ghost" onclick="certEdPreview()">👁️ معاينة PDF</button></div>
+    <div class="pe-actions" style="margin-top:8px;"><button type="button" class="btn-ghost" id="ceRemove" onclick="certEdRemove()">مسح القالب</button><button type="button" class="btn-ghost" onclick="certEdClose()">إغلاق</button></div>
+  </div>
+</div>
+
 <!-- ============ شهادة الحضور (معاينة + تنزيل) ============ -->
 <div class="pe-overlay" id="certModal" onclick="if(event.target===this)closeCertificate()">
   <div class="pe-sheet cert-sheet">
     <div class="pe-handle"></div>
     <h3>🎓 شهادة الحضور</h3>
     <img id="certPrev" class="cert-prev" alt="معاينة الشهادة">
-    <div class="cert-hint">الشهادة أفقية — لف الموبايل أو كبّر الصورة لو عايز تشوف التفاصيل</div>
+    <div class="cert-hint">دي معاينة — الملف اللي هيتنزّل بيبقى بجودة الطباعة الكاملة</div>
     <div class="pe-actions"><button type="button" class="btn-primary" onclick="downloadCertificatePdf()">📄 تنزيل PDF</button><button type="button" class="btn-ghost" onclick="downloadCertificateImage()">🖼️ صورة</button></div>
     <div class="pe-actions" style="margin-top:8px;"><button type="button" class="btn-ghost" onclick="closeCertificate()">إغلاق</button></div>
   </div>
