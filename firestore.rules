@@ -1,0 +1,141 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    // الأدمن = (إيميل مؤكَّد من القائمة دي) أو (وثيقة باسم الـ uid في collection اسمها admins).
+    // email_verified مهم: من غيره حد يقدر يسجل بإيميل الأدمن كـ email/password من غير ما يثبت إنه بتاعه.
+    // لو بتدخل بإيميل/باسورد وإيميلك مش مؤكد: ادخل بجوجل، أو أضف وثيقة في admins/{uid} من الـ Console.
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email_verified == true
+          && request.auth.token.email in ['alikimo1942@gmail.com'])
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // قايمة الأدمنز: الشخص يقدر يقرا وثيقته هو بس (عشان الواجهة تعرف)، والكتابة من الـ Console بس.
+    match /admins/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // بيانات كل طالب
+    match /students/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+
+      allow create: if isSignedIn() && request.auth.uid == uid
+        && request.resource.data.get('points', 0) == 0
+        && request.resource.data.get('events', 0) == 0
+        && request.resource.data.get('workshops', 0) == 0
+        && request.resource.data.get('competitions', 0) == 0
+        && request.resource.data.get('campaigns', 0) == 0;
+
+      allow update: if isAdmin() || (isSignedIn() && request.auth.uid == uid && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'level', 'bio', 'photoURL'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 60
+          && request.resource.data.level is string
+          && request.resource.data.level.size() <= 40
+          && request.resource.data.get('bio', '') is string
+          && request.resource.data.get('bio', '').size() <= 140
+          && request.resource.data.get('photoURL', '') is string
+          && (request.resource.data.get('photoURL', '') == ''
+              || request.resource.data.get('photoURL', '').matches('https://res\\.cloudinary\\.com/.*')))
+        ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['events'])
+          && request.resource.data.events == resource.data.get('events', 0) + 1)
+      ));
+
+      allow delete: if isAdmin();
+    }
+
+    // الفعاليات والمؤتمرات والأنشطة
+    match /activities/{id} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isSignedIn() && (
+        // "مهتم": الطالب يضيف نفسه بس
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['interestedUids'])
+          && request.resource.data.get('interestedUids', []).hasAll(resource.data.get('interestedUids', []))
+          && request.resource.data.get('interestedUids', []).size() == resource.data.get('interestedUids', []).size() + 1
+          && request.auth.uid in request.resource.data.interestedUids)
+        ||
+        // تسجيل حضور: عدّاد +1 مع إنشاء وثيقة التسجيل، وبحد أقصى السعة
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['registeredCount'])
+          && request.resource.data.registeredCount == resource.data.get('registeredCount', 0) + 1
+          && request.resource.data.registeredCount <= resource.data.get('capacity', 1000000)
+          && resource.data.get('registrationClosed', false) == false
+          && !exists(/databases/$(database)/documents/activities/$(id)/registrations/$(request.auth.uid))
+          && existsAfter(/databases/$(database)/documents/activities/$(id)/registrations/$(request.auth.uid)))
+        ||
+        // إلغاء التسجيل: عدّاد -1 مع حذف وثيقة التسجيل
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['registeredCount'])
+          && request.resource.data.registeredCount == resource.data.get('registeredCount', 0) - 1
+          && request.resource.data.registeredCount >= 0
+          && exists(/databases/$(database)/documents/activities/$(id)/registrations/$(request.auth.uid))
+          && !existsAfter(/databases/$(database)/documents/activities/$(id)/registrations/$(request.auth.uid)))
+      ));
+
+      match /registrations/{uid} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow create: if isSignedIn() && request.auth.uid == uid
+          && getAfter(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0)
+             == get(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0) + 1;
+        allow update: if isAdmin();
+        allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == uid
+          && getAfter(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0)
+             == get(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0) - 1);
+      }
+    }
+
+    // الأخبار — قراءة للكل، والطالب يقدر يعمل/يشيل لايك لنفسه بس
+    match /news/{id} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeUids'])
+        && (
+          // إضافة إعجاب: الطالب يضيف نفسه بس
+          (request.resource.data.get('likeUids', []).hasAll(resource.data.get('likeUids', []))
+            && request.resource.data.get('likeUids', []).size() == resource.data.get('likeUids', []).size() + 1
+            && request.auth.uid in request.resource.data.likeUids)
+          ||
+          // إلغاء إعجاب: الطالب يشيل نفسه بس
+          (resource.data.get('likeUids', []).hasAll(request.resource.data.get('likeUids', []))
+            && request.resource.data.get('likeUids', []).size() == resource.data.get('likeUids', []).size() - 1
+            && !(request.auth.uid in request.resource.data.get('likeUids', [])))
+        ));
+    }
+
+    // محتوى عام — يتقرا من أي حد، والتعديل للأدمن بس
+    match /magazines/{id}   { allow read: if true; allow write: if isAdmin(); }
+    match /campaigns/{id}   { allow read: if true; allow write: if isAdmin(); }
+    match /committees/{id}  { allow read: if true; allow write: if isAdmin(); }
+    match /leaderboard/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /members/{id}     { allow read: if true; allow write: if isAdmin(); }
+    match /media/{id}       { allow read: if true; allow write: if isAdmin(); }
+    match /config/{id}      { allow read: if true; allow write: if isAdmin(); }
+
+    // التصويت
+    match /polls/{pollId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      match /votes/{uid} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn()
+          && request.auth.uid == uid
+          && request.resource.data.option is int
+          && request.resource.data.option >= 0
+          && request.resource.data.option < get(/databases/$(database)/documents/polls/$(pollId)).data.options.size()
+          && (!('endsAt' in get(/databases/$(database)/documents/polls/$(pollId)).data)
+              || get(/databases/$(database)/documents/polls/$(pollId)).data.endsAt > request.time);
+        allow update, delete: if false;
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ function switchLead(which){
     const L = STATE.leadership;
     const nodeHtml = (name, photo, label, extraClass)=>{
       const ph = photo
-        ? `<img src="${photo}" alt="${esc(name)}" loading="lazy" decoding="async">`
+        ? `<img src="${esc(photo)}" alt="${esc(name)}" loading="lazy" decoding="async">`
         : `<div class="ph" style="background:${avatarGradient(name||label)}">${esc((name||'؟')[0])}</div>`;
       return `<div class="org-node ${extraClass||''}">${ph}<b>${esc(name||'—')}</b><span>${esc(label)}</span></div>`;
     };
@@ -44,7 +44,7 @@ function switchLead(which){
   }
   const p = which==='dean' ? STATE.dean : STATE.viceDean;
   const bigPh = p.photoURL
-    ? `<img src="${p.photoURL}" alt="${esc(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+    ? `<img src="${esc(p.photoURL)}" alt="${esc(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
     : p.initial;
   wrap.innerHTML = `
     <div class="profile-hero">

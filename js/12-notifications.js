@@ -29,8 +29,7 @@ async function toggleNotifications(){
   notifRenderToggle(); showToast('تم تفعيل الإشعارات 🔔');
 }
 function notifIsAdmin(){
-  try{ return !!(auth && auth.currentUser && ADMIN_EMAILS.includes((auth.currentUser.email||'').toLowerCase())); }
-  catch(e){ return false; }
+  return !!IS_ADMIN;
 }
 /* بتتنادى من مستمعات Firestore كل ما الأخبار أو الفعاليات تتحدث */
 function notifCheck(kind, items){

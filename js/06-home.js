@@ -1,3 +1,5 @@
+/* يحوّل الرابط لشكل آمن جوه url('...') في CSS */
+function cssUrl(u){ return String(u||'').replace(/['"()\\\s]/g, c=>'%'+c.charCodeAt(0).toString(16).toUpperCase().padStart(2,'0')); }
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
   setAvatarEl(document.getElementById('homeAvatar'), STUDENT.uid ? STUDENT.name : 'guest', STUDENT.uid ? STUDENT.photoURL : '', STUDENT.avatarInitial);
@@ -8,7 +10,7 @@ function renderHome(){
   document.getElementById('nextEventName').textContent = NE.name;
   document.getElementById('nextEventMeta').textContent = NE.place;
   document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${NE.image}')`;
+    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${cssUrl(NE.image)}')`;
   ensureMyRegs();
 
   document.getElementById('sowAvatar').textContent = STATE.studentOfWeek.initial;
@@ -71,7 +73,7 @@ function renderMediaCarousel(){
       const th = mediaThumb(m);
       mediaHtml = th ? `<img src="${esc(cld(th,'c_fill,w_800,h_450,q_auto,f_auto'))}" alt="${esc(m.title||m.album||'')}">`
                      : `<div class="mc-fallback" style="background:linear-gradient(135deg,#2159c9,#0f2a66)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${iconFor(m.type)}</svg></div>`;
-    } else if(m.src && m.type==='image') mediaHtml = `<img src="${m.src}" alt="${esc(m.title)}">`;
+    } else if(m.src && m.type==='image') mediaHtml = `<img src="${esc(m.src)}" alt="${esc(m.title)}">`;
     else mediaHtml = `<div class="mc-fallback" style="background:linear-gradient(135deg, ${m.color1}, ${m.color2})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${iconFor(m.type)}</svg></div>`;
     const tag = real ? (m.album || (m.type==='video'?'فيديو':'صورة')) : m.tag;
     const title = real ? (m.title || m.album || '') : m.title;
