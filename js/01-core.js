@@ -60,20 +60,31 @@ const STATE = {
 
 function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
 
+/* أخطاء مستمعات Firestore: بدل الصمت، نوضّح للمستخدم لو القراءة اتمنعت (قواعد أو تسجيل دخول) */
+let LISTEN_ERR_SHOWN = false;
+function listenErr(err){
+  console.warn('Firestore listener error:', err && err.code, err && err.message);
+  if(err && err.code==='permission-denied' && !LISTEN_ERR_SHOWN){
+    LISTEN_ERR_SHOWN = true;
+    showToast('مش قادر أحمّل البيانات — اتأكد إنك مسجّل دخول وإن قواعد Firestore منشورة');
+  }
+}
+function cfgSnap(name, fn){ return db.collection('config').doc(name).onSnapshot(fn, listenErr); }
+
 function initFirestoreListeners(){
   if(!fbReady){
     showToast('التطبيق مش متوصل بقاعدة بيانات لسه — راجع ملف firebase-config.js');
     return;
   }
-  db.collection('config').doc('nextEvent').onSnapshot(doc=>{
+  cfgSnap('nextEvent', doc=>{
     if(doc.exists) Object.assign(STATE.nextEvent, doc.data());
     renderHome(); startCountdown();
   });
-  db.collection('config').doc('studentOfWeek').onSnapshot(doc=>{
+  cfgSnap('studentOfWeek', doc=>{
     if(doc.exists) Object.assign(STATE.studentOfWeek, doc.data());
     renderHome();
   });
-  db.collection('config').doc('leadership').onSnapshot(doc=>{
+  cfgSnap('leadership', doc=>{
     if(doc.exists) Object.assign(STATE.leadership, doc.data());
     if(['members','committees'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
     if(document.getElementById('af-ldPresName') && !document.getElementById('af-ldPresName').value){
@@ -81,7 +92,7 @@ function initFirestoreListeners(){
       document.getElementById('af-ldVpName').value = STATE.leadership.vpName||'';
     }
   });
-  db.collection('config').doc('dean').onSnapshot(doc=>{
+  cfgSnap('dean', doc=>{
     if(doc.exists) Object.assign(STATE.dean, doc.data());
     if(document.querySelector('.lead-tab.active')?.dataset.lt==='dean') switchLead('dean');
     if(document.getElementById('af-deanName') && !document.getElementById('af-deanName').value){
@@ -91,7 +102,7 @@ function initFirestoreListeners(){
       document.getElementById('af-deanQuote').value = STATE.dean.quote||'';
     }
   });
-  db.collection('config').doc('viceDean').onSnapshot(doc=>{
+  cfgSnap('viceDean', doc=>{
     if(doc.exists) Object.assign(STATE.viceDean, doc.data());
     if(document.querySelector('.lead-tab.active')?.dataset.lt==='vice') switchLead('vice');
     if(document.getElementById('af-viceName') && !document.getElementById('af-viceName').value){
@@ -105,16 +116,16 @@ function initFirestoreListeners(){
     STATE.activities = snap.docs.map(docToItem);
     if(typeof notifCheck==='function') notifCheck('activities', STATE.activities);
     renderActivities(); renderHome(); renderAdminActivities(); startCountdown(); adminDashRefresh();
-  }, ()=>{});
+  }, listenErr);
   db.collection('campaigns').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.campaigns = snap.docs.map(docToItem);
     renderCamps(); renderHome(); renderAdminCampaigns();
-  }, ()=>{});
+  }, listenErr);
   db.collection('news').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.news = snap.docs.map(docToItem); adminDashRefresh();
     if(typeof notifCheck==='function') notifCheck('news', STATE.news);
     renderNews(); renderAdminNews();
-  }, ()=>{});
+  }, listenErr);
   db.collection('polls').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
     STATE.pollErr = '';
     STATE.polls = snap.docs.map(docToItem);
@@ -123,7 +134,7 @@ function initFirestoreListeners(){
   db.collection('media').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.media = snap.docs.map(docToItem);
     renderMediaCarousel(); renderMediaPage(); renderAdminMedia(); adminDashRefresh();
-  }, ()=>{});
+  }, listenErr);
   const later = ()=>initDeferredListeners();
   if('requestIdleCallback' in window) requestIdleCallback(later, { timeout:2000 }); else setTimeout(later, 1200);
 }
@@ -133,21 +144,21 @@ function initDeferredListeners(){
   db.collection('magazines').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.magazines = snap.docs.map(docToItem);
     renderMags(); renderAdminMagazines();
-  }, ()=>{});
+  }, listenErr);
   db.collection('committees').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.committees = snap.docs.map(docToItem);
     if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
     renderAdminCommittees();
-  }, ()=>{});
+  }, listenErr);
   db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.members = snap.docs.map(docToItem);
     if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
     renderAdminMembers();
-  }, ()=>{});
+  }, listenErr);
   db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.leaderboard = snap.docs.map(docToItem);
     renderRanking(); renderAdminLeaderboard(); renderProfile();
-  }, ()=>{});
+  }, listenErr);
 }
 
 /* ========================= تسجيل دخول الأدمن ========================= */
