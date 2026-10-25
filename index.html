@@ -679,6 +679,75 @@ button.poll-opt:active{transform:scale(.985);border-color:var(--gold);}
 .lb-msg{color:#fff;text-align:center;padding:20px;font-size:13px;line-height:2;}
 .lb-msg a{display:inline-block;margin-top:8px;padding:9px 18px;border-radius:12px;background:#fff;color:var(--gold);font-weight:800;text-decoration:none;}
 
+/* ---- Admin dashboard ---- */
+body:not(.is-admin) .nav-fab{display:none;}
+body:not(.is-admin) .admin-only{display:none !important;}
+body.is-admin .non-admin-only{display:none !important;}
+.adm-hero{background:linear-gradient(135deg,#1c4fb8,#0f2a66);border-radius:22px;padding:16px;color:#fff;box-shadow:0 12px 28px rgba(21,52,110,.28);margin-bottom:6px;}
+.adm-hero-top{display:flex;align-items:center;gap:12px;}
+.adm-av{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex:none;}
+.adm-who{flex:1;min-width:0;}
+.adm-who b{display:block;font-size:14px;}
+.adm-who span{font-size:10.5px;opacity:.8;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.adm-hero .mini-btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff;}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.adm-stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 4px;text-align:center;}
+.adm-stat b{display:block;font-size:17px;font-weight:800;}
+.adm-stat span{font-size:9.5px;opacity:.85;}
+.adm-group{margin:18px 2px 8px;font-size:12px;font-weight:800;color:var(--muted);}
+.adm-tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.adm-tile{position:relative;display:flex;align-items:center;gap:10px;padding:13px 12px;border-radius:18px;background:#fff;border:1px solid rgba(21,52,110,.08);box-shadow:0 1px 2px rgba(21,52,110,.04),0 8px 20px rgba(21,52,110,.06);cursor:pointer;text-align:right;font:inherit;color:var(--ink);transition:transform .15s;}
+.adm-tile:active{transform:scale(.96);}
+.adm-ic{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;background:linear-gradient(135deg,rgba(33,89,201,.14),rgba(33,89,201,.04));flex:none;}
+.adm-tile b{display:block;font-size:12.5px;line-height:1.4;}
+.adm-tile span{display:block;font-size:10.5px;color:var(--muted);}
+.adm-back{display:none;position:sticky;top:0;z-index:6;align-items:center;gap:10px;padding:8px 2px 12px;background:rgba(240,244,252,.94);backdrop-filter:blur(8px);}
+.adm-back button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 14px;font:inherit;font-size:12px;font-weight:800;color:var(--gold);cursor:pointer;}
+.adm-back b{font-size:14px;}
+#adminPanel.in-section .adm-back{display:flex;}
+#adminPanel.in-section .adm-hero,#adminPanel.in-section #adminDash{display:none;}
+#adminSections details.admin-box{display:none;}
+#adminSections details.admin-box.sec-active{display:block;padding-top:14px;}
+#adminSections details.admin-box.sec-active>summary{display:none;}
+.adm-sub{font-size:11.5px;font-weight:800;color:var(--muted);}
+.adm-chk{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;}
+.adm-chk input{width:auto;}
+.spk-row input,.ag-row input{min-width:0;}
+.upl-bar{height:6px;border-radius:6px;background:rgba(33,89,201,.14);overflow:hidden;display:none;}
+.upl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width .2s;}
+
+/* ---- Events & conferences ---- */
+.ev-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.ev-chip{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;background:rgba(33,89,201,.10);color:var(--gold);}
+.ev-chip.kind{background:linear-gradient(90deg,var(--gold),var(--gold-light));color:#fff;}
+.ev-chip.ok{background:rgba(31,174,106,.14);color:#12874f;}
+.ev-chip.warn{background:rgba(209,67,91,.12);color:#d1435b;}
+.ev-chip.past{background:rgba(92,107,138,.14);color:var(--muted);}
+.event-card.is-past{opacity:.62;}
+.mx-h{font-size:12.5px;font-weight:800;margin:18px 0 10px;}
+.spk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.spk{text-align:center;}
+.spk-ph{width:58px;height:58px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px;background-size:cover;background-position:center;box-shadow:0 6px 14px rgba(21,52,110,.18);}
+.spk b{display:block;font-size:11.5px;line-height:1.4;}
+.spk span{font-size:10px;color:var(--muted);line-height:1.4;display:block;}
+.agenda{margin-right:6px;}
+.ag-item{display:flex;gap:12px;padding:0 0 14px;}
+.ag-time{flex:none;width:58px;font-size:11px;font-weight:800;color:var(--gold);padding-top:2px;}
+.ag-body{flex:1;padding:0 14px 0 0;border-right:2px solid var(--line);position:relative;}
+.ag-body::before{content:"";position:absolute;right:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(33,89,201,.15);}
+.ag-body b{display:block;font-size:12.5px;}
+.ag-body span{font-size:10.5px;color:var(--muted);}
+.reg-box{margin-top:16px;padding:14px;border-radius:16px;background:rgba(33,89,201,.06);border:1px solid rgba(33,89,201,.14);}
+.reg-info{font-size:12px;font-weight:700;margin-bottom:10px;line-height:1.7;}
+.reg-bar{height:6px;border-radius:6px;background:rgba(33,89,201,.14);overflow:hidden;margin:8px 0 0;}
+.reg-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:6px;}
+.reg-btn.cancel{background:#fff;color:#d1435b;border:1.5px solid rgba(209,67,91,.4);box-shadow:none;}
+.rl-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px;border-bottom:1px solid var(--line);}
+.rl-item b{display:block;font-size:12.5px;}
+.rl-item span{font-size:10.5px;color:var(--muted);}
+.rl-att{padding:6px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;font:inherit;font-size:11px;font-weight:800;cursor:pointer;color:var(--muted);flex:none;}
+.rl-att.on{background:rgba(31,174,106,.14);border-color:#1fae6a;color:#12874f;}
+
 /* ---- Premium polish ---- */
 html{-webkit-font-smoothing:antialiased;}
 #pages{scroll-behavior:smooth;}
@@ -939,12 +1008,19 @@ html{-webkit-font-smoothing:antialiased;}
       </div>
 
       <div id="adminPanel" style="display:none;">
-        <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <span class="bio-text" style="margin:0;">مسجل دخول كـ <b id="adminUserEmail"></b></span>
-          <button type="button" class="mini-btn" onclick="adminLogout()">خروج</button>
+        <div class="adm-hero">
+          <div class="adm-hero-top">
+            <div class="adm-av" id="admAv">ا</div>
+            <div class="adm-who"><b>لوحة تحكم الاتحاد</b><span id="adminUserEmail"></span></div>
+            <button type="button" class="mini-btn" onclick="adminLogout()">خروج</button>
+          </div>
+          <div class="adm-stats" id="admStats"></div>
         </div>
+        <div id="adminDash"></div>
 
-        <details class="admin-box" open>
+        <div class="adm-back" id="admBack"><button type="button" onclick="closeAdminSection()">‹ لوحة التحكم</button><b id="admBackTitle"></b></div>
+        <div id="adminSections">
+        <details class="admin-box" data-sec="nextEvent">
           <summary>🔥 الحدث القادم (العداد التنازلي)</summary>
           <form onsubmit="return saveNextEvent(event)">
             <input required id="af-evName" placeholder="اسم الفعالية">
@@ -955,7 +1031,7 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="sow">
           <summary>⭐ طالب الأسبوع</summary>
           <form onsubmit="return saveStudentOfWeek(event)">
             <input required id="af-sowName" placeholder="اسم الطالب">
@@ -965,11 +1041,17 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
         </details>
 
-        <details class="admin-box">
-          <summary>🗓️ الأنشطة والفعاليات</summary>
-          <form onsubmit="return saveActivity(event)">
+        <details class="admin-box" data-sec="activities">
+          <summary>🗓️ الفعاليات والمؤتمرات والأنشطة</summary>
+          <form onsubmit="return saveActivity(event)" id="actForm">
             <input type="hidden" id="af-actId">
-            <input required id="af-actTitle" placeholder="اسم النشاط">
+            <select id="af-actKind" onchange="actKindChanged()">
+              <option value="event">🎉 فعالية</option>
+              <option value="conference">🎤 مؤتمر</option>
+              <option value="workshop">🛠️ ورشة عمل</option>
+              <option value="activity">🎯 نشاط عام</option>
+            </select>
+            <input required id="af-actTitle" placeholder="الاسم">
             <select id="af-actCat">
               <option value="scientific">علمي</option>
               <option value="cultural">ثقافي</option>
@@ -977,16 +1059,34 @@ html{-webkit-font-smoothing:antialiased;}
               <option value="artistic">فني</option>
               <option value="social">اجتماعي</option>
             </select>
-            <input required id="af-actDate" placeholder="التاريخ (مثال: 10 أكتوبر 2026)">
+            <label class="adm-sub">تاريخ ووقت البداية</label>
+            <input id="af-actStart" type="datetime-local">
+            <label class="adm-sub">تاريخ ووقت النهاية (اختياري)</label>
+            <input id="af-actEnd" type="datetime-local">
+            <input id="af-actDate" placeholder="أو اكتب التاريخ كنص (لو مفيش وقت محدد)">
             <input required id="af-actPlace" placeholder="المكان">
-            <textarea id="af-actDesc" placeholder="تفاصيل النشاط (اختياري)" rows="3"></textarea>
+            <textarea id="af-actDesc" placeholder="تفاصيل (اختياري)" rows="3"></textarea>
+            <label class="adm-sub">صورة الغلاف</label>
             <input type="file" id="af-actPhoto" accept="image/*">
+            <div class="adm-sub" style="margin-top:8px;">التسجيل والحضور</div>
+            <label class="adm-chk"><input type="checkbox" id="af-actReg" checked> يحتاج تسجيل حضور مسبق</label>
+            <input id="af-actCap" type="number" min="0" placeholder="عدد الأماكن (فاضي = بدون حد)">
+            <input id="af-actPts" type="number" min="0" placeholder="نقاط الحضور للطالب (اختياري)">
+            <div id="actConfFields">
+              <div class="adm-sub" style="margin-top:8px;">المتحدثون</div>
+              <div id="actSpeakerRows" style="display:flex;flex-direction:column;gap:8px;"></div>
+              <button type="button" class="mini-btn" onclick="addSpeakerRow()">+ متحدث</button>
+              <div class="adm-sub" style="margin-top:8px;">برنامج اليوم</div>
+              <div id="actAgendaRows" style="display:flex;flex-direction:column;gap:8px;"></div>
+              <button type="button" class="mini-btn" onclick="addAgendaRow()">+ فقرة</button>
+            </div>
             <button class="btn-primary" type="submit" id="af-actSubmitBtn">إضافة</button>
+            <button type="button" class="mini-btn" id="af-actCancelEdit" style="display:none;" onclick="resetActForm()">إلغاء التعديل</button>
           </form>
-          <div id="admin-actList"></div>
-        </details>
+          <div id="admin-actList" style="padding:0 14px 12px;"></div>
+        </details></details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="campaigns">
           <summary>📢 حملات التوعية</summary>
           <form onsubmit="return saveCampaign(event)">
             <input type="hidden" id="af-campId">
@@ -1005,7 +1105,7 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-campList"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="magazines">
           <summary>📖 المجلات (علمي / ثقافي)</summary>
           <form onsubmit="return saveMagazine(event)">
             <input type="hidden" id="af-magId">
@@ -1021,7 +1121,7 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-magList"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="president">
           <summary>🏛️ رئيس ونائب رئيس الاتحاد</summary>
           <form onsubmit="return saveLeadership(event)">
             <input required id="af-ldPresName" placeholder="اسم رئيس الاتحاد">
@@ -1032,7 +1132,7 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="committees">
           <summary>👥 اللجان ورؤسائها</summary>
           <form onsubmit="return saveCommittee(event)">
             <input type="hidden" id="af-comId">
@@ -1044,7 +1144,7 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-comList"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="dean">
           <summary>🎓 عميدة الكلية</summary>
           <form onsubmit="return saveDean(event)">
             <input required id="af-deanName" placeholder="الاسم">
@@ -1056,7 +1156,7 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="vice">
           <summary>🎓 وكيلة الكلية</summary>
           <form onsubmit="return saveViceDean(event)">
             <input required id="af-viceName" placeholder="الاسم">
@@ -1068,7 +1168,7 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="ranking">
           <summary>🏆 ترتيب الطلاب</summary>
           <form onsubmit="return saveLeaderboard(event)">
             <input type="hidden" id="af-rankId">
@@ -1079,7 +1179,7 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-rankList"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="members">
           <summary>🧑‍🤝‍🧑 أعضاء الاتحاد (بالصورة)</summary>
           <form onsubmit="return saveMember(event)">
             <input type="hidden" id="af-memId">
@@ -1091,12 +1191,13 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-memList"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="media">
           <summary>🖼️ الميديا (صور وفيديوهات)</summary>
           <form onsubmit="return saveMedia(event)" id="mediaForm">
             <select id="af-mediaType" onchange="toggleMediaType()">
               <option value="image">📷 صور (تقدر تختار أكتر من صورة مرة واحدة)</option>
-              <option value="video">🎬 فيديو (برابط يوتيوب أو فيسبوك أو mp4)</option>
+              <option value="videoup">🎬 رفع فيديو من الجهاز</option>
+              <option value="video">▶️ فيديو يوتيوب (برابط)</option>
             </select>
             <input required id="af-mediaAlbum" list="albumList" placeholder="اسم الألبوم / الفعالية (مثال: اليوم العلمي 2026)">
             <datalist id="albumList"></datalist>
@@ -1104,18 +1205,25 @@ html{-webkit-font-smoothing:antialiased;}
               <input type="file" id="af-mediaFiles" accept="image/*" multiple>
               <input id="af-mediaCaption" placeholder="تعليق على الصور (اختياري)">
             </div>
+            <div id="mediaVidUpFields" style="display:none;flex-direction:column;gap:9px;">
+              <input type="file" id="af-mediaVideo" accept="video/*">
+              <input id="af-mediaVTitle" placeholder="عنوان الفيديو">
+              <label class="adm-sub">صورة غلاف (اختياري — لو سبتها هتتاخد لقطة من الفيديو تلقائي)</label>
+              <input type="file" id="af-mediaVCover" accept="image/*">
+              <div class="adm-sub" style="font-weight:600;">أقصى حجم للفيديو 100 ميجا، وهيتشغل جوه التطبيق من غير ما يحوّل الطالب لأي لينك.</div>
+            </div>
             <div id="mediaVidFields" style="display:none;flex-direction:column;gap:9px;">
-              <input id="af-mediaUrl" placeholder="رابط الفيديو">
+              <input id="af-mediaUrl" placeholder="رابط يوتيوب">
               <input id="af-mediaTitle" placeholder="عنوان الفيديو">
-              <label style="font-size:11.5px;color:var(--muted);font-weight:700;">صورة غلاف (اختياري — يوتيوب بياخدها تلقائي)</label>
               <input type="file" id="af-mediaCover" accept="image/*">
             </div>
+            <div class="upl-bar" id="mediaProgress"><i></i></div>
             <button class="btn-primary" type="submit" id="mediaSubmitBtn">نشر</button>
           </form>
           <div id="admin-mediaList" style="padding:0 14px 12px;"></div>
-        </details>
+        </details></details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="polls">
           <summary>🗳️ التصويت</summary>
           <form onsubmit="return savePoll(event)" id="pollForm">
             <input required id="af-pollQ" placeholder="سؤال التصويت">
@@ -1131,7 +1239,7 @@ html{-webkit-font-smoothing:antialiased;}
           <div id="admin-pollList" style="padding:0 14px 12px;"></div>
         </details>
 
-        <details class="admin-box">
+        <details class="admin-box" data-sec="news">
           <summary>📰 الأخبار (بالصورة)</summary>
           <form onsubmit="return saveNews(event)">
             <input type="hidden" id="af-newsId">
@@ -1143,6 +1251,7 @@ html{-webkit-font-smoothing:antialiased;}
           </form>
           <div id="admin-newsList"></div>
         </details>
+        </div><!-- /adminSections -->
 
       </div>
     </section>
@@ -1158,7 +1267,7 @@ html{-webkit-font-smoothing:antialiased;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
       <span>الفعاليات</span>
     </div>
-    <div class="nav-fab" onclick="goPage('admin')">
+    <div class="nav-fab" id="navFab" onclick="goPage('admin')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
     </div>
     <div class="nav-item" data-nav="ranking" onclick="goPage('ranking')">
@@ -1183,6 +1292,11 @@ html{-webkit-font-smoothing:antialiased;}
           <span id="modalDate">📅</span><span id="modalPlace">📍</span>
         </div>
         <p class="bio-text" id="modalDesc" style="margin:0;"></p>
+        <div id="modalExtra"></div>
+        <div class="reg-box" id="regBox" style="display:none;">
+          <div class="reg-info" id="regInfo"></div>
+          <button class="modal-interest-btn reg-btn" id="regBtn" onclick="toggleRegistration()">سجّل حضورك ✅</button>
+        </div>
         <button class="modal-interest-btn" id="modalInterestBtn" onclick="markInterested()">أنا مهتم بالحضور ⭐</button>
       </div>
     </div>
@@ -1206,9 +1320,10 @@ html{-webkit-font-smoothing:antialiased;}
     <div class="sm-link" onclick="goPage('polls')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>التصويت</div>
     <div class="sm-link" onclick="goPage('leadership')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a4 4 0 00-3-3.87"/><path d="M9 20H4v-2a4 4 0 013-3.87"/><circle cx="9" cy="7" r="4"/></svg>القيادات واللجان</div>
     <div class="sm-link" onclick="openArchive()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>أرشيف طالب الأسبوع</div>
-    <div class="sm-link" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>لوحة التحكم</div>
+    <div class="sm-link admin-only" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>لوحة التحكم</div>
+    <div class="sm-link non-admin-only" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>دخول الإدارة</div>
     <div class="sm-divider"></div>
-    <div class="sm-link" onclick="goPage('admin')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>الإعدادات</div>
+    <div class="sm-link" onclick="openProfileEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>الإعدادات</div>
     <div class="sm-link" onclick="showToast('تحتاج مساعدة؟ تواصل مع لجنة الميديا')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 115.8 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>المساعدة والدعم</div>
     <div class="sm-link sm-logout" onclick="studentLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</div>
   </div>
@@ -1248,6 +1363,19 @@ html{-webkit-font-smoothing:antialiased;}
   <button type="button" class="lb-btn lb-nav prev" onclick="lbMove(-1)" aria-label="السابق">›</button>
   <button type="button" class="lb-btn lb-nav next" onclick="lbMove(1)" aria-label="التالي">‹</button>
   <div class="lb-cap"><b id="lbTitle"></b><span id="lbAlbum"></span></div>
+</div>
+
+<div class="pe-overlay" id="regListModal" onclick="if(event.target===this)closeRegList()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3 id="rlTitle">المسجلين</h3>
+    <div id="rlSummary" class="adm-sub" style="text-align:center;margin-bottom:8px;"></div>
+    <div id="rlList"></div>
+    <div class="pe-actions">
+      <button type="button" class="btn-primary" onclick="exportRegCsv()">⬇ تصدير Excel (CSV)</button>
+      <button type="button" class="btn-ghost" onclick="closeRegList()">إغلاق</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -1311,7 +1439,7 @@ const STATE = {
   studentOfWeek:{name:'—', initial:'-', level:'—', points:0},
   leadership:{presidentName:'—', presidentPhoto:'', vpName:'—', vpPhoto:''},
   dean:{...DEFAULT_DEAN}, viceDean:{...DEFAULT_VICE},
-  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}, media:[]
+  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}, media:[], myRegs:{}
 };
 
 function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
@@ -1359,7 +1487,7 @@ function initFirestoreListeners(){
   });
   db.collection('activities').orderBy('createdAt','desc').onSnapshot(snap=>{
     STATE.activities = snap.docs.map(docToItem);
-    renderActivities(); renderHome(); renderAdminActivities();
+    renderActivities(); renderHome(); renderAdminActivities(); startCountdown(); adminDashRefresh();
   }, ()=>{});
   db.collection('magazines').orderBy('createdAt','desc').onSnapshot(snap=>{
     STATE.magazines = snap.docs.map(docToItem);
@@ -1384,17 +1512,17 @@ function initFirestoreListeners(){
     renderAdminMembers();
   }, ()=>{});
   db.collection('news').orderBy('createdAt','desc').onSnapshot(snap=>{
-    STATE.news = snap.docs.map(docToItem);
+    STATE.news = snap.docs.map(docToItem); adminDashRefresh();
     renderNews(); renderAdminNews();
   }, ()=>{});
   db.collection('polls').orderBy('createdAt','desc').onSnapshot(snap=>{
     STATE.pollErr = '';
     STATE.polls = snap.docs.map(docToItem);
-    syncPollVotes(); renderPolls(); renderAdminPolls();
+    syncPollVotes(); renderPolls(); renderAdminPolls(); adminDashRefresh();
   }, err=>pollLoadError(err));
   db.collection('media').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.media = snap.docs.map(docToItem);
-    renderMediaCarousel(); renderMediaPage(); renderAdminMedia();
+    renderMediaCarousel(); renderMediaPage(); renderAdminMedia(); adminDashRefresh();
   }, ()=>{});
 }
 
@@ -1446,6 +1574,7 @@ if(fbReady){
 /* ========================= التصويت ========================= */
 const pollVoteUnsubs = {};
 let IS_ADMIN = false;
+const myRegPending = {};
 
 function optText(o){ return typeof o==='string' ? o : ((o && o.text) || ''); }
 function optImg(o){ return (o && typeof o==='object') ? (o.imageURL||'') : ''; }
@@ -1633,11 +1762,77 @@ function renderAdminPolls(){
   });
 }
 resetPollForm();
+setTimeout(()=>{ try{ actKindChanged(); toggleMediaType(); }catch(e){} },0);
 if(fbReady){
   auth.onAuthStateChanged(user=>{
     IS_ADMIN = !!(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase()));
-    syncPollVotes(true); renderPolls(); renderAdminPolls();
+    document.body.classList.toggle('is-admin', IS_ADMIN);
+    if(IS_ADMIN) loadAdminStats();
+    STATE.myRegs = {}; Object.keys(myRegPending).forEach(k=>delete myRegPending[k]);
+    syncPollVotes(true); renderPolls(); renderAdminPolls(); renderAdminDash(); renderActivities();
   });
+}
+
+/* ========================= لوحة التحكم: الصفحة الرئيسية للأدمن ========================= */
+const ADMIN_SECTIONS = [
+  {k:'activities',ic:'🗓️',t:'الفعاليات والمؤتمرات',g:'المحتوى',c:()=>STATE.activities.length},
+  {k:'news',ic:'📰',t:'الأخبار',g:'المحتوى',c:()=>STATE.news.length},
+  {k:'media',ic:'🖼️',t:'الميديا',g:'المحتوى',c:()=>STATE.media.length},
+  {k:'polls',ic:'🗳️',t:'التصويت',g:'المحتوى',c:()=>STATE.polls.length},
+  {k:'campaigns',ic:'📢',t:'حملات التوعية',g:'المحتوى',c:()=>STATE.campaigns.length},
+  {k:'magazines',ic:'📖',t:'المجلات',g:'المحتوى',c:()=>STATE.magazines.length},
+  {k:'sow',ic:'⭐',t:'طالب الأسبوع',g:'الطلاب',c:null},
+  {k:'ranking',ic:'🏆',t:'ترتيب الطلاب',g:'الطلاب',c:()=>STATE.leaderboard.length},
+  {k:'president',ic:'🏛️',t:'رئيس ونائب الاتحاد',g:'الاتحاد والكلية',c:null},
+  {k:'members',ic:'🧑‍🤝‍🧑',t:'أعضاء الاتحاد',g:'الاتحاد والكلية',c:()=>STATE.members.length},
+  {k:'committees',ic:'👥',t:'اللجان',g:'الاتحاد والكلية',c:()=>STATE.committees.length},
+  {k:'dean',ic:'🎓',t:'عميدة الكلية',g:'الاتحاد والكلية',c:null},
+  {k:'vice',ic:'🎓',t:'وكيلة الكلية',g:'الاتحاد والكلية',c:null},
+  {k:'nextEvent',ic:'🔥',t:'الحدث القادم (يدوي)',g:'الرئيسية',c:null}
+];
+let ADM_STUDENTS = null, admRaf = 0;
+function loadAdminStats(){
+  if(!fbReady || ADM_STUDENTS!==null) return;
+  ADM_STUDENTS = 0;
+  db.collection('students').get().then(sn=>{ ADM_STUDENTS = sn.size; renderAdminDash(); }).catch(()=>{ ADM_STUDENTS = null; });
+}
+function adminDashRefresh(){
+  if(admRaf) return;
+  admRaf = requestAnimationFrame(()=>{ admRaf = 0; renderAdminDash(); });
+}
+function renderAdminDash(){
+  const st = document.getElementById('admStats'), dash = document.getElementById('adminDash');
+  if(!st || !dash) return;
+  const upcoming = STATE.activities.filter(a=>actStart(a) && !actIsPast(a)).length;
+  const live = STATE.polls.filter(p=>!pollClosed(p)).length;
+  st.innerHTML = [['الطلاب', ADM_STUDENTS===null ? '—' : ADM_STUDENTS],['فعاليات قادمة',upcoming],['تصويتات جارية',live],['الأخبار',STATE.news.length]]
+    .map(x=>`<div class="adm-stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('');
+  const em = (fbReady && auth.currentUser && auth.currentUser.email) || '';
+  const av = document.getElementById('admAv'); if(av) av.textContent = (em[0]||'ا').toUpperCase();
+  let html = '', lastG = '';
+  ADMIN_SECTIONS.forEach(x=>{
+    if(x.g!==lastG){ if(lastG) html += '</div>'; html += `<div class="adm-group">${x.g}</div><div class="adm-tiles">`; lastG = x.g; }
+    const n = x.c ? x.c() : null;
+    html += `<button type="button" class="adm-tile" onclick="openAdminSection('${x.k}')"><div class="adm-ic">${x.ic}</div><div><b>${x.t}</b>${n!==null?`<span>${n} عنصر</span>`:'<span>تعديل</span>'}</div></button>`;
+  });
+  dash.innerHTML = html + '</div>';
+}
+function openAdminSection(key){
+  const panel = document.getElementById('adminPanel');
+  document.querySelectorAll('#adminSections > details.admin-box').forEach(d=>{
+    const on = d.dataset.sec===key;
+    d.classList.toggle('sec-active', on);
+    if(on) d.open = true;
+  });
+  panel.classList.add('in-section');
+  const t = ADMIN_SECTIONS.find(x=>x.k===key);
+  document.getElementById('admBackTitle').textContent = t ? t.ic+' '+t.t : '';
+  document.getElementById('pages').scrollTop = 0;
+}
+function closeAdminSection(){
+  document.getElementById('adminPanel').classList.remove('in-section');
+  document.querySelectorAll('#adminSections > details.admin-box').forEach(d=>d.classList.remove('sec-active'));
+  document.getElementById('pages').scrollTop = 0;
 }
 
 /* ========================= تعديل الملف الشخصي ========================= */
@@ -1734,8 +1929,12 @@ async function saveProfileEdit(){
 
 /* ========================= مركز الميديا ========================= */
 function cld(u,t){
+  if(u && u.indexOf('/video/upload/')>-1) return u;
   return (u && u.indexOf('res.cloudinary.com')>-1 && u.indexOf('/upload/')>-1) ? u.replace('/upload/','/upload/'+t+'/') : u;
 }
+function isCldVideo(u){ return /res\.cloudinary\.com\/[^/]+\/video\/upload\//.test(u||''); }
+function cldPoster(u){ return u.replace('/video/upload/','/video/upload/so_1,c_fill,w_800,h_800,q_auto/').replace(/\.[a-z0-9]+(\?.*)?$/i,'.jpg'); }
+function cldVideoSrc(u){ return u.replace('/video/upload/','/video/upload/f_mp4,vc_h264,q_auto/').replace(/\.[a-z0-9]+(\?.*)?$/i,'.mp4'); }
 function ytId(u){
   const m = String(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/))([\w-]{11})/);
   return m ? m[1] : '';
@@ -1743,6 +1942,7 @@ function ytId(u){
 function mediaThumb(m){
   if(m.type==='image') return m.url;
   if(m.coverURL) return m.coverURL;
+  if(isCldVideo(m.url)) return cldPoster(m.url);
   const y = ytId(m.url);
   return y ? `https://img.youtube.com/vi/${y}/hqdefault.jpg` : '';
 }
@@ -1826,6 +2026,7 @@ function renderLightbox(){
     const y = ytId(m.url);
     if(y) st.innerHTML = `<iframe src="https://www.youtube.com/embed/${y}?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
     else if(/facebook\.com|fb\.watch/i.test(m.url)) st.innerHTML = `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(m.url)}&show_text=false&autoplay=true" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    else if(isCldVideo(m.url)) st.innerHTML = `<video src="${esc(cldVideoSrc(m.url))}" poster="${esc(m.coverURL || cldPoster(m.url))}" controls autoplay playsinline></video>`;
     else if(/\.(mp4|webm|mov)(\?|$)/i.test(m.url)) st.innerHTML = `<video src="${esc(m.url)}" controls autoplay playsinline></video>`;
     else st.innerHTML = `<div class="lb-msg">الفيديو ده بيتفتح في موقعه الأصلي<br><a href="${esc(m.url)}" target="_blank" rel="noopener">فتح الفيديو ↗</a></div>`;
   }
@@ -1866,10 +2067,31 @@ async function deleteMediaItem(){
 })();
 
 /* ----- لوحة الأدمن: رفع الميديا ----- */
+function uploadVideo(file, folder, onProgress){
+  return new Promise((resolve,reject)=>{
+    if(typeof CLOUDINARY_CLOUD_NAME==='undefined' || CLOUDINARY_CLOUD_NAME.includes('ضع_')){ reject(new Error('Cloudinary غير مظبوط')); return; }
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    fd.append('folder', folder);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`);
+    xhr.upload.onprogress = e=>{ if(e.lengthComputable && onProgress) onProgress(Math.round(e.loaded*100/e.total)); };
+    xhr.onload = ()=>{
+      try{
+        const d = JSON.parse(xhr.responseText);
+        if(d.secure_url) resolve(d); else reject(new Error((d.error && d.error.message) || 'upload failed'));
+      }catch(e){ reject(e); }
+    };
+    xhr.onerror = ()=>reject(new Error('مشكلة في الاتصال بالنت'));
+    xhr.send(fd);
+  });
+}
 function toggleMediaType(){
-  const v = document.getElementById('af-mediaType').value==='video';
-  document.getElementById('mediaImgFields').style.display = v ? 'none' : 'flex';
-  document.getElementById('mediaVidFields').style.display = v ? 'flex' : 'none';
+  const t = document.getElementById('af-mediaType').value;
+  document.getElementById('mediaImgFields').style.display = t==='image' ? 'flex' : 'none';
+  document.getElementById('mediaVidUpFields').style.display = t==='videoup' ? 'flex' : 'none';
+  document.getElementById('mediaVidFields').style.display = t==='video' ? 'flex' : 'none';
 }
 function resetMediaForm(){
   const f = document.getElementById('mediaForm'); if(!f) return;
@@ -1879,6 +2101,12 @@ function resetMediaForm(){
   document.getElementById('af-mediaAlbum').value = keepAlbum; /* غالباً هيضيف في نفس الألبوم */
   document.getElementById('af-mediaType').value = t;
   toggleMediaType();
+  setMediaProgress(-1);
+}
+function setMediaProgress(p){
+  const bar = document.getElementById('mediaProgress'); if(!bar) return;
+  bar.style.display = p<0 ? 'none' : 'block';
+  bar.firstElementChild.style.width = Math.max(0,p)+'%';
 }
 async function saveMedia(ev){
   ev.preventDefault();
@@ -1901,6 +2129,17 @@ async function saveMedia(ev){
         if(!u) throw new Error('upload failed');
         items.push({ type:'image', album, title:caption, url:u, createdAt: base + (files.length - i) });
       }
+    } else if(type==='videoup'){
+      const vf = document.getElementById('af-mediaVideo').files[0];
+      if(!vf){ showToast('اختار فيديو من الجهاز'); return false; }
+      if(vf.size > 100*1024*1024){ showToast('الفيديو أكبر من 100 ميجا — صغّره الأول'); return false; }
+      setMediaProgress(0);
+      const d = await uploadVideo(vf,'media-videos', p=>{ setMediaProgress(p); btn.textContent = p<100 ? `رفع الفيديو ${p}%` : 'بيتم معالجة الفيديو...'; });
+      const item = { type:'video', source:'upload', album, title: document.getElementById('af-mediaVTitle').value.trim(), url:d.secure_url, createdAt: base };
+      if(d.duration) item.duration = Math.round(d.duration);
+      const cover = document.getElementById('af-mediaVCover').files[0];
+      if(cover){ const u = await uploadImage(await resizeImage(cover,1200),'media'); if(u) item.coverURL = u; }
+      items.push(item);
     } else {
       const url = document.getElementById('af-mediaUrl').value.trim();
       if(!/^https?:\/\//i.test(url)){ showToast('الصق رابط فيديو صحيح (يبدأ بـ https)'); return false; }
@@ -1915,9 +2154,9 @@ async function saveMedia(ev){
     showToast(`تم نشر ${items.length} ${items.length>1?'عناصر':'عنصر'} ✔`);
     resetMediaForm();
   }catch(e){
-    showToast('حصل خطأ في النشر، اتأكد إنك داخل بحساب الأدمن');
+    showToast('تعذر النشر: ' + ((e && e.message) ? e.message : 'اتأكد إنك داخل بحساب الأدمن'));
   }finally{
-    btn.disabled = false; btn.textContent = 'نشر';
+    btn.disabled = false; btn.textContent = 'نشر'; setMediaProgress(-1);
   }
   return false;
 }
@@ -2079,7 +2318,9 @@ function openArchive(){
   showToast('أرشيف طالب الأسبوع — قريباً هيتم عرض كل الفائزين السابقين هنا');
 }
 function joinNextEvent(){
-  showToast('تم تسجيل انضمامك لفعالية «'+STATE.nextEvent.name+'» ✔');
+  const ne = homeNextEvent();
+  if(ne.activityId){ openActivityModal(ne.activityId); }
+  else { showToast('تابع صفحة الفعاليات لمعرفة طريقة التسجيل'); goPage('activities'); }
 }
 
 /* ========================= الصفحة الرئيسية ========================= */
@@ -2088,10 +2329,12 @@ function renderHome(){
   const hr = new Date().getHours();
   const greet = hr<12 ? 'صباح الخير' : 'مساء الخير';
   document.getElementById('homeGreeting').textContent = STUDENT.uid ? `${greet}، ${STUDENT.name} 👋` : `${greet} 👋`;
-  document.getElementById('nextEventName').textContent = STATE.nextEvent.name;
-  document.getElementById('nextEventMeta').textContent = STATE.nextEvent.place;
+  const NE = homeNextEvent();
+  document.getElementById('nextEventName').textContent = NE.name;
+  document.getElementById('nextEventMeta').textContent = NE.place;
   document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${STATE.nextEvent.image}')`;
+    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${NE.image}')`;
+  ensureMyRegs();
 
   document.getElementById('sowAvatar').textContent = STATE.studentOfWeek.initial;
   document.getElementById('sowAvatar').style.background = avatarGradient(STATE.studentOfWeek.name);
@@ -2206,8 +2449,8 @@ function mcAutoplay(){
 let cdTimer=null;
 function startCountdown(){
   clearInterval(cdTimer);
-  const target = new Date(STATE.nextEvent.date).getTime();
   function tick(){
+    const target = new Date(homeNextEvent().date).getTime();
     const diff = Math.max(0, target - Date.now());
     const d = Math.floor(diff/86400000);
     const h = Math.floor(diff%86400000/3600000);
@@ -2243,19 +2486,83 @@ function iconForCat(cat){
   if(cat==='artistic') return '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1"/><circle cx="14" cy="9" r="1"/><circle cx="15" cy="14" r="1"/>';
   return '<path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M12 12a4 4 0 100-8 4 4 0 000 8z"/>';
 }
+/* ===== الفعاليات والمؤتمرات: أدوات مساعدة ===== */
+const KINDS = { activity:{label:'نشاط',icon:'🎯'}, event:{label:'فعالية',icon:'🎉'}, conference:{label:'مؤتمر',icon:'🎤'}, workshop:{label:'ورشة عمل',icon:'🛠️'} };
+function actStart(a){ return a.startAt && a.startAt.toDate ? a.startAt.toDate() : null; }
+function actEnd(a){ return a.endAt && a.endAt.toDate ? a.endAt.toDate() : null; }
+function actIsPast(a){
+  const st = actStart(a); if(!st) return false;
+  const en = actEnd(a) || new Date(st.getTime() + 3*3600*1000);
+  return en < new Date();
+}
+function fmtArDate(d){ return d.toLocaleString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'}); }
+function relWhen(d){
+  const t0 = new Date(); t0.setHours(0,0,0,0);
+  const d0 = new Date(d); d0.setHours(0,0,0,0);
+  const diff = Math.round((d0 - t0)/86400000);
+  if(diff<0) return 'انتهت';
+  if(diff===0) return 'النهاردة';
+  if(diff===1) return 'بكرة';
+  if(diff===2) return 'بعد يومين';
+  return diff<=10 ? 'بعد '+diff+' أيام' : 'بعد '+diff+' يوم';
+}
+function seatsLeft(a){ return a.capacity ? Math.max(0, a.capacity - (a.registeredCount||0)) : null; }
+function toLocalInput(ts){
+  if(!ts || !ts.toDate) return '';
+  const d = ts.toDate(), p = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function nextActivity(){
+  const now = Date.now();
+  return STATE.activities.filter(a=>actStart(a) && actStart(a).getTime()>now).sort((x,y)=>actStart(x)-actStart(y))[0] || null;
+}
+function homeNextEvent(){
+  const manual = STATE.nextEvent, mT = new Date(manual.date).getTime();
+  const a = nextActivity();
+  if(a && (!(mT>Date.now()) || actStart(a).getTime() < mT)){
+    return { name:a.title, place:a.place, image:a.photoURL || manual.image, date:actStart(a).toISOString(), activityId:a.id };
+  }
+  return manual;
+}
+function ensureMyRegs(){
+  if(!fbReady || !STUDENT.uid) return;
+  const need = STATE.activities.filter(a=>a.requiresRegistration && STATE.myRegs[a.id]===undefined && !myRegPending[a.id]);
+  if(!need.length) return;
+  need.forEach(a=>{ myRegPending[a.id] = true; });
+  Promise.all(need.map(a=>db.collection('activities').doc(a.id).collection('registrations').doc(STUDENT.uid).get()
+    .then(d=>{ STATE.myRegs[a.id] = d.exists; }).catch(()=>{ STATE.myRegs[a.id] = false; })
+  )).then(()=>renderActivities());
+}
+
 function renderActivities(){
   const wrap = document.getElementById('actList');
   wrap.innerHTML='';
-  const list = STATE.activities.filter(a=>actFilter==='all'||a.cat===actFilter);
+  let list = STATE.activities.filter(a=>actFilter==='all'||a.cat===actFilter);
+  const up = list.filter(a=>actStart(a) && !actIsPast(a)).sort((x,y)=>actStart(x)-actStart(y));
+  const none = list.filter(a=>!actStart(a));
+  const past = list.filter(a=>actStart(a) && actIsPast(a)).sort((x,y)=>actStart(y)-actStart(x));
+  list = [...up, ...none, ...past];
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد أنشطة في هذا التصنيف حالياً</div>'));return;}
   list.forEach((a,i)=>{
     const c=CATS[a.cat]||CATS.scientific;
     const interestedCount = (a.interestedUids||[]).length;
+    const past = actIsPast(a);
     const thumb = a.photoURL
-      ? `<img src="${a.photoURL}" alt="${esc(a.title)}">`
-      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg>`;
+      ? `<img src="${esc(a.photoURL)}" alt="${esc(a.title)}">`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`;
+    const kind = a.kind && a.kind!=='activity' && KINDS[a.kind] ? `<span class="ev-chip kind">${KINDS[a.kind].icon} ${KINDS[a.kind].label}</span>` : '';
+    const st = actStart(a);
+    const when = st ? `<span class="ev-chip ${past?'past':''}">${past?'انتهت':'⏰ '+relWhen(st)}</span>` : '';
+    let seat = '';
+    if(a.requiresRegistration && !past){
+      const left = seatsLeft(a);
+      if(STATE.myRegs[a.id]) seat = '<span class="ev-chip ok">✔ مسجّل</span>';
+      else if(a.registrationClosed) seat = '<span class="ev-chip warn">التسجيل مقفول</span>';
+      else if(left===0) seat = '<span class="ev-chip warn">اكتمل العدد</span>';
+      else seat = `<span class="ev-chip ok">${left!==null ? 'متبقي '+left+' مكان' : 'التسجيل مفتوح'}</span>`;
+    }
     const card = el(`
-      <div class="card event-card" style="animation-delay:${Math.min(i*0.05,0.4)}s;">
+      <div class="card event-card ${past?'is-past':''}" style="animation-delay:${Math.min(i*0.05,0.4)}s;">
         <div class="ev-thumb" style="background:linear-gradient(135deg, ${c.color}, #0d1836)">
           ${thumb}
           ${interestedCount ? `<div class="interest-badge">⭐ ${interestedCount}</div>` : ''}
@@ -2263,13 +2570,16 @@ function renderActivities(){
         <div class="ev-body">
           <span class="cat" style="background:${c.color}22;color:${c.color}">${esc(c.label)}</span>
           <b>${esc(a.title)}</b>
-          <div class="meta"><span>📅 ${esc(a.date)}</span><span>📍 ${esc(a.place)}</span></div>
+          <div class="meta"><span>📅 ${esc(a.date||'')}</span><span>📍 ${esc(a.place)}</span></div>
+          <div class="ev-chips">${kind}${when}${seat}</div>
         </div>
       </div>
     `);
     card.addEventListener('click', ()=>openActivityModal(a.id));
     wrap.appendChild(card);
   });
+  ensureMyRegs();
+  if(modalActivityId){ const m = STATE.activities.find(x=>x.id===modalActivityId); if(m && m.requiresRegistration) refreshRegBox(m); }
 }
 
 /* ========================= مودال تفاصيل النشاط ========================= */
@@ -2278,26 +2588,91 @@ function openActivityModal(id){
   const a = STATE.activities.find(x=>x.id===id); if(!a) return;
   modalActivityId = id;
   const c = CATS[a.cat]||CATS.scientific;
-  document.getElementById('modalCat').textContent = c.label;
+  const kindLbl = a.kind && KINDS[a.kind] && a.kind!=='activity' ? KINDS[a.kind].icon+' '+KINDS[a.kind].label+' · ' : '';
+  document.getElementById('modalCat').textContent = kindLbl + c.label;
   document.getElementById('modalCat').style.background = c.color+'22';
   document.getElementById('modalCat').style.color = c.color;
   document.getElementById('modalTitle').textContent = a.title;
-  document.getElementById('modalDate').textContent = '📅 '+a.date;
+  const st = actStart(a);
+  document.getElementById('modalDate').textContent = '📅 '+(a.date||'') + (st && !actIsPast(a) ? ' · '+relWhen(st) : '');
   document.getElementById('modalPlace').textContent = '📍 '+a.place;
   document.getElementById('modalDesc').textContent = a.desc || 'مفيش تفاصيل إضافية للنشاط ده لسه.';
   document.getElementById('modalHeroWrap').innerHTML = a.photoURL
-    ? `<img class="modal-hero" src="${a.photoURL}" alt="${esc(a.title)}">`
-    : `<div class="modal-hero-fallback" style="background:linear-gradient(135deg, ${c.color}, #0d1836)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${iconForCat(a.cat)}</svg></div>`;
-  const uids = a.interestedUids || [];
-  const btn = document.getElementById('modalInterestBtn');
-  const already = STUDENT.uid && uids.includes(STUDENT.uid);
-  btn.textContent = already ? `✔ سجّلت اهتمامك${uids.length?' ('+uids.length+')':''}` : `أنا مهتم بالحضور ⭐${uids.length?' ('+uids.length+')':''}`;
-  btn.disabled = !!already;
+    ? `<img class="modal-hero" src="${esc(a.photoURL)}" alt="${esc(a.title)}">`
+    : `<div class="modal-hero-fallback" style="background:linear-gradient(135deg, ${c.color}, #0d1836)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>`;
+  let extra = '';
+  if((a.speakers||[]).length){
+    extra += `<div class="mx-h">🎤 المتحدثون</div><div class="spk-grid">` + a.speakers.map(sp=>{
+      const ph = sp.photoURL ? `style="background-image:url('${esc(sp.photoURL)}')"` : `style="background:${avatarGradient(sp.name)}"`;
+      return `<div class="spk"><div class="spk-ph" ${ph}>${sp.photoURL?'':esc((sp.name||'?')[0])}</div><b>${esc(sp.name)}</b>${sp.role?`<span>${esc(sp.role)}</span>`:''}</div>`;
+    }).join('') + `</div>`;
+  }
+  if((a.agenda||[]).length){
+    extra += `<div class="mx-h">🗓️ برنامج اليوم</div><div class="agenda">` + a.agenda.map(g=>
+      `<div class="ag-item"><div class="ag-time">${esc(g.time||'')}</div><div class="ag-body"><b>${esc(g.title)}</b>${g.speaker?`<span>${esc(g.speaker)}</span>`:''}</div></div>`
+    ).join('') + `</div>`;
+  }
+  document.getElementById('modalExtra').innerHTML = extra;
+  const needsReg = !!a.requiresRegistration;
+  document.getElementById('regBox').style.display = needsReg ? '' : 'none';
+  const ib = document.getElementById('modalInterestBtn');
+  ib.style.display = needsReg ? 'none' : '';
+  if(needsReg){ refreshRegBox(a); ensureMyRegs(); }
+  else {
+    const uids = a.interestedUids || [];
+    const already = STUDENT.uid && uids.includes(STUDENT.uid);
+    ib.textContent = already ? `✔ سجّلت اهتمامك${uids.length?' ('+uids.length+')':''}` : `أنا مهتم بالحضور ⭐${uids.length?' ('+uids.length+')':''}`;
+    ib.disabled = !!already;
+  }
   document.getElementById('activityModal').classList.add('show');
 }
 function closeActivityModal(){
   document.getElementById('activityModal').classList.remove('show');
   modalActivityId = null;
+}
+function refreshRegBox(a){
+  const mine = !!STATE.myRegs[a.id];
+  const cnt = a.registeredCount || 0, cap = a.capacity || 0;
+  const left = seatsLeft(a), past = actIsPast(a);
+  const btn = document.getElementById('regBtn');
+  let info = cap ? `المسجلين: <b>${cnt}</b> من ${cap} — ${left>0 ? 'متبقي '+left+' مكان' : 'اكتمل العدد'}`
+                 : `عدد المسجلين: <b>${cnt}</b>`;
+  if(cap) info += `<div class="reg-bar"><i style="width:${Math.min(100,Math.round(cnt*100/cap))}%"></i></div>`;
+  if(a.points>0) info += `<div style="font-size:11px;color:var(--muted);margin-top:6px;">🎁 بتاخد ${a.points} نقطة لما يتأكد حضورك</div>`;
+  document.getElementById('regInfo').innerHTML = info;
+  btn.classList.toggle('cancel', mine);
+  if(mine){ btn.textContent = past ? '✔ كنت مسجّل' : 'إلغاء التسجيل'; btn.disabled = past; }
+  else if(past){ btn.textContent = 'الفعالية انتهت'; btn.disabled = true; }
+  else if(a.registrationClosed){ btn.textContent = 'التسجيل مقفول'; btn.disabled = true; }
+  else if(left===0){ btn.textContent = 'اكتمل العدد'; btn.disabled = true; }
+  else { btn.textContent = 'سجّل حضورك ✅'; btn.disabled = false; }
+}
+async function toggleRegistration(){
+  if(!STUDENT.uid){ showToast('لازم تسجل دخولك الأول من صفحة حسابي'); closeActivityModal(); goPage('profile'); return; }
+  const a = STATE.activities.find(x=>x.id===modalActivityId); if(!a || !fbReady) return;
+  const btn = document.getElementById('regBtn');
+  const mine = !!STATE.myRegs[a.id];
+  if(mine && !confirm('تلغي تسجيلك في «'+a.title+'»؟')) return;
+  btn.disabled = true;
+  try{
+    const ref = db.collection('activities').doc(a.id);
+    const regRef = ref.collection('registrations').doc(STUDENT.uid);
+    const batch = db.batch();
+    if(mine){
+      batch.delete(regRef);
+      batch.update(ref, { registeredCount: firebase.firestore.FieldValue.increment(-1) });
+    } else {
+      batch.set(regRef, { uid:STUDENT.uid, name:STUDENT.name, studentId:STUDENT.studentId||'', level:STUDENT.level||'', createdAt:Date.now(), attended:false });
+      batch.update(ref, { registeredCount: firebase.firestore.FieldValue.increment(1) });
+    }
+    await batch.commit();
+    STATE.myRegs[a.id] = !mine;
+    showToast(mine ? 'تم إلغاء تسجيلك' : 'تم تسجيلك ✔ نشوفك هناك!');
+    renderActivities();
+  }catch(e){
+    showToast(mine ? 'مقدرتش ألغي التسجيل، جرّب تاني' : 'مقدرتش أسجلك — يمكن العدد اكتمل أو التسجيل اتقفل');
+  }
+  refreshRegBox(STATE.activities.find(x=>x.id===a.id) || a);
 }
 async function markInterested(){
   if(!STUDENT.uid){ showToast('لازم تسجل دخولك الأول من صفحة حسابي'); closeActivityModal(); goPage('profile'); return; }
@@ -2581,58 +2956,187 @@ function saveStudentOfWeek(ev){
 }
 
 /* --- الأنشطة --- */
+function addSpeakerRow(sp){
+  const rows = document.getElementById('actSpeakerRows');
+  const row = el(`<div class="poll-opt-row spk-row"><input class="spk-name" placeholder="الاسم"><input class="spk-role" placeholder="الصفة / الوظيفة"><label class="po-img" title="صورة">📷<input type="file" accept="image/*" class="spk-file" onchange="this.parentNode.classList.toggle('has', this.files.length>0)"></label><button type="button" class="mini-btn danger" onclick="this.parentNode.remove()">✕</button></div>`);
+  if(sp){ row.querySelector('.spk-name').value = sp.name||''; row.querySelector('.spk-role').value = sp.role||''; if(sp.photoURL){ row.dataset.photo = sp.photoURL; row.querySelector('.po-img').classList.add('has'); } }
+  rows.appendChild(row);
+}
+function addAgendaRow(g){
+  const rows = document.getElementById('actAgendaRows');
+  const row = el(`<div class="poll-opt-row ag-row"><input class="ag-time" placeholder="10:00" style="max-width:76px;"><input class="ag-title" placeholder="الفقرة"><input class="ag-spk" placeholder="المتحدث (اختياري)"><button type="button" class="mini-btn danger" onclick="this.parentNode.remove()">✕</button></div>`);
+  if(g){ row.querySelector('.ag-time').value = g.time||''; row.querySelector('.ag-title').value = g.title||''; row.querySelector('.ag-spk').value = g.speaker||''; }
+  rows.appendChild(row);
+}
+function actKindChanged(){
+  const k = document.getElementById('af-actKind').value;
+  document.getElementById('actConfFields').style.display = (k==='conference' || k==='workshop') ? '' : 'none';
+  if(!document.getElementById('af-actId').value) document.getElementById('af-actReg').checked = (k!=='activity');
+}
+function resetActForm(){
+  const f = document.getElementById('actForm'); if(!f) return;
+  f.reset();
+  document.getElementById('af-actId').value = '';
+  document.getElementById('actSpeakerRows').innerHTML = '';
+  document.getElementById('actAgendaRows').innerHTML = '';
+  document.getElementById('af-actSubmitBtn').textContent = 'إضافة';
+  document.getElementById('af-actCancelEdit').style.display = 'none';
+  actKindChanged();
+}
 function editActivity(id){
   const a = STATE.activities.find(x=>x.id===id); if(!a) return;
+  resetActForm();
   document.getElementById('af-actId').value = id;
+  document.getElementById('af-actKind').value = a.kind || 'activity';
   document.getElementById('af-actTitle').value = a.title;
   document.getElementById('af-actCat').value = a.cat;
-  document.getElementById('af-actDate').value = a.date;
+  document.getElementById('af-actStart').value = toLocalInput(a.startAt);
+  document.getElementById('af-actEnd').value = toLocalInput(a.endAt);
+  document.getElementById('af-actDate').value = a.startAt ? '' : (a.date || '');
   document.getElementById('af-actPlace').value = a.place;
   document.getElementById('af-actDesc').value = a.desc || '';
+  document.getElementById('af-actReg').checked = !!a.requiresRegistration;
+  document.getElementById('af-actCap').value = a.capacity || '';
+  document.getElementById('af-actPts').value = a.points || '';
+  (a.speakers||[]).forEach(addSpeakerRow);
+  (a.agenda||[]).forEach(addAgendaRow);
   document.getElementById('af-actSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(3)').open = true;
+  document.getElementById('af-actCancelEdit').style.display = '';
+  actKindChanged();
+  document.getElementById('af-actReg').checked = !!a.requiresRegistration;
+  openAdminSection('activities');
 }
 function deleteActivity(id){
   if(!confirm('حذف النشاط ده؟')) return;
   db.collection('activities').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
 }
+function toggleRegClosed(id){
+  const a = STATE.activities.find(x=>x.id===id); if(!a || !requireFB()) return;
+  db.collection('activities').doc(id).update({ registrationClosed: !a.registrationClosed })
+    .then(()=>showToast(a.registrationClosed ? 'اتفتح التسجيل ✔' : 'اتقفل التسجيل ✔'));
+}
 async function saveActivity(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
-  const item = {
-    cat: document.getElementById('af-actCat').value,
-    title: document.getElementById('af-actTitle').value.trim(),
-    date: document.getElementById('af-actDate').value.trim(),
-    place: document.getElementById('af-actPlace').value.trim(),
-    desc: document.getElementById('af-actDesc').value.trim(),
-  };
-  if(!item.title||!item.date||!item.place) return false;
-  const file = document.getElementById('af-actPhoto').files[0];
-  if(file) item.photoURL = await uploadImage(file, 'activities');
+  const btn = document.getElementById('af-actSubmitBtn');
   const id = document.getElementById('af-actId').value;
-  const p = id ? db.collection('activities').doc(id).update(item)
-               : db.collection('activities').add({...item, interestedUids:[], createdAt:Date.now()});
-  p.then(()=>{
-    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة النشاط ✔');
-    ev.target.reset(); document.getElementById('af-actId').value='';
-    document.getElementById('af-actSubmitBtn').textContent='إضافة';
-  });
+  const title = document.getElementById('af-actTitle').value.trim();
+  const place = document.getElementById('af-actPlace').value.trim();
+  const startV = document.getElementById('af-actStart').value;
+  const endV = document.getElementById('af-actEnd').value;
+  const dateText = document.getElementById('af-actDate').value.trim();
+  if(!title || !place){ showToast('اكتب الاسم والمكان'); return false; }
+  if(!startV && !dateText){ showToast('حدد تاريخ ووقت البداية'); return false; }
+  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+  try{
+    const DEL = firebase.firestore.FieldValue.delete();
+    const item = {
+      kind: document.getElementById('af-actKind').value,
+      cat: document.getElementById('af-actCat').value,
+      title, place,
+      desc: document.getElementById('af-actDesc').value.trim(),
+      requiresRegistration: document.getElementById('af-actReg').checked,
+      points: Math.max(0, Math.floor(Number(document.getElementById('af-actPts').value)||0))
+    };
+    if(startV){ const d = new Date(startV); item.startAt = firebase.firestore.Timestamp.fromDate(d); item.date = fmtArDate(d); }
+    else { item.date = dateText; if(id) item.startAt = DEL; }
+    if(endV) item.endAt = firebase.firestore.Timestamp.fromDate(new Date(endV)); else if(id) item.endAt = DEL;
+    const cap = Math.floor(Number(document.getElementById('af-actCap').value)||0);
+    if(cap>0) item.capacity = cap; else if(id) item.capacity = DEL;
+    const spk = [];
+    for(const r of document.querySelectorAll('#actSpeakerRows .spk-row')){
+      const name = r.querySelector('.spk-name').value.trim(); if(!name) continue;
+      const o = { name, role: r.querySelector('.spk-role').value.trim() };
+      const f = r.querySelector('.spk-file').files[0];
+      if(f){ const u = await uploadImage(await resizeImage(f,600),'speakers'); if(u) o.photoURL = u; }
+      else if(r.dataset.photo) o.photoURL = r.dataset.photo;
+      spk.push(o);
+    }
+    item.speakers = spk;
+    item.agenda = [...document.querySelectorAll('#actAgendaRows .ag-row')].map(r=>({
+      time: r.querySelector('.ag-time').value.trim(), title: r.querySelector('.ag-title').value.trim(), speaker: r.querySelector('.ag-spk').value.trim()
+    })).filter(g=>g.title);
+    const file = document.getElementById('af-actPhoto').files[0];
+    if(file){ const u = await uploadImage(await resizeImage(file,1400),'activities'); if(u) item.photoURL = u; }
+    if(id) await db.collection('activities').doc(id).update(item);
+    else await db.collection('activities').add({ ...item, interestedUids:[], registeredCount:0, createdAt:Date.now() });
+    showToast(id ? 'تم حفظ التعديل ✔' : 'تمت الإضافة ✔');
+    resetActForm();
+  }catch(e){
+    showToast('حصل خطأ في الحفظ، اتأكد إنك داخل بحساب الأدمن');
+  }finally{
+    btn.disabled = false;
+    if(!document.getElementById('af-actId').value) btn.textContent = 'إضافة'; else btn.textContent = 'حفظ التعديل';
+  }
   return false;
 }
 function renderAdminActivities(){
   const wrap = document.getElementById('admin-actList'); if(!wrap) return;
   wrap.innerHTML='';
   STATE.activities.forEach(a=>{
+    const k = a.kind && KINDS[a.kind] ? KINDS[a.kind].label : ((CATS[a.cat]||{}).label||a.cat);
+    const reg = a.requiresRegistration ? ` · ${a.registeredCount||0}${a.capacity?'/'+a.capacity:''} مسجل${a.registrationClosed?' (مقفول)':''}` : '';
     wrap.appendChild(el(`
       <div class="admin-item-row">
-        <div class="ai-info"><b>${esc(a.title)}</b><span>${esc((CATS[a.cat]||{}).label||a.cat)} · ${esc(a.date)}</span></div>
-        <div class="ai-actions">
+        <div class="ai-info"><b>${esc(a.title)}</b><span>${esc(k)} · ${esc(a.date||'')}${reg}</span></div>
+        <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
+          ${a.requiresRegistration ? `<button type="button" class="mini-btn" onclick="openRegList('${a.id}')">المسجلين</button><button type="button" class="mini-btn" onclick="toggleRegClosed('${a.id}')">${a.registrationClosed?'فتح التسجيل':'قفل التسجيل'}</button>` : ''}
           <button type="button" class="mini-btn" onclick="editActivity('${a.id}')">تعديل</button>
           <button type="button" class="mini-btn danger" onclick="deleteActivity('${a.id}')">حذف</button>
         </div>
       </div>
     `));
   });
+}
+
+/* ----- قايمة المسجلين + الحضور + التصدير ----- */
+let REG = { id:null, a:null, items:[] };
+async function openRegList(id){
+  const a = STATE.activities.find(x=>x.id===id); if(!a || !requireFB()) return;
+  REG = { id, a, items:[] };
+  document.getElementById('rlTitle').textContent = 'المسجلين في «'+a.title+'»';
+  document.getElementById('rlSummary').textContent = 'جاري التحميل...';
+  document.getElementById('rlList').innerHTML = '';
+  document.getElementById('regListModal').classList.add('show');
+  try{
+    const snap = await db.collection('activities').doc(id).collection('registrations').orderBy('createdAt').get();
+    REG.items = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+    renderRegList();
+  }catch(e){ document.getElementById('rlSummary').textContent = 'مقدرتش أحمّل القايمة'; }
+}
+function closeRegList(){ document.getElementById('regListModal').classList.remove('show'); }
+function renderRegList(){
+  const att = REG.items.filter(x=>x.attended).length;
+  document.getElementById('rlSummary').textContent = `${REG.items.length} مسجل · ${att} حضروا` + (REG.a.points>0 ? ` · ${REG.a.points} نقطة لكل حاضر` : '');
+  const box = document.getElementById('rlList'); box.innerHTML='';
+  if(!REG.items.length){ box.appendChild(el('<div class="empty-note">لسه محدش سجّل</div>')); return; }
+  REG.items.forEach(it=>{
+    const row = el(`<div class="rl-item"><div><b>${esc(it.name||'—')}</b><span>${esc(it.studentId||'—')} · ${esc(it.level||'')}</span></div><button type="button" class="rl-att ${it.attended?'on':''}">${it.attended?'✔ حضر':'تأكيد الحضور'}</button></div>`);
+    row.querySelector('button').addEventListener('click', ()=>toggleAttend(it.id));
+    box.appendChild(row);
+  });
+}
+async function toggleAttend(uid){
+  const it = REG.items.find(x=>x.id===uid); if(!it) return;
+  const to = !it.attended, pts = REG.a.points || 0;
+  try{
+    const batch = db.batch();
+    const ref = db.collection('activities').doc(REG.id);
+    batch.update(ref.collection('registrations').doc(uid), { attended: to });
+    if(pts>0) batch.update(db.collection('students').doc(uid), { points: firebase.firestore.FieldValue.increment(to ? pts : -pts) });
+    await batch.commit();
+    it.attended = to; renderRegList();
+  }catch(e){ showToast('مقدرتش أحدّث الحضور'); }
+}
+function exportRegCsv(){
+  if(!REG.items.length){ showToast('مفيش مسجلين للتصدير'); return; }
+  const q = v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const rows = [['الاسم','الرقم الجامعي','المستوى','وقت التسجيل','الحضور']].concat(REG.items.map(i=>[i.name,i.studentId,i.level,new Date(i.createdAt||0).toLocaleString('ar-EG'),i.attended?'حضر':'لم يحضر']));
+  const csv = '\uFEFF' + rows.map(r=>r.map(q).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'registrants-'+(REG.a.title||'event')+'.csv';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
 /* --- حملات التوعية --- */
@@ -2646,7 +3150,7 @@ function editCampaign(id){
   document.getElementById('af-campCat').value = c.cat;
   document.getElementById('af-campStatus').value = c.status;
   document.getElementById('af-campSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(4)').open = true;
+  openAdminSection('campaigns');
 }
 function deleteCampaign(id){
   if(!confirm('حذف الحملة دي؟')) return;
@@ -2702,7 +3206,7 @@ function editMagazine(id){
   document.getElementById('af-magDate').value = m.date;
   document.getElementById('af-magType').value = m.type;
   document.getElementById('af-magSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(5)').open = true;
+  openAdminSection('magazines');
 }
 function deleteMagazine(id){
   if(!confirm('حذف المقال ده؟')) return;
@@ -2803,7 +3307,7 @@ function editCommittee(id){
   document.getElementById('af-comName').value = c.name;
   document.getElementById('af-comHead').value = c.head;
   document.getElementById('af-comSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(7)').open = true;
+  openAdminSection('committees');
 }
 function deleteCommittee(id){
   if(!confirm('حذف اللجنة دي؟')) return;
@@ -2852,7 +3356,7 @@ function editLeaderboard(id){
   document.getElementById('af-rankName').value = r.name;
   document.getElementById('af-rankPoints').value = r.points;
   document.getElementById('af-rankSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(10)').open = true;
+  openAdminSection('ranking');
 }
 function deleteLeaderboard(id){
   if(!confirm('حذف الطالب ده من الترتيب؟')) return;
@@ -2899,7 +3403,7 @@ function editMember(id){
   document.getElementById('af-memName').value = m.name;
   document.getElementById('af-memRole').value = m.role;
   document.getElementById('af-memSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(11)').open = true;
+  openAdminSection('members');
 }
 function deleteMember(id){
   if(!confirm('حذف العضو ده؟')) return;
@@ -2948,7 +3452,7 @@ function editNews(id){
   document.getElementById('af-newsDesc').value = n.desc;
   document.getElementById('af-newsDate').value = n.date;
   document.getElementById('af-newsSubmitBtn').textContent = 'حفظ التعديل';
-  document.querySelector('#page-admin details:nth-of-type(12)').open = true;
+  openAdminSection('news');
 }
 function deleteNews(id){
   if(!confirm('حذف الخبر ده؟')) return;
