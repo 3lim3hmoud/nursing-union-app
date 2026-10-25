@@ -293,6 +293,8 @@
         <details class="admin-box" data-sec="nextEvent">
           <summary>🔥 الحدث القادم (العداد التنازلي)</summary>
           <form onsubmit="return saveNextEvent(event)">
+            <label class="adm-sub">اختار من الفعاليات وهتتعبّى الخانات بصورتها تلقائي</label>
+            <select id="af-evPick" onchange="fillNextFromActivity(this.value)"><option value="">— اختار فعالية —</option></select>
             <input required id="af-evName" placeholder="اسم الفعالية">
             <input required id="af-evPlace" placeholder="المكان">
             <input required id="af-evDate" type="datetime-local">
@@ -375,13 +377,15 @@
             <input required id="af-actPlace" placeholder="المكان">
             <textarea id="af-actDesc" placeholder="تفاصيل (اختياري)" rows="3"></textarea>
             <label class="adm-sub">صورة الغلاف (بتظهر كخلفية في الرئيسية وكارت الفعالية)</label>
-            <input type="file" id="af-actPhoto" accept="image/*">
+            <div class="adm-cover-prev" id="af-actPrev" style="display:none;"><img alt="معاينة الغلاف"><span>الغلاف</span></div>
+            <input type="file" id="af-actPhoto" accept="image/*" onchange="actCoverPreview(this)">
             <label class="adm-chk"><input type="checkbox" id="af-actRmCover"> حذف صورة الغلاف الحالية (عند التعديل)</label>
             <label class="adm-sub">صور إضافية (اختار أكتر من صورة مرة واحدة — بتظهر جنب بعض)</label>
             <input type="file" id="af-actGallery" accept="image/*" multiple>
             <label class="adm-chk"><input type="checkbox" id="af-actRmImgs"> مسح الصور الإضافية القديمة (عند التعديل)</label>
             <div class="adm-sub" style="margin-top:8px;">التسجيل والحضور</div>
             <label class="adm-chk"><input type="checkbox" id="af-actReg" checked> يحتاج تسجيل حضور مسبق</label>
+            <label class="adm-chk adm-chk-next"><input type="checkbox" id="af-actNext"> 📌 اعرضها كـ«الحدث القادم» في الرئيسية (لازم يكون ليها ميعاد بداية)</label>
             <input id="af-actCap" type="number" min="0" placeholder="عدد الأماكن (فاضي = بدون حد)">
             <input id="af-actPts" type="number" min="0" placeholder="نقاط الحضور للطالب (اختياري)">
             <div id="actConfFields">
@@ -395,6 +399,8 @@
             <button class="btn-primary" type="submit" id="af-actSubmitBtn">إضافة</button>
             <button type="button" class="mini-btn" id="af-actCancelEdit" style="display:none;" onclick="resetActForm()">إلغاء التعديل</button>
           </form>
+          <div id="admNextPreview" class="adm-next-preview"></div>
+          <input type="search" class="adm-search" placeholder="🔍 دوّر في الفعاليات" oninput="admActSearch(this.value)">
           <div id="admin-actList" style="padding:0 14px 12px;"></div>
         </details></details>
 
