@@ -12,6 +12,7 @@ function initApp(){
   renderProfile();
   renderRankTabs(); renderRanking();
   if(!fbReady) initFirestoreListeners();   /* من غير Firebase: بس يظهر تنبيه الإعداد */
+  startPollsAuthWatch();
 }
 function resetStudentToGuest(){ STUDENT = {...GUEST_STUDENT}; }
 /* المحتوى (فعاليات، أخبار، حملات...) متاح للمسجّلين بس: الزائر بيشوف صفحة الدخول، والقواعد في Firestore بتمنع القراءة من غير تسجيل */
