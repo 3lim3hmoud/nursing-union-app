@@ -52,6 +52,9 @@ function nextActivity(){
 }
 function homeNextEvent(){
   const manual = STATE.nextEvent, mT = new Date(manual.date).getTime();
+  /* المثبّتة من لوحة الأدمن بتكسب لو لسه ماخلصتش */
+  const pin = STATE.activities.find(x=>x.pinnedNext && actStart(x) && !actIsPast(x));
+  if(pin) return { name:pin.title, place:pin.place, image:pin.photoURL || manual.image, date:actStart(pin).toISOString(), activityId:pin.id, pinned:true };
   const a = nextActivity();
   if(a && (!(mT>Date.now()) || actStart(a).getTime() < mT)){
     return { name:a.title, place:a.place, image:a.photoURL || manual.image, date:actStart(a).toISOString(), activityId:a.id };

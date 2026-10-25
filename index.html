@@ -382,6 +382,7 @@
             <label class="adm-chk"><input type="checkbox" id="af-actRmImgs"> مسح الصور الإضافية القديمة (عند التعديل)</label>
             <div class="adm-sub" style="margin-top:8px;">التسجيل والحضور</div>
             <label class="adm-chk"><input type="checkbox" id="af-actReg" checked> يحتاج تسجيل حضور مسبق</label>
+            <label class="adm-chk adm-chk-next"><input type="checkbox" id="af-actNext"> 📌 اعرضها كـ«الحدث القادم» في الرئيسية (لازم يكون ليها ميعاد بداية)</label>
             <input id="af-actCap" type="number" min="0" placeholder="عدد الأماكن (فاضي = بدون حد)">
             <input id="af-actPts" type="number" min="0" placeholder="نقاط الحضور للطالب (اختياري)">
             <div id="actConfFields">
@@ -395,6 +396,8 @@
             <button class="btn-primary" type="submit" id="af-actSubmitBtn">إضافة</button>
             <button type="button" class="mini-btn" id="af-actCancelEdit" style="display:none;" onclick="resetActForm()">إلغاء التعديل</button>
           </form>
+          <div id="admNextPreview" class="adm-next-preview"></div>
+          <input type="search" class="adm-search" placeholder="🔍 دوّر في الفعاليات" oninput="admActSearch(this.value)">
           <div id="admin-actList" style="padding:0 14px 12px;"></div>
         </details></details>
 
