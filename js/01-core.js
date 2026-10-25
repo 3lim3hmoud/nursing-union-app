@@ -150,6 +150,7 @@ let adminLoginAttempted = false;
 function authErrMsg(err){
   const c = (err && err.code) || '';
   if(c.includes('unauthorized-domain')) return 'الدومين ده ('+location.hostname+') مش مضاف في Firebase: Authentication ← Settings ← Authorized domains ← Add domain.';
+  if(c.includes('requests-from-referer') || c.includes('api-key-not-valid') || c.includes('invalid-api-key')) return 'مفتاح Firebase (API key) مقفول على دومينات معينة والدومين ده ('+location.hostname+') مش منهم: Google Cloud Console ← APIs & Services ← Credentials ← Browser key ← Website restrictions ← ضيف '+location.hostname+'/* .';
   if(c.includes('operation-not-allowed')) return 'طريقة الدخول دي مش مفعّلة في Firebase: Authentication ← Sign-in method ← فعّل Google (أو Email/Password).';
   if(c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) return 'نافذة جوجل اتقفلت قبل ما تكمّل الدخول.';
   if(c.includes('popup-blocked')) return 'المتصفح منع نافذة جوجل — هجرّب طريقة تانية تلقائي.';

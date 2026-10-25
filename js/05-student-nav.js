@@ -11,7 +11,7 @@ function gateErrorMsg(err){
   if(code.includes('weak-password')) return 'كلمة السر لازم تكون 6 أحرف على الأقل.';
   if(code.includes('invalid-email')) return 'الإيميل مش صحيح.';
   if(code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) return 'الإيميل أو كلمة السر غلط.';
-  return 'حصل خطأ، جرّب تاني.';
+  return (typeof authErrMsg==='function') ? authErrMsg(err) : 'حصل خطأ، جرّب تاني.';
 }
 function studentLogin(ev){
   ev.preventDefault();
