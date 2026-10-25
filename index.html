@@ -723,7 +723,7 @@
       <div class="tk-who"><b id="tkName"></b><span id="tkMeta"></span></div>
       <div class="tk-status" id="tkStatus"></div>
     </div>
-    <div class="pe-actions"><button type="button" class="btn-ghost" onclick="closeTicket()">إغلاق</button></div>
+    <div class="pe-actions"><button type="button" class="btn-primary" onclick="saveTicketImage()">💾 حفظ التذكرة كصورة</button><button type="button" class="btn-ghost" onclick="closeTicket()">إغلاق</button></div>
   </div>
 </div>
 
@@ -745,6 +745,18 @@
       <button type="button" class="btn-primary" onclick="openScanner()">📷 مسح تذكرة QR</button>
       <button type="button" class="btn-primary" onclick="exportRegCsv()">⬇ تصدير Excel (CSV)</button>
       <button type="button" class="btn-ghost" onclick="closeRegList()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="pe-overlay" id="liveAdminModal" onclick="if(event.target===this)closeLiveAdmin()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3 id="laTitle">التقييم والأسئلة</h3>
+    <div id="laBody"></div>
+    <div class="pe-actions">
+      <button type="button" class="btn-primary" onclick="exportFeedbackCsv()">⬇ تصدير التقييمات (CSV)</button>
+      <button type="button" class="btn-ghost" onclick="closeLiveAdmin()">إغلاق</button>
     </div>
   </div>
 </div>
@@ -812,6 +824,7 @@
 <script src="js/12-notifications.js" defer></script>
 <script src="js/14-students-insights.js" defer></script>
 <script src="js/15-attendance.js" defer></script>
+<script src="js/16-live.js" defer></script>
 <script src="js/13-init.js" defer></script>
 </body>
 </html>

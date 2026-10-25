@@ -16,6 +16,16 @@ service cloud.firestore {
       );
     }
 
+    // الطالب حضر الفعالية فعلاً (الأدمن سجّل حضوره): شرط التقييم وأسئلة القاعة
+    function didAttend(actId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/activities/$(actId)/registrations/$(request.auth.uid))
+        && get(/databases/$(database)/documents/activities/$(actId)/registrations/$(request.auth.uid)).data.get('attended', false) == true;
+    }
+    function okStar(d, k) {
+      return !(k in d) || (d[k] is int && d[k] >= 1 && d[k] <= 5);
+    }
+
     // قايمة الأدمنز: الشخص يقدر يقرا وثيقته هو بس (عشان الواجهة تعرف)، والكتابة من الـ Console بس.
     match /admins/{uid} {
       allow read: if isSignedIn() && request.auth.uid == uid;
@@ -95,6 +105,37 @@ service cloud.firestore {
         allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == uid
           && getAfter(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0)
              == get(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0) - 1);
+      }
+
+      // تقييم الفعالية: وثيقة واحدة لكل طالب حضر، والأدمن يقرأ الكل
+      match /feedback/{uid} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow create, update: if isSignedIn() && request.auth.uid == uid && didAttend(id)
+          && request.resource.data.keys().hasOnly(['uid','name','overall','content','organization','speaker','comment','updatedAt'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.overall is int && request.resource.data.overall >= 1 && request.resource.data.overall <= 5
+          && okStar(request.resource.data, 'content') && okStar(request.resource.data, 'organization') && okStar(request.resource.data, 'speaker')
+          && request.resource.data.get('comment', '') is string && request.resource.data.get('comment', '').size() <= 300
+          && request.resource.data.name is string && request.resource.data.name.size() <= 60;
+        allow delete: if isAdmin();
+      }
+
+      // أسئلة القاعة: الحاضرين بس يسألوا، وأي حاضر يرفع سؤال (مرة واحدة)، والأدمن يجاوب/يحذف
+      match /questions/{qid} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && didAttend(id)
+          && request.resource.data.keys().hasOnly(['uid','name','text','createdAt','upUids','answered'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.text is string && request.resource.data.text.size() >= 3 && request.resource.data.text.size() <= 200
+          && request.resource.data.name is string && request.resource.data.name.size() <= 60
+          && request.resource.data.get('upUids', []).size() == 0
+          && request.resource.data.get('answered', false) == false;
+        allow update: if isAdmin() || (didAttend(id)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upUids'])
+          && request.resource.data.get('upUids', []).hasAll(resource.data.get('upUids', []))
+          && request.resource.data.get('upUids', []).size() == resource.data.get('upUids', []).size() + 1
+          && request.auth.uid in request.resource.data.upUids);
+        allow delete: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
       }
     }
 

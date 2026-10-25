@@ -1355,3 +1355,39 @@ body{color:var(--ink);}
 .mc-slide{background:linear-gradient(135deg,#0c2f6b,#1360d2);}
 .mc-slide>img,.nw-feat>img,.ev-thumb img,.nw-card img,.modal-hero{object-fit:cover;background:#dcebff;}
 img{max-width:100%;}
+
+/* ===== إصلاح العرض على الموبايل (لوحة الأدمن): مفيش حاجة تزوّد عن عرض الشاشة ===== */
+html,body{overflow-x:hidden;}
+#page-admin,#adminPanel,#adminSections,.admin-box{max-width:100%;}
+.adm-tiles>*,.adm-stats>*{min-width:0;}
+.adm-tile{overflow:hidden;} .adm-tile b,.adm-tile span,.adm-stat span{overflow-wrap:anywhere;}
+.adm-stat span{font-size:10px;line-height:1.3;}
+.admin-item-row{flex-wrap:wrap;}
+.ai-info{flex:1 1 150px;min-width:0;overflow-wrap:anywhere;}
+.ai-actions{flex:1 1 auto;flex-wrap:wrap;justify-content:flex-end;}
+.admin-box form,.admin-box .adm-row{max-width:100%;} .admin-box input,.admin-box select,.admin-box textarea{max-width:100%;min-width:0;box-sizing:border-box;}
+.rl-item{flex-wrap:wrap;gap:8px;} .rl-item>div{min-width:0;overflow-wrap:anywhere;}
+@media (max-width:400px){ .adm-stats{grid-template-columns:repeat(2,1fr);} .adm-hero{padding:14px;border-radius:22px;} }
+@media (max-width:340px){ .adm-tiles{grid-template-columns:1fr;} }
+
+/* ===== تقييم الفعالية + أسئلة القاعة ===== */
+.live-box{margin:16px 0 4px;padding:14px;border-radius:18px;background:var(--navy-800);border:1px solid var(--line);}
+.lv-h{font-weight:800;font-size:14px;margin-bottom:10px;color:var(--ink);}
+.lv-lock{font-size:12.5px;color:var(--muted);text-align:center;padding:6px;}
+.lv-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;font-size:13px;}
+.lv-row em{color:#d1435b;font-style:normal;}
+.lv-stars{display:flex;gap:2px;direction:rtl;}
+.lv-stars button{border:0;background:none;font-size:26px;line-height:1;color:#c9d6ea;cursor:pointer;padding:2px 3px;}
+.lv-stars button.on{color:#f5a623;}
+.live-box textarea,.lv-ask input{width:100%;box-sizing:border-box;margin-top:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;font:inherit;font-size:13px;color:var(--ink);}
+.lv-btn{width:100%;margin-top:10px;}
+.lv-ask{display:flex;gap:8px;align-items:center;} .lv-ask input{margin-top:0;flex:1;min-width:0;} .lv-ask .btn-primary{width:auto;padding:10px 16px;flex:none;}
+.lv-qs{margin-top:8px;display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;}
+.lv-q{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--line);}
+.lv-q.done{opacity:.65;} .lv-qt{min-width:0;overflow-wrap:anywhere;} .lv-qt b{display:block;font-size:13px;} .lv-qt span{font-size:10.5px;color:var(--muted);}
+.lv-up{flex:none;border:1px solid var(--line);background:var(--navy-700);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+.lv-up.on{background:var(--gold);color:var(--on-accent);border-color:var(--gold);}
+.la-sum{text-align:center;margin-bottom:10px;} .la-sum b{font-size:30px;display:block;} .la-sum span{font-size:11px;color:var(--muted);}
+.la-bar{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:12.5px;} .la-bar span{flex:0 0 96px;} .la-bar b{flex:0 0 30px;text-align:left;}
+.la-bar div{flex:1;height:8px;border-radius:8px;background:var(--navy-700);overflow:hidden;} .la-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.la-cm{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;} .la-cm em{color:#f5a623;font-style:normal;} .la-cm p{margin:4px 0 0;overflow-wrap:anywhere;}
