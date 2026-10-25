@@ -82,13 +82,56 @@ async function loadStudentProfile(user){
 }
 
 /* ========================= التنقل بين الصفحات ========================= */
-function goPage(name){
+let CUR_PAGE = 'home';
+function goPage(name, fromPop){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.nav===name));
   document.getElementById('pages').scrollTop=0;
   closeMenu();
+  /* كل صفحة ليها خطوة في تاريخ المتصفح، عشان زر الرجوع يرجّع للصفحة اللي قبلها بدل ما يقفل التطبيق */
+  if(!fromPop && name !== CUR_PAGE){ try{ history.pushState({nu:1, page:name}, ''); }catch(e){} }
+  CUR_PAGE = name;
 }
+
+/* ========================= زر الرجوع ========================= */
+/* النوافذ المنبثقة (الأقرب للمستخدم أولاً): الرجوع بيقفل أعلى نافذة مفتوحة قبل ما يغيّر الصفحة */
+const BACK_OVERLAYS = [
+  ['lightbox','closeLightbox'], ['regListModal','closeRegList'], ['profileEditModal','closeProfileEdit'],
+  ['activityModal','closeActivityModal'], ['newsReader','closeNews'], ['sideMenu','closeMenu']
+];
+const IS_STANDALONE = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+let lastBackAt = 0;
+try{
+  history.replaceState({nu:1, page:'home', base:true}, '');
+  history.pushState({nu:1, page:'home'}, '');   /* خطوة حماية: بتخلّي الرجوع يقفل النافذة المفتوحة بدل ما يطلّع من التطبيق */
+}catch(e){}
+window.addEventListener('popstate', e=>{
+  for(const [id, fn] of BACK_OVERLAYS){
+    const box = document.getElementById(id);
+    if(box && box.classList.contains('show')){
+      window[fn]();
+      try{ history.pushState({nu:1, page:CUR_PAGE}, ''); }catch(_){}   /* نرجّع الخطوة اللي رجعنا منها */
+      return;
+    }
+  }
+  const st = e.state || {};
+  if(st.base){
+    /* وصلنا لخطوة الحماية (يعني المستخدم ضغط رجوع من الرئيسية): نخرج فعلاً.
+       في وضع التطبيق المثبّت بنطلب ضغطة تانية الأول عشان محدش يخرج بالغلط */
+    if(CUR_PAGE !== 'home') goPage('home', true);
+    if(IS_STANDALONE && Date.now()-lastBackAt >= 2000){
+      lastBackAt = Date.now();
+      showToast('اضغط رجوع مرة تانية للخروج');
+      try{ history.pushState({nu:1, page:'home'}, ''); }catch(_){}
+      return;
+    }
+    history.back();
+    return;
+  }
+  const target = st.page || 'home';
+  if(target !== CUR_PAGE) goPage(target, true);
+});
 function openMenu(){document.getElementById('sideMenu').classList.add('show');document.getElementById('overlay').classList.add('show');}
 function closeMenu(){document.getElementById('sideMenu').classList.remove('show');document.getElementById('overlay').classList.remove('show');}
 document.getElementById('openMenuBtn').addEventListener('click', openMenu);

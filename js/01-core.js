@@ -224,3 +224,10 @@ function showToast(msg){
   showToast._tm=setTimeout(()=>t.classList.remove('show'),2200);
 }
 function esc(s){ return (s==null?'':String(s)).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* تبسيط النص العربي للبحث: يشيل التشكيل ويوحّد الألف والتاء المربوطة والياء */
+function normAr(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g,'')
+    .replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').trim();
+}
