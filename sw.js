@@ -23,7 +23,9 @@ const ASSETS = [
   './images/logo.png',
   './images/building.jpg',
   './images/icon-192.png',
-  './images/icon-512.png'
+  './images/icon-512.png',
+  './images/apple-touch-icon.png',
+  './images/favicon-32.png'
 ];
 
 self.addEventListener('install', (event) => {

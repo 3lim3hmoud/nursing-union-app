@@ -1,0 +1,28 @@
+# بيغيّر رقم نسخة الكاش في sw.js تلقائي بعد كل push على main يغيّر ملفات التطبيق،
+# عشان المستخدمين ياخدوا التحديث من غير ما تفتكر تشغّل scripts/bump-sw.sh.
+name: Bump service worker version
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'images/**'
+      - 'manifest.json'
+      - 'firebase-config.js'
+permissions:
+  contents: write
+jobs:
+  bump:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh scripts/bump-sw.sh
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sw.js
+          git diff --cached --quiet || (git commit -m "chore: bump service worker cache version [skip ci]" && git push)

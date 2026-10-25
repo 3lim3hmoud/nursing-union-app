@@ -1,0 +1,28 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: JS syntax check
+        run: for f in js/*.js sw.js firebase-config.js; do node --check "$f"; done
+      - name: manifest.json is valid JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+      - name: Every file listed in sw.js ASSETS exists
+        run: |
+          node -e "
+          const fs=require('fs');
+          const src=fs.readFileSync('sw.js','utf8');
+          const m=src.match(/const ASSETS = \[([\s\S]*?)\];/);
+          const files=[...m[1].matchAll(/'\.\/([^']*)'/g)].map(x=>x[1]).filter(Boolean);
+          const missing=files.filter(f=>!fs.existsSync(f));
+          if(missing.length){console.error('Missing:',missing);process.exit(1)}
+          console.log('ok',files.length,'assets');
+          "
