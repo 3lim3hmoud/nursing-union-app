@@ -20,17 +20,37 @@ function saveNextEvent(ev){
   return false;
 }
 
-/* --- طالب الأسبوع --- */
-function saveStudentOfWeek(ev){
+/* --- طالب الأسبوع (اختيار من المسجلين + صورة) --- */
+async function saveStudentOfWeek(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
   const name = document.getElementById('af-sowName').value.trim();
   const level = document.getElementById('af-sowLevel').value.trim();
   const points = Number(document.getElementById('af-sowPoints').value)||0;
+  const uid = document.getElementById('af-sowStudent').value || '';
   if(!name || !level) return false;
-  const initial = name.trim()[0];
-  db.collection('config').doc('studentOfWeek').set({name, initial, level, points})
-    .then(()=>showToast('تم تحديث طالب الأسبوع ✔'));
+  const btn = ev.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  try{
+    const stu = (typeof ADM_STU_MAP!=='undefined' && uid) ? ADM_STU_MAP[uid] : null;
+    let photoURL = '';
+    const file = document.getElementById('af-sowPhoto').files[0];
+    if(file){
+      photoURL = (await uploadImage(await resizeImage(file,800),'students')) || '';
+      if(!photoURL){ btn.disabled = false; return false; }
+      /* لو الطالب مسجّل: الصورة بتتحفظ في ملفه كمان */
+      if(stu){
+        await db.collection('students').doc(uid).update({ photoURL });
+        stu.photoURL = photoURL;
+        if(!stu.hideFromRanking && (Number(stu.points)||0)>0) await admBoardRef(uid).set(admMirrorData(stu), {merge:true});
+      }
+    }else if(stu){ photoURL = stu.photoURL || ''; }
+    else if(STATE.studentOfWeek.name === name){ photoURL = STATE.studentOfWeek.photoURL || ''; }
+    await db.collection('config').doc('studentOfWeek').set({ name, initial:name.trim()[0], level, points, uid, photoURL });
+    document.getElementById('af-sowPhoto').value = '';
+    showToast('تم تحديث طالب الأسبوع ✔');
+  }catch(e){ showToast('مقدرتش أحفظ — اتأكد إنك داخل بحساب الأدمن'); }
+  finally{ btn.disabled = false; }
   return false;
 }
 
@@ -235,7 +255,7 @@ function deleteCampaign(id){
   if(!confirm('حذف الحملة دي؟')) return;
   db.collection('campaigns').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
 }
-function saveCampaign(ev){
+async function saveCampaign(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
   const status = document.getElementById('af-campStatus').value;
@@ -251,13 +271,18 @@ function saveCampaign(ev){
   };
   if(!item.title||!item.desc) return false;
   const id = document.getElementById('af-campId').value;
-  const p = id ? db.collection('campaigns').doc(id).update(item)
-               : db.collection('campaigns').add({...item, createdAt:Date.now()});
-  p.then(()=>{
+  const form = ev.target, btn = document.getElementById('af-campSubmitBtn');
+  btn.disabled = true;
+  try{
+    const f = document.getElementById('af-campPhoto').files[0];
+    if(f){ const u = await uploadImage(await resizeImage(f,1400),'campaigns'); if(u) item.photoURL = u; }
+    if(id) await db.collection('campaigns').doc(id).update(item);
+    else await db.collection('campaigns').add({...item, createdAt:Date.now()});
     showToast(id?'تم حفظ التعديل ✔':'تمت إضافة الحملة ✔');
-    ev.target.reset(); document.getElementById('af-campId').value='';
-    document.getElementById('af-campSubmitBtn').textContent='إضافة';
-  });
+    form.reset(); document.getElementById('af-campId').value='';
+    btn.textContent='إضافة';
+  }catch(e){ showToast('مقدرتش أحفظ — اتأكد إنك داخل بحساب الأدمن'); }
+  finally{ btn.disabled = false; }
   return false;
 }
 function renderAdminCampaigns(){
@@ -291,7 +316,7 @@ function deleteMagazine(id){
   if(!confirm('حذف المقال ده؟')) return;
   db.collection('magazines').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
 }
-function saveMagazine(ev){
+async function saveMagazine(ev){
   ev.preventDefault();
   if(!requireFB()) return false;
   const item = {
@@ -302,13 +327,18 @@ function saveMagazine(ev){
   };
   if(!item.title||!item.desc) return false;
   const id = document.getElementById('af-magId').value;
-  const p = id ? db.collection('magazines').doc(id).update(item)
-               : db.collection('magazines').add({...item, createdAt:Date.now()});
-  p.then(()=>{
+  const form = ev.target, btn = document.getElementById('af-magSubmitBtn');
+  btn.disabled = true;
+  try{
+    const f = document.getElementById('af-magPhoto').files[0];
+    if(f){ const u = await uploadImage(await resizeImage(f,1200),'magazines'); if(u) item.photoURL = u; }
+    if(id) await db.collection('magazines').doc(id).update(item);
+    else await db.collection('magazines').add({...item, createdAt:Date.now()});
     showToast(id?'تم حفظ التعديل ✔':'تمت إضافة المقال ✔');
-    ev.target.reset(); document.getElementById('af-magId').value='';
-    document.getElementById('af-magSubmitBtn').textContent='إضافة';
-  });
+    form.reset(); document.getElementById('af-magId').value='';
+    btn.textContent='إضافة';
+  }catch(e){ showToast('مقدرتش أحفظ — اتأكد إنك داخل بحساب الأدمن'); }
+  finally{ btn.disabled = false; }
   return false;
 }
 function renderAdminMagazines(){

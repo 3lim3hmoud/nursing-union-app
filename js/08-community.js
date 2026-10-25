@@ -1,61 +1,68 @@
 /* ========================= القيادات، اللجان، الأعضاء ========================= */
+function byCreated(list){ return [...list].sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt)||0)); }
+function ldAvatar(name, photo, cls){
+  return `<div class="${cls}" style="${esc(avStyle(name, photo))}">${avInner(name, photo)}</div>`;
+}
+function stripQuotes(t){ return String(t||'').replace(/^[\s"“”«»]+|[\s"“”«»]+$/g,''); }
+
 function switchLead(which){
   document.querySelectorAll('.lead-tab').forEach(t=>t.classList.toggle('active', t.dataset.lt===which));
   const wrap = document.getElementById('leadContent');
+
+  /* ----- اللجان ----- */
   if(which==='committees'){
-    if(!STATE.committees.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش لجان مضافة</div>'; return; }
-    let rows='';
-    STATE.committees.forEach(c=>{
-      rows+=`<div class="committee-row">
-        <div class="c-avatar" style="background:${avatarGradient(c.head)}">${esc((c.head||'?')[0])}</div>
-        <div><div class="name">${esc(c.name)}</div><div class="role">رئيس اللجنة: ${esc(c.head)}</div></div>
-      </div>`;
-    });
-    wrap.innerHTML = `<div class="card" style="padding:6px 14px;">${rows}</div>`;
+    const list = byCreated(STATE.committees);
+    if(!list.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش لجان مضافة</div>'; return; }
+    wrap.innerHTML = `<div class="ld-grid">${list.map(c=>`
+      <div class="ld-com">
+        ${ldAvatar(c.head, c.photoURL, 'ld-com-av')}
+        <div class="ld-com-info">
+          <b>${esc(c.name)}</b>
+          <span>رئيس اللجنة</span>
+          <em>${esc(c.head)}</em>
+        </div>
+      </div>`).join('')}</div>`;
     return;
   }
+
+  /* ----- الهيكل التنظيمي ----- */
   if(which==='members'){
     const L = STATE.leadership;
-    const nodeHtml = (name, photo, label, extraClass)=>{
-      const ph = photo
-        ? `<img src="${esc(photo)}" alt="${esc(name)}" loading="lazy" decoding="async">`
-        : `<div class="ph" style="background:${avatarGradient(name||label)}">${esc((name||'؟')[0])}</div>`;
-      return `<div class="org-node ${extraClass||''}">${ph}<b>${esc(name||'—')}</b><span>${esc(label)}</span></div>`;
-    };
-    let committeesHtml = '';
-    if(!STATE.committees.length){
-      committeesHtml = '<div class="empty-note">لسه مفيش لجان مضافة</div>';
-    }else{
-      committeesHtml = `<div class="org-committees-row">${STATE.committees.map(c=>
-        nodeHtml(c.head, c.photoURL, c.name, 'committee')
-      ).join('')}</div>`;
-    }
+    const node = (name, photo, label, cls)=>
+      `<div class="org-node ${cls||''}">${ldAvatar(name||label, photo, 'org-av')}<b>${esc(name||'—')}</b><span>${esc(label)}</span></div>`;
+    const coms = byCreated(STATE.committees);
+    const comsHtml = coms.length
+      ? `<div class="org-committees-row">${coms.map(c=>node(c.head, c.photoURL, c.name, 'committee')).join('')}</div>`
+      : '<div class="empty-note">لسه مفيش لجان مضافة</div>';
+    const mem = byCreated(STATE.members);
+    const memHtml = mem.length ? `
+      <div class="section-title" style="margin-top:22px;">أعضاء الاتحاد</div>
+      <div class="ld-members">${mem.map(m=>`
+        <div class="ld-mem">${ldAvatar(m.name, m.photoURL, 'ld-mem-av')}<b>${esc(m.name)}</b><span>${esc(m.role||'')}</span></div>`).join('')}</div>` : '';
     wrap.innerHTML = `
       <div class="org-chart">
         <div class="org-top-row">
-          ${nodeHtml(L.presidentName, L.presidentPhoto, 'رئيس الاتحاد', 'president')}
-          ${nodeHtml(L.vpName, L.vpPhoto, 'نائب رئيس الاتحاد', 'vp')}
+          ${node(L.presidentName, L.presidentPhoto, 'رئيس الاتحاد', 'president')}
+          ${node(L.vpName, L.vpPhoto, 'نائب رئيس الاتحاد', 'vp')}
         </div>
         <div class="org-bus"></div>
-        ${committeesHtml}
+        ${comsHtml}
       </div>
-    `;
+      ${memHtml}`;
     return;
   }
+
+  /* ----- العميدة / الوكيلة ----- */
   const p = which==='dean' ? STATE.dean : STATE.viceDean;
-  const bigPh = p.photoURL
-    ? `<img src="${esc(p.photoURL)}" alt="${esc(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-    : p.initial;
+  const quote = stripQuotes(p.quote);
   wrap.innerHTML = `
-    <div class="profile-hero">
-      <div class="big-avatar" style="background:${avatarGradient(p.name)};overflow:hidden;">${bigPh}</div>
+    <div class="ld-hero">
+      <div class="ld-ring">${ldAvatar(p.name, p.photoURL, 'ld-photo')}</div>
       <b>${esc(p.name)}</b>
-      <div class="role">${esc(p.role)}</div>
+      <span class="ld-role">${esc(p.role)}</span>
     </div>
-    <div class="section-title" style="margin-top:14px;">نبذة</div>
-    <div class="card"><p class="bio-text" style="margin:0;">${esc(p.bio)}</p></div>
-    <div class="section-title">آخر رسالة</div>
-    <div class="card"><p class="bio-text" style="margin:0;">${esc(p.quote)}</p></div>
+    ${p.bio ? `<div class="ld-card"><h4>نبذة</h4><p>${esc(p.bio)}</p></div>` : ''}
+    ${quote ? `<div class="ld-quote"><i>“</i><p>${esc(quote)}</p></div>` : ''}
   `;
 }
 
@@ -77,8 +84,8 @@ function renderMags(){
   list.forEach(m=>{
     wrap.appendChild(el(`
       <div class="card mag-card">
-        <div class="mag-cover" style="background:linear-gradient(160deg, ${magFilter==='scientific'?'#4d8dff':'#b27cff'}, #0d1836)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        <div class="mag-cover" style="${m.photoURL ? esc("background:url('"+cssUrl(m.photoURL)+"') center/cover no-repeat") : 'background:linear-gradient(160deg, '+(magFilter==='scientific'?'#4d8dff':'#b27cff')+', #0d1836)'}">
+          ${m.photoURL ? '' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>'}
         </div>
         <div class="mag-body">
           <b>${esc(m.title)}</b>
@@ -108,7 +115,7 @@ function renderCamps(){
   if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد حملات هنا حالياً</div>'));return;}
   list.forEach(c=>{
     wrap.appendChild(el(`
-      <div class="campaign-banner" style="background:linear-gradient(135deg, ${c.color1}, ${c.color2})">
+      <div class="campaign-banner" style="${c.photoURL ? esc("background:linear-gradient(180deg,rgba(8,20,50,.35),rgba(8,20,50,.88)),url('"+cssUrl(c.photoURL)+"') center/cover no-repeat") : 'background:linear-gradient(135deg, '+c.color1+', '+c.color2+')'}">
         <span class="cat-tag">${esc(c.cat)}</span>
         <b>${esc(c.title)}</b>
         <p>${esc(c.desc)}</p>

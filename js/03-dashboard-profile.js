@@ -6,6 +6,9 @@ const ADMIN_SECTIONS = [
   {k:'polls',ic:'🗳️',t:'التصويت',g:'المحتوى',c:()=>STATE.polls.length},
   {k:'campaigns',ic:'📢',t:'حملات التوعية',g:'المحتوى',c:()=>STATE.campaigns.length},
   {k:'magazines',ic:'📖',t:'المجلات',g:'المحتوى',c:()=>STATE.magazines.length},
+  {k:'students',ic:'🎓',t:'الطلاب وملفاتهم',g:'الطلاب',c:()=>ADM_STUDENTS||0},
+  {k:'insights',ic:'📊',t:'التفاعل والإحصائيات',g:'الطلاب',c:null},
+  {k:'rating',ic:'⚙️',t:'التقييم التلقائي',g:'الطلاب',c:null},
   {k:'sow',ic:'⭐',t:'طالب الأسبوع',g:'الطلاب',c:null},
   {k:'ranking',ic:'🏆',t:'ترتيب الطلاب',g:'الطلاب',c:()=>STATE.leaderboard.length},
   {k:'president',ic:'🏛️',t:'رئيس ونائب الاتحاد',g:'الاتحاد والكلية',c:null},
@@ -53,6 +56,7 @@ function openAdminSection(key){
   const t = ADMIN_SECTIONS.find(x=>x.k===key);
   document.getElementById('admBackTitle').textContent = t ? t.ic+' '+t.t : '';
   document.getElementById('pages').scrollTop = 0;
+  if(typeof admOnSection==='function') admOnSection(key);
 }
 function closeAdminSection(){
   document.getElementById('adminPanel').classList.remove('in-section');

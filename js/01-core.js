@@ -52,7 +52,7 @@ try{
 const STATE = {
   nextEvent:{name:'اليوم العلمي 2026', place:'القاعة الرئيسية', image:'images/building.jpg',
     date:new Date(Date.now()+(3*86400+14*3600+27*60)*1000).toISOString()},
-  studentOfWeek:{name:'—', initial:'-', level:'—', points:0},
+  studentOfWeek:{name:'—', initial:'-', level:'—', points:0, photoURL:'', uid:''},
   leadership:{presidentName:'—', presidentPhoto:'', vpName:'—', vpPhoto:''},
   dean:{...DEFAULT_DEAN}, viceDean:{...DEFAULT_VICE},
   activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}, media:[], myRegs:{}
@@ -121,7 +121,7 @@ function initFirestoreListeners(){
   }, ()=>{});
   db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.leaderboard = snap.docs.map(docToItem);
-    renderRanking(); renderAdminLeaderboard();
+    renderRanking(); renderAdminLeaderboard(); renderProfile();
   }, ()=>{});
   db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.members = snap.docs.map(docToItem);

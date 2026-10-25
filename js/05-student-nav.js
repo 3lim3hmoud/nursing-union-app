@@ -92,12 +92,14 @@ function goPage(name, fromPop){
   /* كل صفحة ليها خطوة في تاريخ المتصفح، عشان زر الرجوع يرجّع للصفحة اللي قبلها بدل ما يقفل التطبيق */
   if(!fromPop && name !== CUR_PAGE){ try{ history.pushState({nu:1, page:name}, ''); }catch(e){} }
   CUR_PAGE = name;
+  if((name==='profile' || name==='ranking') && typeof refreshMyStudent==='function') refreshMyStudent();
 }
 
 /* ========================= زر الرجوع ========================= */
 /* النوافذ المنبثقة (الأقرب للمستخدم أولاً): الرجوع بيقفل أعلى نافذة مفتوحة قبل ما يغيّر الصفحة */
 const BACK_OVERLAYS = [
   ['lightbox','closeLightbox'], ['regListModal','closeRegList'], ['profileEditModal','closeProfileEdit'],
+  ['admStuModal','closeStuEditor'], ['stuCardModal','closeStuCard'],
   ['activityModal','closeActivityModal'], ['newsReader','closeNews'], ['sideMenu','closeMenu']
 ];
 const IS_STANDALONE = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;

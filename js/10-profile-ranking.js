@@ -15,24 +15,26 @@ function renderProfile(){
   document.getElementById('profRole').textContent = STUDENT.level;
   document.getElementById('profId').textContent = 'ID: ' + (STUDENT.studentId || '—');
   document.getElementById('chipPoints').textContent = STUDENT.points;
-  document.getElementById('chipRank').textContent = '#'+STUDENT.rank;
+  const rk = myRank(); STUDENT.rank = rk;
+  document.getElementById('chipRank').textContent = rk==='—' ? '—' : '#'+rk;
   document.getElementById('chipEvents').textContent = STUDENT.events;
   document.getElementById('statComp').textContent = STUDENT.competitions;
   document.getElementById('statCamp').textContent = STUDENT.campaigns;
   document.getElementById('statVol').textContent = STUDENT.workshops;
-  document.getElementById('statActive').textContent = STUDENT.activeLevel;
+  document.getElementById('statActive').textContent = levelFromPoints(STUDENT.points);
 
+  const isSow = !!(STATE.studentOfWeek && STATE.studentOfWeek.uid && STATE.studentOfWeek.uid===STUDENT.uid);
   const badges = [
-    {icon:'🏅', label:'طالب نشط'},
-    {icon:'🏆', label:'بطل مسابقة'},
-    {icon:'🤝', label:'متطوع'},
-    {icon:'⭐', label:'طالب الأسبوع'},
+    {icon:'🏅', label:'طالب نشط', on:(STUDENT.points||0)>=30},
+    {icon:'🏆', label:'بطل مسابقة', on:(STUDENT.competitions||0)>0},
+    {icon:'🤝', label:'متطوع', on:(STUDENT.workshops||0)>0},
+    {icon:'⭐', label:'طالب الأسبوع', on:isSow},
   ];
   const wrap = document.getElementById('achievCard');
   wrap.innerHTML='';
   badges.forEach(b=>{
     wrap.appendChild(el(`
-      <div style="flex:1;min-width:70px;text-align:center;padding:10px 4px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);">
+      <div style="flex:1;min-width:70px;text-align:center;padding:10px 4px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);${b.on?'':'opacity:.38;filter:grayscale(1);'}">
         <div style="font-size:22px;">${b.icon}</div>
         <div style="font-size:9.5px;color:var(--muted);margin-top:4px;">${b.label}</div>
       </div>
@@ -41,18 +43,12 @@ function renderProfile(){
 }
 
 /* ========================= الترتيب ========================= */
-let rankFilter='week';
-function renderRankTabs(){
-  const wrap = document.getElementById('rankFilterTabs');
-  wrap.innerHTML = `
-    <div class="pill-tab ${rankFilter==='week'?'active':''}" data-r="week">هذا الأسبوع</div>
-    <div class="pill-tab ${rankFilter==='month'?'active':''}" data-r="month">هذا الشهر</div>
-    <div class="pill-tab ${rankFilter==='all'?'active':''}" data-r="all">كل الأوقات</div>
-  `;
-  wrap.querySelectorAll('.pill-tab').forEach(t=>t.addEventListener('click',()=>{rankFilter=t.dataset.r; renderRankTabs(); renderRanking();}));
+function renderRankTabs(){ /* التابات القديمة (أسبوع/شهر) اتشالت لأنها ماكانتش بتفلتر حاجة */ }
+function rankRowAv(cls, s){
+  return `<div class="${cls}" style="${esc(avStyle(s.name, s.photoURL))}">${avInner(s.name, s.photoURL)}</div>`;
 }
 function renderRanking(){
-  const sorted = [...STATE.leaderboard].sort((a,b)=>b.points-a.points);
+  const sorted = sortedBoard();
   const podium = document.getElementById('podium');
   const listCard = document.getElementById('rankListCard');
   if(!sorted.length){
@@ -60,23 +56,24 @@ function renderRanking(){
     listCard.innerHTML = '<div class="empty-note">لسه مفيش طلاب في الترتيب</div>';
     return;
   }
+  const pod = (s, cls, rank, crown)=> s ? `<div class="pod ${cls}" data-i="${rank-1}" style="cursor:pointer;">${crown?'<div class="crown">👑</div>':''}${rankRowAv('rank-avatar', s)}<b>${esc(s.name)}</b><div class="pts">${esc(s.points||0)} نقطة</div></div>` : '';
   const [p1,p2,p3] = sorted;
-  podium.innerHTML = `
-    ${p2?`<div class="pod silver"><div class="rank-avatar" style="background:${avatarGradient(p2.name)}">${esc((p2.name||'?')[0])}</div><b>${esc(p2.name)}</b><div class="pts">${p2.points} نقطة</div></div>`:''}
-    <div class="pod gold"><div class="crown">👑</div><div class="rank-avatar" style="background:${avatarGradient(p1.name)}">${esc((p1.name||'?')[0])}</div><b>${esc(p1.name)}</b><div class="pts">${p1.points} نقطة</div></div>
-    ${p3?`<div class="pod bronze"><div class="rank-avatar" style="background:${avatarGradient(p3.name)}">${esc((p3.name||'?')[0])}</div><b>${esc(p3.name)}</b><div class="pts">${p3.points} نقطة</div></div>`:''}
-  `;
+  podium.innerHTML = pod(p2,'silver',2,false) + pod(p1,'gold',1,true) + pod(p3,'bronze',3,false);
+  podium.querySelectorAll('.pod').forEach(n=>n.addEventListener('click', ()=>{
+    const i = Number(n.dataset.i); const s = sorted[i]; if(s) openStuCard({ name:s.name, level:s.level, photoURL:s.photoURL, points:s.points, rank:i+1 });
+  }));
   listCard.innerHTML='';
   sorted.forEach((s,i)=>{
-    const isMe = s.name===STUDENT.name;
-    listCard.appendChild(el(`
-      <div class="rank-list-row ${isMe?'me':''}">
+    const isMe = !!STUDENT.uid && (s.uid===STUDENT.uid || s.id===STUDENT.uid);
+    const row = el(`
+      <div class="rank-list-row ${isMe?'me':''}" style="cursor:pointer;">
         <div class="rank-num">${i+1}</div>
-        <div class="r-avatar" style="background:${avatarGradient(s.name)}">${esc((s.name||'?')[0])}</div>
+        ${rankRowAv('r-avatar', s)}
         <div class="rname">${esc(s.name)}${isMe?' (أنت)':''}</div>
-        <div class="rpts">${s.points} نقطة</div>
+        <div class="rpts">${esc(s.points||0)} نقطة</div>
       </div>
-    `));
+    `);
+    row.addEventListener('click', ()=>openStuCard({ name:s.name, level:s.level, photoURL:s.photoURL, points:s.points, rank:i+1 }));
+    listCard.appendChild(row);
   });
 }
-

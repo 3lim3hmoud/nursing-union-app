@@ -827,3 +827,91 @@ html{-webkit-font-smoothing:antialiased;}
 .card:active,.mchip:active,.pill-tab:active,.icon-btn:active,.sm-link:active,.more-btn:active{transform:scale(.97);}
 .card,.mchip,.pill-tab,.icon-btn,.sm-link{transition:transform .12s ease;}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px;}
+
+/* =========================================================================
+   القيادات (تصميم جديد) + الطلاب + التفاعل + كارت الطالب
+   ========================================================================= */
+.ld-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 16px 18px;margin-bottom:14px;border-radius:var(--radius-lg);background:linear-gradient(180deg,rgba(33,89,201,.08),rgba(33,89,201,.02));border:1px solid var(--line);}
+.ld-ring{padding:4px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));box-shadow:0 10px 26px rgba(33,89,201,.22);}
+.ld-photo{width:112px;height:112px;border-radius:50%;border:4px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:36px;overflow:hidden;}
+.ld-hero b{font-size:17px;margin-top:12px;}
+.ld-role{margin-top:6px;font-size:11.5px;font-weight:700;color:var(--gold);background:rgba(33,89,201,.10);padding:4px 12px;border-radius:20px;}
+.ld-card{background:var(--navy-800);border:1px solid var(--line);border-radius:var(--radius-md,16px);padding:14px 16px;margin-bottom:12px;}
+.ld-card h4{margin:0 0 6px;font-size:12.5px;color:var(--gold);}
+.ld-card p{margin:0;font-size:12.5px;line-height:1.9;color:var(--ink);}
+.ld-quote{position:relative;border-radius:var(--radius-md,16px);padding:16px 18px 14px;background:linear-gradient(135deg,var(--gold),#173a86);color:#fff;}
+.ld-quote i{position:absolute;top:-2px;right:14px;font-size:54px;font-style:normal;opacity:.25;line-height:1;}
+.ld-quote p{margin:0;font-size:13px;line-height:1.9;font-weight:600;position:relative;}
+
+.ld-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.ld-com{display:flex;align-items:center;gap:12px;background:var(--navy-800);border:1px solid var(--line);border-radius:var(--radius-md,16px);padding:12px;box-shadow:0 4px 14px rgba(21,52,110,.05);}
+.ld-com-av{width:58px;height:58px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px;overflow:hidden;}
+.ld-com-info{min-width:0;}
+.ld-com-info b{display:block;font-size:13.5px;}
+.ld-com-info span{display:block;font-size:10px;color:var(--muted);margin-top:3px;}
+.ld-com-info em{display:block;font-style:normal;font-size:12px;font-weight:700;color:var(--gold);margin-top:1px;}
+
+.org-av{width:56px;height:56px;border-radius:50%;margin-bottom:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;border:2px solid var(--line);overflow:hidden;}
+.org-node.president .org-av,.org-node.vp .org-av{width:68px;height:68px;font-size:18px;border-color:var(--gold);box-shadow:0 6px 16px rgba(33,89,201,.2);}
+.org-node{width:92px;}
+.ld-members{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.ld-mem{display:flex;flex-direction:column;align-items:center;text-align:center;background:var(--navy-800);border:1px solid var(--line);border-radius:14px;padding:12px 6px;}
+.ld-mem-av{width:54px;height:54px;border-radius:50%;margin-bottom:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;overflow:hidden;}
+.ld-mem b{font-size:11.5px;line-height:1.4;}
+.ld-mem span{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.4;}
+
+/* الترتيب: صور */
+.rank-avatar,.r-avatar{overflow:hidden;color:#fff;}
+
+/* لوحة الأدمن: الطلاب */
+.stu-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);cursor:pointer;}
+.stu-row:last-child{border-bottom:none;}
+.stu-av{width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;overflow:hidden;}
+.stu-info{flex:1;min-width:0;}
+.stu-info b{display:block;font-size:12.5px;}
+.stu-info span{font-size:10.5px;color:var(--muted);}
+.se-meta{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;font-size:10.5px;color:var(--muted);margin:2px 0 10px;}
+.se-num,.pe-sheet input[type=number]{width:100%;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line);font:inherit;font-size:13px;color:var(--ink);background:#fff;}
+.se-check{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin:12px 0 4px;}
+.se-check input{width:auto;}
+.se-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+.se-stats div{text-align:center;background:rgba(33,89,201,.06);border-radius:12px;padding:8px 2px;}
+.se-stats b{display:block;font-size:15px;color:var(--gold);}
+.se-stats span{font-size:9.5px;color:var(--muted);}
+.seh-row{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;padding:8px 2px;border-bottom:1px solid var(--line);}
+.seh-row b{font-weight:700;flex:1;}
+.seh-row span{color:var(--muted);flex:none;}
+
+/* لوحة الأدمن: التفاعل */
+.ins-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.ins-tabs button{flex:1;padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;}
+.ins-tabs button.on{background:linear-gradient(90deg,var(--gold),var(--gold-light));color:#fff;border-color:transparent;}
+.ins-sum{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;}
+.ins-sum div{text-align:center;background:rgba(33,89,201,.06);border-radius:12px;padding:8px 2px;}
+.ins-sum b{display:block;font-size:15px;color:var(--gold);}
+.ins-sum span{font-size:9.5px;color:var(--muted);}
+.ins-card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fff;}
+.ins-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px;}
+.ins-h b{font-size:12.5px;line-height:1.5;}
+.ins-h span{font-size:11px;color:var(--muted);flex:none;}
+.ins-opt{margin-bottom:8px;}
+.ins-bar{position:relative;display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:9px;overflow:hidden;background:rgba(33,89,201,.06);font-size:11.5px;}
+.ins-bar i{position:absolute;inset:0 auto 0 0;background:rgba(33,89,201,.18);}
+.ins-bar span,.ins-bar b{position:relative;}
+.ins-more{margin-top:4px;font-size:11.5px;}
+.ins-more summary{cursor:pointer;color:var(--gold);font-weight:700;padding:3px 0;}
+.ins-names{margin:4px 0 0;padding-inline-start:22px;line-height:1.9;}
+.ins-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.ins-chips i{font-style:normal;font-size:11px;background:rgba(33,89,201,.08);padding:3px 9px;border-radius:20px;}
+.rt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;}
+.rt-grid label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;color:var(--muted);}
+
+/* كارت الطالب (للكل) */
+.sc-body{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 0 12px;}
+.sc-av{width:104px;height:104px;border-radius:50%;border:4px solid var(--gold);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:34px;overflow:hidden;box-shadow:0 10px 24px rgba(33,89,201,.22);}
+.sc-name{font-size:17px;margin-top:12px;}
+.sc-level{font-size:12px;color:var(--muted);margin-top:3px;}
+.sc-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;}
+.sc-chip{background:rgba(33,89,201,.08);color:var(--ink);font-size:12px;padding:6px 12px;border-radius:20px;}
+.sc-chip b{color:var(--gold);}
+.sow-avatar{overflow:hidden;color:#fff;}
