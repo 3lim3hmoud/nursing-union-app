@@ -97,6 +97,7 @@ function resetActForm(){
   const f = document.getElementById('actForm'); if(!f) return;
   f.reset();
   document.getElementById('af-actId').value = '';
+  showActPrev('');
   document.getElementById('actSpeakerRows').innerHTML = '';
   document.getElementById('actAgendaRows').innerHTML = '';
   document.getElementById('af-actSubmitBtn').textContent = 'إضافة';
@@ -117,6 +118,7 @@ function editActivity(id){
   document.getElementById('af-actDesc').value = a.desc || '';
   document.getElementById('af-actReg').checked = !!a.requiresRegistration;
   document.getElementById('af-actNext').checked = !!a.pinnedNext;
+  showActPrev(a.photoURL);
   document.getElementById('af-actCap').value = a.capacity || '';
   document.getElementById('af-actPts').value = a.points || '';
   (a.speakers||[]).forEach(addSpeakerRow);
@@ -196,6 +198,36 @@ async function saveActivity(ev){
   }
   return false;
 }
+
+/* معاينة صورة الغلاف: الحالية عند التعديل أو الملف اللي اخترته قبل الرفع */
+function showActPrev(src){
+  const box = document.getElementById('af-actPrev'); if(!box) return;
+  if(!src){ box.style.display='none'; return; }
+  box.querySelector('img').src = src; box.style.display='flex';
+}
+function actCoverPreview(inp){
+  const f = inp.files && inp.files[0];
+  if(!f){ const a = STATE.activities.find(x=>x.id===document.getElementById('af-actId').value); showActPrev(a && a.photoURL); return; }
+  const r = new FileReader(); r.onload = ()=>showActPrev(r.result); r.readAsDataURL(f);
+}
+/* تعبئة نموذج الحدث القادم من فعالية موجودة (الاسم + المكان + الميعاد + صورتها) */
+function fillNextOptions(){
+  const sel = document.getElementById('af-evPick'); if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— اختار فعالية —</option>' + STATE.activities.filter(a=>actStart(a))
+    .sort((x,y)=>actStart(x)-actStart(y)).map(a=>`<option value="${esc(a.id)}">${esc(a.title)} · ${esc(a.date||'')}</option>`).join('');
+  sel.value = cur;
+}
+function fillNextFromActivity(id){
+  const a = STATE.activities.find(x=>x.id===id); if(!a) return;
+  document.getElementById('af-evName').value = a.title || '';
+  document.getElementById('af-evPlace').value = a.place || '';
+  document.getElementById('af-evDate').value = toLocalInput(a.startAt);
+  document.getElementById('af-evImage').value = a.photoURL || '';
+  document.getElementById('af-evPhoto').value = '';
+  showToast(a.photoURL ? 'اتعبّت الخانات بصورة الفعالية ✔' : 'اتعبّت الخانات (الفعالية من غير صورة)');
+}
+
 /* تثبيت فعالية كـ"الحدث القادم": واحدة بس في نفس الوقت */
 async function unpinOtherNext(keepId){
   const others = STATE.activities.filter(x=>x.id!==keepId && x.pinnedNext);
@@ -221,7 +253,7 @@ function renderNextPreview(){
 }
 function renderAdminActivities(){
   const wrap = document.getElementById('admin-actList'); if(!wrap) return;
-  renderNextPreview();
+  renderNextPreview(); fillNextOptions();
   wrap.innerHTML='';
   const q = ADM_ACT_Q;
   const list = STATE.activities.filter(a=>!q || (a.title||'').toLowerCase().includes(q) || (a.place||'').toLowerCase().includes(q));

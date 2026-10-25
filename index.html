@@ -293,6 +293,8 @@
         <details class="admin-box" data-sec="nextEvent">
           <summary>🔥 الحدث القادم (العداد التنازلي)</summary>
           <form onsubmit="return saveNextEvent(event)">
+            <label class="adm-sub">اختار من الفعاليات وهتتعبّى الخانات بصورتها تلقائي</label>
+            <select id="af-evPick" onchange="fillNextFromActivity(this.value)"><option value="">— اختار فعالية —</option></select>
             <input required id="af-evName" placeholder="اسم الفعالية">
             <input required id="af-evPlace" placeholder="المكان">
             <input required id="af-evDate" type="datetime-local">
@@ -375,7 +377,8 @@
             <input required id="af-actPlace" placeholder="المكان">
             <textarea id="af-actDesc" placeholder="تفاصيل (اختياري)" rows="3"></textarea>
             <label class="adm-sub">صورة الغلاف (بتظهر كخلفية في الرئيسية وكارت الفعالية)</label>
-            <input type="file" id="af-actPhoto" accept="image/*">
+            <div class="adm-cover-prev" id="af-actPrev" style="display:none;"><img alt="معاينة الغلاف"><span>الغلاف</span></div>
+            <input type="file" id="af-actPhoto" accept="image/*" onchange="actCoverPreview(this)">
             <label class="adm-chk"><input type="checkbox" id="af-actRmCover"> حذف صورة الغلاف الحالية (عند التعديل)</label>
             <label class="adm-sub">صور إضافية (اختار أكتر من صورة مرة واحدة — بتظهر جنب بعض)</label>
             <input type="file" id="af-actGallery" accept="image/*" multiple>

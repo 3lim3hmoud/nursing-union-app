@@ -1165,3 +1165,6 @@ main{padding-bottom:118px;}
 .quick-btn,.qa-item{transition:transform .15s ease;}
 .quick-btn:active,.qa-item:active{transform:scale(.93);}
 @media (prefers-reduced-motion:reduce){.skel{animation:none;}}
+.adm-cover-prev{position:relative;border-radius:16px;overflow:hidden;height:120px;box-shadow:var(--float-sh);align-items:flex-end;}
+.adm-cover-prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.adm-cover-prev span{position:relative;margin:8px;font-size:10px;font-weight:800;color:#fff;background:rgba(12,47,107,.7);border-radius:20px;padding:3px 10px;backdrop-filter:blur(6px);}
