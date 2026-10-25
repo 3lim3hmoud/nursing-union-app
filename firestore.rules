@@ -5,9 +5,21 @@ service cloud.firestore {
     function isSignedIn() {
       return request.auth != null;
     }
+    // الأدمن = (إيميل مؤكَّد من القائمة دي) أو (وثيقة باسم الـ uid في collection اسمها admins).
+    // email_verified مهم: من غيره حد يقدر يسجل بإيميل الأدمن كـ email/password من غير ما يثبت إنه بتاعه.
+    // لو بتدخل بإيميل/باسورد وإيميلك مش مؤكد: ادخل بجوجل، أو أضف وثيقة في admins/{uid} من الـ Console.
     function isAdmin() {
-      return isSignedIn() &&
-        request.auth.token.email in ['alikimo1942@gmail.com'];
+      return isSignedIn() && (
+        (request.auth.token.email_verified == true
+          && request.auth.token.email in ['alikimo1942@gmail.com'])
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // قايمة الأدمنز: الشخص يقدر يقرا وثيقته هو بس (عشان الواجهة تعرف)، والكتابة من الـ Console بس.
+    match /admins/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false;
     }
 
     // بيانات كل طالب

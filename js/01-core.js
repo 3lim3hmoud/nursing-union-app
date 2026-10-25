@@ -170,14 +170,28 @@ function adminLoginGoogle(){
   });
 }
 function adminLogout(){ if(fbReady) auth.signOut(); }
+/* ملاحظة: الفحص ده للواجهة بس (يظهر/يخفي لوحة التحكم). الحماية الحقيقية في firestore.rules.
+   الأدمن = إيميل من القايمة دي، أو uid موجود في collection اسمها admins (بتتضاف من Firebase Console). */
 const ADMIN_EMAILS = ['alikimo1942@gmail.com'];
+const ADMIN_CACHE = {};
+function isAdminEmail(user){ return !!(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase())); }
+async function resolveIsAdmin(user){
+  if(!user) return false;
+  if(isAdminEmail(user)) return true;
+  if(Object.prototype.hasOwnProperty.call(ADMIN_CACHE, user.uid)) return ADMIN_CACHE[user.uid];
+  try{
+    const d = await db.collection('admins').doc(user.uid).get();
+    return (ADMIN_CACHE[user.uid] = d.exists);
+  }catch(e){ return false; }
+}
 if(fbReady){
-  auth.onAuthStateChanged(user=>{
+  auth.onAuthStateChanged(async user=>{
+    const isAdm = await resolveIsAdmin(user);
     const loginBox = document.getElementById('adminLogin');
     const panel = document.getElementById('adminPanel');
-    if(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase())){
+    if(isAdm){
       loginBox.style.display='none'; panel.style.display='block';
-      document.getElementById('adminUserEmail').textContent = user.email;
+      document.getElementById('adminUserEmail').textContent = user.email || '';
     }else{
       /* المستخدم مسجل دخول كطالب عادي (مش أدمن) — منسيبه في التطبيق، بس ملوش صلاحية يشوف لوحة التحكم */
       if(user && adminLoginAttempted){

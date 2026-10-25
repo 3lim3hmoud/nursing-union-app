@@ -191,8 +191,8 @@ function renderAdminPolls(){
 resetPollForm();
 setTimeout(()=>{ try{ actKindChanged(); toggleMediaType(); }catch(e){} },0);
 if(fbReady){
-  auth.onAuthStateChanged(user=>{
-    IS_ADMIN = !!(user && ADMIN_EMAILS.includes((user.email||'').toLowerCase()));
+  auth.onAuthStateChanged(async user=>{
+    IS_ADMIN = await resolveIsAdmin(user);
     document.body.classList.toggle('is-admin', IS_ADMIN);
     if(IS_ADMIN) loadAdminStats();
     STATE.myRegs = {}; Object.keys(myRegPending).forEach(k=>delete myRegPending[k]);
