@@ -1052,7 +1052,6 @@ body{
   border:1px solid rgba(255,255,255,.9);
   background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,251,255,.92));
 }
-.card,.mini-event,.nw-card,.member-card{content-visibility:auto;contain-intrinsic-size:auto 120px;}
 .card{border-radius:20px;}
 @media (hover:hover){
   .card,.mini-event,.nw-card,.adm-tile{transition:transform .22s ease,box-shadow .22s ease;}
@@ -1351,3 +1350,8 @@ body{color:var(--ink);}
 [data-theme="dark"] .quick-icon{background:linear-gradient(180deg,#1a3262,#142852);color:#7cc0ff;border-color:var(--line);}
 
 [data-theme="dark"] .gate-tab.active,[data-theme="dark"] .pill-tab.active,[data-theme="dark"] .mini-btn.on{color:#fff;}
+
+/* صور: ما تنهارش ولا تتشوّه، وخلفية مكانها بتفضل ظاهرة لحد ما تتحمّل */
+.mc-slide{background:linear-gradient(135deg,#0c2f6b,#1360d2);}
+.mc-slide>img,.nw-feat>img,.ev-thumb img,.nw-card img,.modal-hero{object-fit:cover;background:#dcebff;}
+img{max-width:100%;}
