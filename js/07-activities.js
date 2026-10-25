@@ -1,5 +1,6 @@
 /* ========================= الأنشطة ========================= */
-let actFilter='all';
+let actFilter='all', ACT_Q='';
+function actMatch(a){ return !ACT_Q || normAr([a.title,a.place,a.desc,a.date].join(' ')).includes(ACT_Q); }
 function renderActivityTabs(){
   const wrap = document.getElementById('actFilterTabs');
   const cats = ['all', ...Object.keys(CATS)];
@@ -70,12 +71,12 @@ function ensureMyRegs(){
 function renderActivities(){
   const wrap = document.getElementById('actList');
   wrap.innerHTML='';
-  let list = STATE.activities.filter(a=>actFilter==='all'||a.cat===actFilter);
+  let list = STATE.activities.filter(a=>(actFilter==='all'||a.cat===actFilter) && actMatch(a));
   const up = list.filter(a=>actStart(a) && !actIsPast(a)).sort((x,y)=>actStart(x)-actStart(y));
   const none = list.filter(a=>!actStart(a));
   const past = list.filter(a=>actStart(a) && actIsPast(a)).sort((x,y)=>actStart(y)-actStart(x));
   list = [...up, ...none, ...past];
-  if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد أنشطة في هذا التصنيف حالياً</div>'));return;}
+  if(!list.length){wrap.appendChild(el(ACT_Q ? '<div class="empty-note">مفيش نتائج للبحث ده 🔍</div>' : '<div class="empty-note">لا توجد أنشطة في هذا التصنيف حالياً</div>'));return;}
   list.forEach((a,i)=>{
     const c=CATS[a.cat]||CATS.scientific;
     const interestedCount = (a.interestedUids||[]).length;
@@ -227,4 +228,4 @@ async function markInterested(){
     showToast('حصل خطأ، جرّب تاني');
   }
 }
-
+document.getElementById('actSearch').addEventListener('input', e=>{ ACT_Q = normAr(e.target.value); renderActivities(); });

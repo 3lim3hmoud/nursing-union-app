@@ -4,7 +4,7 @@ const NEWS_CATS = {
   union:{label:'أخبار الاتحاد',icon:'📣'}, events:{label:'فعاليات',icon:'🎉'}, academic:{label:'أكاديمي',icon:'🎓'},
   achievements:{label:'إنجازات',icon:'🏆'}, announce:{label:'إعلانات',icon:'📌'}
 };
-let NEWS_FILTER = 'all', NEWS_OPEN = null, NEWS_DEEP_DONE = false;
+let NEWS_FILTER = 'all', NEWS_OPEN = null, NEWS_DEEP_DONE = false, NEWS_Q = '';
 const NEWS_PAGE = 10; let NEWS_SHOWN = NEWS_PAGE;   /* عدد الأخبار اللي بتظهر في القايمة (بعد الخبر الرئيسي) */
 function newsSorted(){
   return [...STATE.news].sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || (b.createdAt||0)-(a.createdAt||0));
@@ -28,10 +28,11 @@ function renderNews(){
         chips.appendChild(el(`<button type="button" class="mchip ${NEWS_FILTER===d[0]?'active':''}" data-f="${d[0]}">${d[1]} <i>${d[2]}</i></button>`));
       });
     }
-    const list = NEWS_FILTER==='all' ? all : all.filter(n=>n.cat===NEWS_FILTER);
+    let list = NEWS_FILTER==='all' ? all : all.filter(n=>n.cat===NEWS_FILTER);
+    if(NEWS_Q) list = list.filter(n=>normAr([n.title,n.desc].join(' ')).includes(NEWS_Q));
     document.getElementById('newsCount').textContent = list.length ? list.length+' خبر' : '';
     feat.innerHTML = ''; wrap.innerHTML = '';
-    if(!list.length){ wrap.appendChild(el('<div class="empty-note">لسه مفيش أخبار</div>')); }
+    if(!list.length){ wrap.appendChild(el(NEWS_Q ? '<div class="empty-note">مفيش نتائج للبحث ده 🔍</div>' : '<div class="empty-note">لسه مفيش أخبار</div>')); }
     else {
       const f = list[0];
       const fe = el(`<div class="nw-feat">${f.photoURL ? `<img src="${esc(cld(f.photoURL,'c_fill,w_900,h_560,q_auto,f_auto'))}" alt="" decoding="async">` : '<div class="nw-ph">📰</div>'}<div class="shade"></div><div class="info"><div>${newsFlags(f)}${newsTag(f)}</div><b>${esc(f.title)}</b><small>📅 ${esc(newsDate(f))}${(f.likeUids||[]).length?` · ❤ ${(f.likeUids||[]).length}`:''}</small></div></div>`);
@@ -110,12 +111,12 @@ function openNews(id){
   fillNewsReader(n);
   const r = document.getElementById('newsReader'); r.classList.add('show');
   document.getElementById('nrBody').scrollTop = 0;
-  try{ history.replaceState(null,'',location.pathname+location.search+'#news-'+id); }catch(e){}
+  try{ history.replaceState(history.state,'',location.pathname+location.search+'#news-'+id); }catch(e){}
 }
 function closeNews(){
   NEWS_OPEN = null;
   document.getElementById('newsReader').classList.remove('show');
-  try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+  try{ history.replaceState(history.state,'',location.pathname+location.search); }catch(e){}
 }
 async function toggleLike(){
   const n = STATE.news.find(x=>x.id===NEWS_OPEN); if(!n) return;
@@ -233,4 +234,4 @@ function renderAdminNews(){
     `));
   });
 }
-
+document.getElementById('newsSearch').addEventListener('input', e=>{ NEWS_Q = normAr(e.target.value); NEWS_SHOWN = NEWS_PAGE; renderNews(); });
