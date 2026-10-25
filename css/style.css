@@ -1177,3 +1177,21 @@ main{padding-bottom:118px;}
 .cd-cell{background:rgba(8,20,50,.45);border-color:rgba(255,255,255,.22);}
 .cd-cell b{color:#fff;}
 .cd-cell span{color:rgba(255,255,255,.8);}
+
+/* ===== توحيد النصوص: عناوين داكنة، ثانوي واضح، روابط بلون واحد ===== */
+:root{--ink:#0d2247;--muted:#3f5378;--muted-dim:#5a7094;}
+body{color:var(--ink);}
+.section-title,.card b,.ev-body b,.mini-event b,.nw-card b,.hello-top h1,.adm-tile b,.ai-info b,.profile-hero b,.stat-box b{color:var(--ink);}
+.section-title{font-size:16px;font-weight:800;}
+.section-title .more{color:var(--gold);font-size:12px;font-weight:700;}
+.hello-top h1{font-size:17px;font-weight:800;}
+.hello-top p,.ev-body .meta,.mini-event .meta,.ai-info span,.stat-box span,.adm-sub{color:var(--muted);}
+.ev-body b,.mini-event b{font-size:13.5px;line-height:1.5;}
+.ev-body .meta{font-size:11.5px;}
+.nav-item{color:var(--muted-dim);}
+.nav-item span{font-size:10px;font-weight:700;}
+.nav-item.active{color:var(--gold);}
+.pill-tab{color:var(--muted);font-weight:700;}
+.pill-tab.active{color:#fff;}
+.event-name{font-size:18px;line-height:1.5;}
+.ev-over{margin:2px 0 12px;padding:10px 12px;border-radius:12px;background:rgba(8,20,50,.5);color:#fff;font-size:12px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,.22);}

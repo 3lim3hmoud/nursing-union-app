@@ -163,6 +163,13 @@ function startCountdown(){
   clearInterval(cdTimer);
   function tick(){
     const target = new Date(homeNextEvent().date).getTime();
+    const over = !(target > Date.now());
+    const strip = document.getElementById('eventStrip'), box = document.getElementById('countdownBox');
+    if(strip){ strip.classList.toggle('is-over', over); const jb = strip.querySelector('.btn-primary'); if(jb) jb.textContent = (over && !homeNextEvent().activityId) ? 'شوف الفعاليات' : 'انضم للفعالية'; }
+    if(box) box.style.display = over ? 'none' : '';
+    let note = document.getElementById('evOverNote');
+    if(over && !note && box){ note = document.createElement('div'); note.id = 'evOverNote'; note.className = 'ev-over'; note.textContent = 'الحدث ده خلص — تابع الفعاليات الجاية'; box.after(note); }
+    if(note) note.style.display = over ? '' : 'none';
     const diff = Math.max(0, target - Date.now());
     const d = Math.floor(diff/86400000);
     const h = Math.floor(diff%86400000/3600000);
