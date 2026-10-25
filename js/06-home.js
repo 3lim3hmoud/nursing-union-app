@@ -32,7 +32,7 @@ function renderHome(){
   document.getElementById('nextEventName').textContent = NE.name;
   document.getElementById('nextEventMeta').textContent = NE.place;
   document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(6,16,40,.45), rgba(4,10,28,.90)), url('${cssUrl(NE.image)}')`;
+    `linear-gradient(180deg, rgba(6,16,40,.45), rgba(4,10,28,.90)), url('${cssUrl(cld(NE.image,'c_fill,w_900,h_700,q_auto,f_auto'))}')`;
   ensureMyRegs();
 
   setAvatarEl(document.getElementById('sowAvatar'), STATE.studentOfWeek.name, STATE.studentOfWeek.photoURL, STATE.studentOfWeek.initial);

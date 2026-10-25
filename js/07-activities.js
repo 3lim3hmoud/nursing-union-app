@@ -52,14 +52,16 @@ function nextActivity(){
 }
 function homeNextEvent(){
   const manual = STATE.nextEvent, mT = new Date(manual.date).getTime();
+  /* الصورة: غلاف الفعالية، وإلا أول صورة من معرضها، وإلا صورة الإعداد اليدوي، وإلا صورة المبنى */
+  const imgOf = act => (typeof mediaList==='function' ? mediaList(act)[0] : act.photoURL) || manual.image || 'images/building.jpg';
   /* المثبّتة من لوحة الأدمن بتكسب لو لسه ماخلصتش */
   const pin = STATE.activities.find(x=>x.pinnedNext && actStart(x) && !actIsPast(x));
-  if(pin) return { name:pin.title, place:pin.place, image:pin.photoURL || manual.image, date:actStart(pin).toISOString(), activityId:pin.id, pinned:true };
+  if(pin) return { name:pin.title, place:pin.place, image:imgOf(pin), date:actStart(pin).toISOString(), activityId:pin.id, pinned:true };
   const a = nextActivity();
   if(a && (!(mT>Date.now()) || actStart(a).getTime() < mT)){
-    return { name:a.title, place:a.place, image:a.photoURL || manual.image, date:actStart(a).toISOString(), activityId:a.id };
+    return { name:a.title, place:a.place, image:imgOf(a), date:actStart(a).toISOString(), activityId:a.id };
   }
-  return manual;
+  return Object.assign({}, manual, { image: manual.image || 'images/building.jpg' });
 }
 function ensureMyRegs(){
   if(!fbReady || !STUDENT.uid) return;
