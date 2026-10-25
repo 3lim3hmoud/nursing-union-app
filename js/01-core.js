@@ -101,39 +101,39 @@ function initFirestoreListeners(){
       document.getElementById('af-viceQuote').value = STATE.viceDean.quote||'';
     }
   });
-  db.collection('activities').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('activities').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.activities = snap.docs.map(docToItem);
     if(typeof notifCheck==='function') notifCheck('activities', STATE.activities);
     renderActivities(); renderHome(); renderAdminActivities(); startCountdown(); adminDashRefresh();
   }, ()=>{});
-  db.collection('magazines').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('magazines').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.magazines = snap.docs.map(docToItem);
     renderMags(); renderAdminMagazines();
   }, ()=>{});
-  db.collection('campaigns').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('campaigns').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.campaigns = snap.docs.map(docToItem);
     renderCamps(); renderHome(); renderAdminCampaigns();
   }, ()=>{});
-  db.collection('committees').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('committees').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
     STATE.committees = snap.docs.map(docToItem);
     if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
     renderAdminCommittees();
   }, ()=>{});
-  db.collection('leaderboard').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.leaderboard = snap.docs.map(docToItem);
     renderRanking(); renderAdminLeaderboard();
   }, ()=>{});
-  db.collection('members').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
     STATE.members = snap.docs.map(docToItem);
     if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
     renderAdminMembers();
   }, ()=>{});
-  db.collection('news').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('news').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
     STATE.news = snap.docs.map(docToItem); adminDashRefresh();
     if(typeof notifCheck==='function') notifCheck('news', STATE.news);
     renderNews(); renderAdminNews();
   }, ()=>{});
-  db.collection('polls').orderBy('createdAt','desc').onSnapshot(snap=>{
+  db.collection('polls').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
     STATE.pollErr = '';
     STATE.polls = snap.docs.map(docToItem);
     syncPollVotes(); renderPolls(); renderAdminPolls(); adminDashRefresh();
