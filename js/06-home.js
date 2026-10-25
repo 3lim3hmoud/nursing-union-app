@@ -22,17 +22,23 @@ function bindGallery(root, list, title){
     openLightboxList(list.map(u=>({type:'image',url:u,title:title||'',album:''})), Number(im.dataset.i));
   }));
 }
+/* اسم مرتب: أول اسمين، والإنجليزي بحروف عادية (مش ALL CAPS) */
+function niceName(n){
+  const parts = String(n||'').trim().split(/\s+/).slice(0,2);
+  return parts.map(w=>/^[A-Za-z]+$/.test(w) ? w.charAt(0).toUpperCase()+w.slice(1).toLowerCase() : w).join(' ');
+}
 /* ========================= الصفحة الرئيسية ========================= */
 function renderHome(){
   setAvatarEl(document.getElementById('homeAvatar'), STUDENT.uid ? STUDENT.name : 'guest', STUDENT.uid ? STUDENT.photoURL : '', STUDENT.avatarInitial);
   const hr = new Date().getHours();
   const greet = hr<12 ? 'صباح الخير' : 'مساء الخير';
-  document.getElementById('homeGreeting').textContent = STUDENT.uid ? `${greet}، ${STUDENT.name} 👋` : `${greet} 👋`;
+  document.getElementById('homeGreetTime').textContent = `${greet} 👋`;
+  document.getElementById('homeGreeting').textContent = STUDENT.uid ? niceName(STUDENT.name) : 'يا صديق الاتحاد';
   const NE = homeNextEvent();
   document.getElementById('nextEventName').textContent = NE.name;
   document.getElementById('nextEventMeta').textContent = NE.place;
   document.getElementById('eventStrip').style.backgroundImage =
-    `linear-gradient(180deg, rgba(9,20,46,.28), rgba(5,11,28,.86)), url('${cssUrl(NE.image)}')`;
+    `linear-gradient(180deg, rgba(6,16,40,.45), rgba(4,10,28,.90)), url('${cssUrl(cld(NE.image,'c_fill,w_900,h_700,q_auto,f_auto'))}')`;
   ensureMyRegs();
 
   setAvatarEl(document.getElementById('sowAvatar'), STATE.studentOfWeek.name, STATE.studentOfWeek.photoURL, STATE.studentOfWeek.initial);
@@ -163,6 +169,13 @@ function startCountdown(){
   clearInterval(cdTimer);
   function tick(){
     const target = new Date(homeNextEvent().date).getTime();
+    const over = !(target > Date.now());
+    const strip = document.getElementById('eventStrip'), box = document.getElementById('countdownBox');
+    if(strip){ strip.classList.toggle('is-over', over); const jb = strip.querySelector('.btn-primary'); if(jb) jb.textContent = (over && !homeNextEvent().activityId) ? 'شوف الفعاليات' : 'انضم للفعالية'; }
+    if(box) box.style.display = over ? 'none' : '';
+    let note = document.getElementById('evOverNote');
+    if(over && !note && box){ note = document.createElement('div'); note.id = 'evOverNote'; note.className = 'ev-over'; note.textContent = 'الحدث ده خلص — تابع الفعاليات الجاية'; box.after(note); }
+    if(note) note.style.display = over ? '' : 'none';
     const diff = Math.max(0, target - Date.now());
     const d = Math.floor(diff/86400000);
     const h = Math.floor(diff%86400000/3600000);

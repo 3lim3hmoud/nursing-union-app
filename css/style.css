@@ -1072,7 +1072,7 @@ body{
 .pill-tab.active{background:linear-gradient(135deg,#1360d2,#2d8cf0);border-color:transparent;box-shadow:0 8px 18px rgba(19,96,210,.30);}
 
 /* بانر الحدث والحملات */
-.event-strip{background-image:linear-gradient(135deg,#0c2f6b,#1360d2 60%,#38a6ff) !important;box-shadow:0 18px 38px rgba(19,96,210,.38);}
+.event-strip{background-color:#0c2f6b;background-size:cover;background-position:center;box-shadow:0 18px 38px rgba(12,47,107,.40);}
 .event-strip .tag{color:#bfe4ff;}
 .campaign-banner{box-shadow:0 16px 34px rgba(19,96,210,.28);}
 
@@ -1161,10 +1161,76 @@ main{padding-bottom:118px;}
 .event-card .ev-thumb{border-radius:18px;box-shadow:0 8px 18px rgba(19,70,160,.22);overflow:hidden;}
 .ev-chip{border-radius:20px;font-weight:700;}
 .mini-event{overflow:hidden;}
-.hello-top h1{background:linear-gradient(135deg,#0c2f6b,#1f74e6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hello-top h1{color:var(--ink);}
 .quick-btn,.qa-item{transition:transform .15s ease;}
 .quick-btn:active,.qa-item:active{transform:scale(.93);}
 @media (prefers-reduced-motion:reduce){.skel{animation:none;}}
 .adm-cover-prev{position:relative;border-radius:16px;overflow:hidden;height:120px;box-shadow:var(--float-sh);align-items:flex-end;}
 .adm-cover-prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .adm-cover-prev span{position:relative;margin:8px;font-size:10px;font-weight:800;color:#fff;background:rgba(12,47,107,.7);border-radius:20px;padding:3px 10px;backdrop-filter:blur(6px);}
+
+/* بانر الحدث القادم: الصورة باينة، وخلفية غامقة والكتابة بيضا واضحة */
+.event-strip::before{background:radial-gradient(circle,rgba(56,189,248,.22),transparent 65%);}
+.event-strip .tag{color:#cfe8ff;text-shadow:0 1px 8px rgba(0,0,0,.45);}
+.event-name{color:#fff;font-size:20px;text-shadow:0 2px 12px rgba(0,0,0,.55);}
+.event-meta{color:rgba(255,255,255,.88);text-shadow:0 1px 8px rgba(0,0,0,.5);}
+.cd-cell{background:rgba(8,20,50,.45);border-color:rgba(255,255,255,.22);}
+.cd-cell b{color:#fff;}
+.cd-cell span{color:rgba(255,255,255,.8);}
+
+/* ===== توحيد النصوص: عناوين داكنة، ثانوي واضح، روابط بلون واحد ===== */
+:root{--ink:#0d2247;--muted:#3f5378;--muted-dim:#5a7094;}
+body{color:var(--ink);}
+.section-title,.card b,.ev-body b,.mini-event b,.nw-card b,.hello-top h1,.adm-tile b,.ai-info b,.profile-hero b,.stat-box b{color:var(--ink);}
+.section-title{font-size:16px;font-weight:800;}
+.section-title .more{color:var(--gold);font-size:12px;font-weight:700;}
+.hello-top h1{font-size:17px;font-weight:800;}
+.hello-top p,.ev-body .meta,.mini-event .meta,.ai-info span,.stat-box span,.adm-sub{color:var(--muted);}
+.ev-body b,.mini-event b{font-size:13.5px;line-height:1.5;}
+.ev-body .meta{font-size:11.5px;}
+.nav-item{color:var(--muted-dim);}
+.nav-item span{font-size:10px;font-weight:700;}
+.nav-item.active{color:var(--gold);}
+.pill-tab{color:var(--muted);font-weight:700;}
+.pill-tab.active{color:#fff;}
+.event-name{font-size:18px;line-height:1.5;}
+.ev-over{margin:2px 0 12px;padding:10px 12px;border-radius:12px;background:rgba(8,20,50,.5);color:#fff;font-size:12px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,.22);}
+
+/* ===== الترحيب ===== */
+.hello-h1{display:flex;flex-direction:column;gap:2px;margin:0;line-height:1.3;}
+.hello-h1 small{font-size:12.5px;font-weight:700;color:var(--muted);}
+.hello-h1 bdi{font-size:21px;font-weight:800;color:var(--ink);unicode-bidi:isolate;}
+
+/* ===== شاشة الدخول / حساب جديد ===== */
+.gate-hero{position:relative;overflow:hidden;text-align:center;color:#fff;padding:26px 18px 54px;border-radius:28px;margin-bottom:-34px;
+  background:radial-gradient(260px 160px at 85% 0%,rgba(125,211,252,.45),transparent 70%),linear-gradient(135deg,#0c2f6b 0%,#1360d2 55%,#47a6ff 100%);
+  box-shadow:0 18px 40px rgba(19,96,210,.35);}
+.gate-hero::before,.gate-hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.10);pointer-events:none;}
+.gate-hero::before{width:170px;height:170px;left:-60px;top:-70px;}
+.gate-hero::after{width:110px;height:110px;right:-30px;bottom:-40px;background:rgba(56,189,248,.22);}
+.gate-hero>*{position:relative;z-index:1;}
+.gate-logo{width:84px;height:84px;border-radius:50%;border:3px solid rgba(255,255,255,.85);box-shadow:0 0 0 7px rgba(255,255,255,.14),0 14px 30px rgba(0,0,0,.28);background:#fff;object-fit:cover;}
+.gate-hero h2{margin:14px 0 6px;font-size:19px;font-weight:800;color:#fff;}
+.gate-hero p{margin:0 auto;max-width:280px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.9);}
+.gate-perks{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.gate-perks span{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(6px);}
+.gate-card{position:relative;z-index:2;padding:18px 16px 16px;border-radius:24px;}
+.gate-tabs{display:flex;gap:4px;padding:4px;border-radius:16px;background:#e3efff;margin-bottom:16px;}
+.gate-tab{flex:1;text-align:center;padding:10px 6px;border-radius:12px;font-size:13px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s;background:transparent;border:0;box-shadow:none;}
+.gate-tab.active{color:#fff;background:linear-gradient(135deg,#1360d2,#47a6ff);box-shadow:0 8px 18px rgba(19,96,210,.30);}
+.gate-form{display:flex;flex-direction:column;gap:11px;}
+.gate-form input{width:100%;box-sizing:border-box;padding:14px 46px 14px 14px;border-radius:15px;border:1.5px solid transparent;background:#f1f7ff no-repeat right 15px center/18px;font:inherit;font-size:13.5px;color:var(--ink);transition:border-color .2s,box-shadow .2s,background-color .2s;}
+.gate-form input::placeholder{color:var(--muted-dim);}
+.gate-form input:focus{outline:none;background-color:#fff;border-color:var(--gold-light);box-shadow:0 0 0 4px rgba(71,166,255,.20);}
+#gateLoginEmail,#gateSignupEmail{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f74e6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='18' height='14' rx='3'/><path d='M3 7l9 6 9-6'/></svg>");}
+#gateLoginPass,#gateSignupPass{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f74e6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='11' width='16' height='10' rx='3'/><path d='M8 11V8a4 4 0 018 0v3'/></svg>");}
+#gateSignupName{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f74e6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M4 21c0-4 4-6 8-6s8 2 8 6'/></svg>");}
+#gateSignupId{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f74e6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='18' height='14' rx='3'/><circle cx='9' cy='11' r='2'/><path d='M14 10h4M14 14h4M6 16c.6-1.4 2-2 3-2s2.4.6 3 2'/></svg>");}
+#gateSignupLevel{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f74e6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l9 5-9 5-9-5 9-5z'/><path d='M3 13l9 5 9-5'/></svg>");}
+.gate-form .btn-primary{margin-top:4px;padding:14px;border-radius:16px;font-size:14px;font-weight:800;}
+.gate-or{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:var(--muted-dim);font-size:11.5px;}
+.gate-or::before,.gate-or::after{content:"";flex:1;height:1px;background:var(--line);}
+.gate-or span{background:none;padding:0;}
+.gate-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:16px;border:1.5px solid rgba(19,96,210,.18);background:#fff;color:var(--ink);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(19,70,160,.08);transition:transform .15s,box-shadow .2s;}
+.gate-google:active{transform:scale(.98);}
+.gate-error{margin:10px 0 0;font-size:12px;font-weight:700;color:#d1435b;text-align:center;}
