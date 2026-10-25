@@ -748,6 +748,54 @@ body.is-admin .non-admin-only{display:none !important;}
 .rl-att{padding:6px 12px;border-radius:9px;border:1px solid var(--line);background:#fff;font:inherit;font-size:11px;font-weight:800;cursor:pointer;color:var(--muted);flex:none;}
 .rl-att.on{background:rgba(31,174,106,.14);border-color:#1fae6a;color:#12874f;}
 
+/* ---- News ---- */
+.nw-feat{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:16/10;cursor:pointer;background:linear-gradient(135deg,#caa53d,#0d1836);box-shadow:0 12px 28px rgba(21,52,110,.2);margin-bottom:14px;}
+.nw-feat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.nw-feat .shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,9,26,.9),rgba(4,9,26,.05) 65%);}
+.nw-feat .info{position:absolute;right:0;left:0;bottom:0;padding:16px;color:#fff;}
+.nw-feat b{display:block;font-size:16px;line-height:1.6;margin:8px 0 4px;}
+.nw-feat small{font-size:11px;opacity:.85;}
+.nw-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:40px;}
+.nw-item{display:flex;gap:12px;padding:12px;margin-bottom:10px;cursor:pointer;}
+.nw-th{position:relative;width:88px;height:88px;border-radius:14px;overflow:hidden;flex:none;background:linear-gradient(135deg,#caa53d,#0d1836);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.nw-th img{width:100%;height:100%;object-fit:cover;}
+.nw-in{flex:1;min-width:0;}
+.nw-in b{font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.nw-in p{font-size:11.5px;color:var(--muted);line-height:1.7;margin:3px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.nw-meta{display:flex;gap:8px;font-size:10.5px;color:var(--muted);margin-top:6px;align-items:center;flex-wrap:wrap;}
+.nw-tag{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 9px;border-radius:20px;background:rgba(33,89,201,.1);color:var(--gold);}
+.nw-tag.pin{background:rgba(202,165,61,.2);color:#9a7a14;}
+.nw-tag.brk{background:rgba(209,67,91,.14);color:#d1435b;}
+.nw-feat .nw-tag{background:rgba(255,255,255,.22);color:#fff;backdrop-filter:blur(4px);margin-inline-end:6px;}
+.nw-scroll{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 14px;scrollbar-width:none;}
+.nw-scroll::-webkit-scrollbar{display:none;}
+.nw-card{flex:none;width:210px;border-radius:18px;overflow:hidden;background:#fff;border:1px solid rgba(21,52,110,.07);box-shadow:0 1px 2px rgba(21,52,110,.04),0 10px 24px rgba(21,52,110,.07);cursor:pointer;}
+.nw-card .im{height:112px;background:linear-gradient(135deg,#caa53d,#0d1836);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.nw-card .im img{width:100%;height:100%;object-fit:cover;display:block;}
+.nw-card .tx{padding:10px 12px 12px;}
+.nw-card b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;line-height:1.6;}
+.nw-card small{display:block;margin-top:5px;font-size:10px;color:var(--muted);}
+.breaking{display:flex;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;border-radius:16px;background:linear-gradient(90deg,#d1435b,#a3243f);color:#fff;cursor:pointer;box-shadow:0 10px 22px rgba(163,36,63,.3);}
+.breaking .bk{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;}
+.breaking .bk i{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulseDot 1.4s infinite;}
+.breaking b{flex:1;min-width:0;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nr{position:fixed;inset:0;z-index:85;background:#fff;display:none;flex-direction:column;}
+.nr.show{display:flex;animation:sheetUp .25s ease;}
+.nr-top{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 8px;position:absolute;top:0;left:0;right:0;z-index:2;}
+.nr-top .lb-btn{background:rgba(5,10,24,.5);backdrop-filter:blur(6px);}
+.nr-scroll{flex:1;overflow-y:auto;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));}
+.nr-hero{width:100%;aspect-ratio:16/11;object-fit:cover;display:block;}
+.nr-hero-ph{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:56px;background:linear-gradient(135deg,#caa53d,#0d1836);}
+.nr-body{padding:18px 20px;}
+.nr-body h1{font-size:19px;line-height:1.7;margin:10px 0 8px;font-weight:800;}
+.nr-info{font-size:11.5px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
+.nr-text{font-size:14px;line-height:2;white-space:pre-wrap;margin-top:16px;}
+.nr-gal{display:flex;gap:8px;overflow-x:auto;margin-top:18px;padding-bottom:4px;}
+.nr-gal img{width:130px;height:96px;object-fit:cover;border-radius:12px;flex:none;cursor:pointer;}
+.nr-actions{display:flex;gap:10px;margin-top:22px;}
+.nr-btn{flex:1;padding:12px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font:inherit;font-weight:800;font-size:13px;cursor:pointer;color:var(--ink);}
+.nr-btn.on{background:rgba(209,67,91,.1);border-color:rgba(209,67,91,.4);color:#d1435b;}
+
 /* ---- Premium polish ---- */
 html{-webkit-font-smoothing:antialiased;}
 #pages{scroll-behavior:smooth;}
@@ -828,6 +876,8 @@ html{-webkit-font-smoothing:antialiased;}
         </div>
       </div>
 
+      <div id="homeBreaking"></div>
+
       <div id="homePollBanner"></div>
 
       <div class="section-title">من فعاليات الكلية 🎬 <span class="more" onclick="goPage('media')">عرض الكل</span></div>
@@ -848,6 +898,9 @@ html{-webkit-font-smoothing:antialiased;}
         <div class="quick-item" onclick="goPage('news')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><span>الأخبار</span></div>
         <div class="quick-item" onclick="goPage('media')"><div class="quick-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div><span>الميديا</span></div>
       </div>
+
+      <div class="section-title">📰 آخر الأخبار <span class="more" onclick="goPage('news')">عرض الكل</span></div>
+      <div class="nw-scroll" id="homeNewsScroll"></div>
 
       <div class="section-title">⭐ طالب الأسبوع <span class="more" onclick="openArchive()">الأرشيف</span></div>
       <div class="sow-card">
@@ -901,9 +954,11 @@ html{-webkit-font-smoothing:antialiased;}
 
     <!-- ---------------- NEWS ---------------- -->
     <section class="page" id="page-news">
-      <div class="section-title" style="margin-top:6px;">أخبار الاتحاد</div>
+      <div class="section-title" style="margin-top:6px;">📰 أخبار الاتحاد <span class="more" id="newsCount"></span></div>
+      <div class="mchips" id="newsChips"></div>
+      <div id="newsFeatured"></div>
       <div id="newsList"></div>
-    </section>
+    </section></section>
 
     <!-- ---------------- POLLS ---------------- -->
     <section class="page" id="page-media">
@@ -1240,17 +1295,31 @@ html{-webkit-font-smoothing:antialiased;}
         </details>
 
         <details class="admin-box" data-sec="news">
-          <summary>📰 الأخبار (بالصورة)</summary>
-          <form onsubmit="return saveNews(event)">
+          <summary>📰 الأخبار</summary>
+          <form onsubmit="return saveNews(event)" id="newsForm">
             <input type="hidden" id="af-newsId">
             <input required id="af-newsTitle" placeholder="عنوان الخبر">
-            <input required id="af-newsDesc" placeholder="تفاصيل الخبر">
-            <input required id="af-newsDate" placeholder="التاريخ">
+            <select id="af-newsCat">
+              <option value="union">📣 أخبار الاتحاد</option>
+              <option value="events">🎉 فعاليات</option>
+              <option value="academic">🎓 أكاديمي</option>
+              <option value="achievements">🏆 إنجازات</option>
+              <option value="announce">📌 إعلانات</option>
+            </select>
+            <textarea required id="af-newsDesc" rows="7" placeholder="نص الخبر (تقدر تكتب أكتر من فقرة)"></textarea>
+            <label class="adm-sub">الصورة الرئيسية</label>
             <input type="file" id="af-newsPhoto" accept="image/*">
-            <button class="btn-primary" type="submit" id="af-newsSubmitBtn">إضافة</button>
+            <label class="adm-chk"><input type="checkbox" id="af-newsRmCover"> حذف الصورة الرئيسية الحالية (عند التعديل)</label>
+            <label class="adm-sub">صور إضافية (اختياري)</label>
+            <input type="file" id="af-newsGallery" accept="image/*" multiple>
+            <label class="adm-chk"><input type="checkbox" id="af-newsRmImgs"> مسح الصور الإضافية القديمة (عند التعديل)</label>
+            <label class="adm-chk"><input type="checkbox" id="af-newsPinned"> 📌 تثبيت في أول القايمة</label>
+            <label class="adm-chk"><input type="checkbox" id="af-newsBreaking"> 🔴 خبر عاجل (يظهر في الرئيسية لمدة 3 أيام)</label>
+            <button class="btn-primary" type="submit" id="af-newsSubmitBtn">نشر الخبر</button>
+            <button type="button" class="mini-btn" id="af-newsCancel" style="display:none;" onclick="resetNewsForm()">إلغاء التعديل</button>
           </form>
-          <div id="admin-newsList"></div>
-        </details>
+          <div id="admin-newsList" style="padding:0 14px 12px;"></div>
+        </details></details>
         </div><!-- /adminSections -->
 
       </div>
@@ -1376,6 +1445,14 @@ html{-webkit-font-smoothing:antialiased;}
       <button type="button" class="btn-ghost" onclick="closeRegList()">إغلاق</button>
     </div>
   </div>
+</div>
+
+<div class="nr" id="newsReader">
+  <div class="nr-top">
+    <button type="button" class="lb-btn" onclick="closeNews()" aria-label="إغلاق">✕</button>
+    <button type="button" class="lb-btn" onclick="shareNews()" aria-label="مشاركة">⤴</button>
+  </div>
+  <div class="nr-scroll" id="nrBody"></div>
 </div>
 
 <div id="toast"></div>
@@ -1999,12 +2076,18 @@ document.getElementById('mediaGrid').addEventListener('click', e=>{
 });
 
 /* ----- العارض الكامل ----- */
-const LB = { list:[], i:0 };
+const LB = { list:[], i:0, deletable:true };
 function openLightbox(id, scope){
+  LB.deletable = true;
   LB.list = scope==='home' ? STATE.media.slice(0,6) : filteredMedia();
   const i = LB.list.findIndex(m=>m.id===id);
   if(i<0) return;
   LB.i = i;
+  document.getElementById('lightbox').classList.add('show');
+  renderLightbox();
+}
+function openLightboxList(list, i){
+  LB.deletable = false; LB.list = list; LB.i = i || 0;
   document.getElementById('lightbox').classList.add('show');
   renderLightbox();
 }
@@ -2033,7 +2116,7 @@ function renderLightbox(){
   document.getElementById('lbTitle').textContent = m.title || m.album || '';
   document.getElementById('lbAlbum').textContent = m.title && m.album ? m.album : '';
   document.getElementById('lbCount').textContent = (LB.i+1)+' / '+LB.list.length;
-  document.getElementById('lbDel').style.display = IS_ADMIN ? '' : 'none';
+  document.getElementById('lbDel').style.display = (IS_ADMIN && LB.deletable) ? '' : 'none';
   document.querySelectorAll('#lightbox .lb-nav').forEach(b=>b.style.display = LB.list.length>1 ? '' : 'none');
 }
 function shareMedia(){
@@ -2816,21 +2899,227 @@ function renderCamps(){
 }
 
 /* ========================= الأخبار ========================= */
+/* ========================= الأخبار ========================= */
+const NEWS_CATS = {
+  union:{label:'أخبار الاتحاد',icon:'📣'}, events:{label:'فعاليات',icon:'🎉'}, academic:{label:'أكاديمي',icon:'🎓'},
+  achievements:{label:'إنجازات',icon:'🏆'}, announce:{label:'إعلانات',icon:'📌'}
+};
+let NEWS_FILTER = 'all', NEWS_OPEN = null, NEWS_DEEP_DONE = false;
+function newsSorted(){
+  return [...STATE.news].sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || (b.createdAt||0)-(a.createdAt||0));
+}
+function newsDate(n){
+  if(n.date) return n.date;
+  return n.createdAt ? new Date(n.createdAt).toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'}) : '';
+}
+function newsTag(n){ const c = NEWS_CATS[n.cat]; return c ? `<span class="nw-tag">${c.icon} ${c.label}</span>` : ''; }
+function newsFlags(n){ return (n.breaking && Date.now()-(n.createdAt||0) < 3*86400000 ? '<span class="nw-tag brk">🔴 عاجل</span>' : '') + (n.pinned ? '<span class="nw-tag pin">📌 مثبّت</span>' : ''); }
+function newsThumb(n,w,h){ return n.photoURL ? `<img src="${esc(cld(n.photoURL,'c_fill,w_'+w+',h_'+h+',q_auto,f_auto'))}" alt="" loading="lazy">` : '📰'; }
 function renderNews(){
-  const wrap = document.getElementById('newsList');
+  const chips = document.getElementById('newsChips'), feat = document.getElementById('newsFeatured'), wrap = document.getElementById('newsList');
+  if(chips && feat && wrap){
+    const all = newsSorted();
+    const cats = Object.keys(NEWS_CATS).filter(k=>all.some(n=>n.cat===k));
+    if(NEWS_FILTER!=='all' && !cats.includes(NEWS_FILTER)) NEWS_FILTER = 'all';
+    chips.innerHTML = '';
+    if(cats.length){
+      [['all','الكل',all.length]].concat(cats.map(k=>[k, NEWS_CATS[k].icon+' '+NEWS_CATS[k].label, all.filter(n=>n.cat===k).length])).forEach(d=>{
+        chips.appendChild(el(`<button type="button" class="mchip ${NEWS_FILTER===d[0]?'active':''}" data-f="${d[0]}">${d[1]} <i>${d[2]}</i></button>`));
+      });
+    }
+    const list = NEWS_FILTER==='all' ? all : all.filter(n=>n.cat===NEWS_FILTER);
+    document.getElementById('newsCount').textContent = list.length ? list.length+' خبر' : '';
+    feat.innerHTML = ''; wrap.innerHTML = '';
+    if(!list.length){ wrap.appendChild(el('<div class="empty-note">لسه مفيش أخبار</div>')); }
+    else {
+      const f = list[0];
+      const fe = el(`<div class="nw-feat">${f.photoURL ? `<img src="${esc(cld(f.photoURL,'c_fill,w_900,h_560,q_auto,f_auto'))}" alt="">` : '<div class="nw-ph">📰</div>'}<div class="shade"></div><div class="info"><div>${newsFlags(f)}${newsTag(f)}</div><b>${esc(f.title)}</b><small>📅 ${esc(newsDate(f))}${(f.likeUids||[]).length?` · ❤ ${(f.likeUids||[]).length}`:''}</small></div></div>`);
+      fe.addEventListener('click', ()=>openNews(f.id));
+      feat.appendChild(fe);
+      list.slice(1).forEach(n=>{
+        const it = el(`<div class="card nw-item"><div class="nw-th">${newsThumb(n,200,200)}</div><div class="nw-in"><b>${esc(n.title)}</b><p>${esc((n.desc||'').replace(/\s+/g,' '))}</p><div class="nw-meta">${newsFlags(n)}${newsTag(n)}<span>📅 ${esc(newsDate(n))}</span>${(n.likeUids||[]).length?`<span>❤ ${(n.likeUids||[]).length}</span>`:''}</div></div></div>`);
+        it.addEventListener('click', ()=>openNews(n.id));
+        wrap.appendChild(it);
+      });
+    }
+  }
+  renderHomeNews();
+  if(NEWS_OPEN){ const cur = STATE.news.find(x=>x.id===NEWS_OPEN); if(cur) fillNewsReader(cur); }
+  if(!NEWS_DEEP_DONE && STATE.news.length){
+    NEWS_DEEP_DONE = true;
+    const m = /^#news-(.+)$/.exec(location.hash || '');
+    if(m && STATE.news.some(x=>x.id===m[1])) openNews(m[1]);
+  }
+}
+function renderHomeNews(){
+  const sc = document.getElementById('homeNewsScroll'), br = document.getElementById('homeBreaking');
+  if(sc){
+    sc.innerHTML = '';
+    const list = newsSorted().slice(0,6);
+    if(!list.length) sc.appendChild(el('<div class="empty-note" style="width:100%;">لسه مفيش أخبار</div>'));
+    list.forEach(n=>{
+      const c = el(`<div class="nw-card"><div class="im">${newsThumb(n,420,224)}</div><div class="tx"><b>${esc(n.title)}</b><small>${n.pinned?'📌 ':''}${esc(newsDate(n))}</small></div></div>`);
+      c.addEventListener('click', ()=>openNews(n.id));
+      sc.appendChild(c);
+    });
+  }
+  if(br){
+    const b = [...STATE.news].filter(n=>n.breaking && Date.now()-(n.createdAt||0) < 3*86400000).sort((x,y)=>(y.createdAt||0)-(x.createdAt||0))[0];
+    br.innerHTML = '';
+    if(b){
+      const d = el(`<div class="breaking"><span class="bk"><i></i>عاجل</span><b>${esc(b.title)}</b><span>‹</span></div>`);
+      d.addEventListener('click', ()=>openNews(b.id));
+      br.appendChild(d);
+    }
+  }
+}
+document.getElementById('newsChips').addEventListener('click', e=>{
+  const b = e.target.closest('.mchip'); if(!b) return;
+  NEWS_FILTER = b.dataset.f; renderNews();
+});
+function fillNewsReader(n){
+  const likes = n.likeUids || [], liked = !!(STUDENT.uid && likes.includes(STUDENT.uid));
+  const gal = (n.images||[]).length ? `<div class="nr-gal">${n.images.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy">`).join('')}</div>` : '';
+  document.getElementById('nrBody').innerHTML = `
+    ${n.photoURL ? `<img class="nr-hero" src="${esc(cld(n.photoURL,'c_fill,w_1000,h_690,q_auto,f_auto'))}" alt="">` : '<div class="nr-hero-ph">📰</div>'}
+    <div class="nr-body">
+      <div>${newsFlags(n)}${newsTag(n)}</div>
+      <h1>${esc(n.title)}</h1>
+      <div class="nr-info"><span>📅 ${esc(newsDate(n))}</span><span id="nrLikeCount">${likes.length ? '❤ '+likes.length : ''}</span></div>
+      <div class="nr-text">${esc(n.desc||'')}</div>
+      ${gal}
+      <div class="nr-actions">
+        <button type="button" class="nr-btn ${liked?'on':''}" id="nrLike" onclick="toggleLike()">${liked?'❤ أعجبني':'🤍 أعجبني'}${likes.length?' ('+likes.length+')':''}</button>
+        <button type="button" class="nr-btn" onclick="shareNews()">⤴ مشاركة</button>
+      </div>
+    </div>`;
+  document.querySelectorAll('#nrBody .nr-gal img').forEach(im=>im.addEventListener('click', ()=>
+    openLightboxList((n.images||[]).map(u=>({type:'image',url:u,title:n.title,album:''})), Number(im.dataset.i))));
+}
+function openNews(id){
+  const n = STATE.news.find(x=>x.id===id); if(!n) return;
+  NEWS_OPEN = id;
+  fillNewsReader(n);
+  const r = document.getElementById('newsReader'); r.classList.add('show');
+  document.getElementById('nrBody').scrollTop = 0;
+  try{ history.replaceState(null,'',location.pathname+location.search+'#news-'+id); }catch(e){}
+}
+function closeNews(){
+  NEWS_OPEN = null;
+  document.getElementById('newsReader').classList.remove('show');
+  try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+}
+async function toggleLike(){
+  const n = STATE.news.find(x=>x.id===NEWS_OPEN); if(!n) return;
+  if(!STUDENT.uid){ showToast('سجّل دخولك الأول علشان تتفاعل'); closeNews(); goPage('profile'); return; }
+  if(!fbReady) return;
+  const likes = n.likeUids || [], liked = likes.includes(STUDENT.uid);
+  const FV = firebase.firestore.FieldValue;
+  n.likeUids = liked ? likes.filter(u=>u!==STUDENT.uid) : [...likes, STUDENT.uid];   /* تحديث فوري */
+  fillNewsReader(n);
+  try{
+    await db.collection('news').doc(n.id).update({ likeUids: liked ? FV.arrayRemove(STUDENT.uid) : FV.arrayUnion(STUDENT.uid) });
+  }catch(e){
+    n.likeUids = likes; fillNewsReader(n); showToast('مقدرتش أسجل تفاعلك، جرّب تاني');
+  }
+}
+function shareNews(){
+  const n = STATE.news.find(x=>x.id===NEWS_OPEN); if(!n) return;
+  const url = location.href.split('#')[0] + '#news-' + n.id;
+  const data = { title:n.title, text:n.title, url };
+  if(navigator.share){ navigator.share(data).catch(()=>{}); }
+  else if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>showToast('تم نسخ رابط الخبر ✔')).catch(()=>showToast(url)); }
+  else showToast(url);
+}
+
+/* ----- لوحة الأدمن: الأخبار ----- */
+function resetNewsForm(){
+  const f = document.getElementById('newsForm'); if(!f) return;
+  f.reset();
+  document.getElementById('af-newsId').value = '';
+  document.getElementById('af-newsSubmitBtn').textContent = 'نشر الخبر';
+  document.getElementById('af-newsCancel').style.display = 'none';
+}
+function editNews(id){
+  const n = STATE.news.find(x=>x.id===id); if(!n) return;
+  resetNewsForm();
+  document.getElementById('af-newsId').value = id;
+  document.getElementById('af-newsTitle').value = n.title;
+  document.getElementById('af-newsDesc').value = n.desc || '';
+  document.getElementById('af-newsCat').value = n.cat || 'union';
+  document.getElementById('af-newsPinned').checked = !!n.pinned;
+  document.getElementById('af-newsBreaking').checked = !!n.breaking;
+  document.getElementById('af-newsSubmitBtn').textContent = 'حفظ التعديل';
+  document.getElementById('af-newsCancel').style.display = '';
+  openAdminSection('news');
+}
+function deleteNews(id){
+  if(!confirm('حذف الخبر ده؟')) return;
+  db.collection('news').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
+}
+function toggleNewsFlag(id, flag){
+  const n = STATE.news.find(x=>x.id===id); if(!n || !requireFB()) return;
+  const upd = { [flag]: !n[flag] };
+  if(flag==='breaking' && !n.breaking) upd.createdAt = Date.now();   /* العاجل يبدأ عدّاد الـ 3 أيام من لحظة التفعيل */
+  db.collection('news').doc(id).update(upd).then(()=>showToast('تم التحديث ✔'));
+}
+async function saveNews(ev){
+  ev.preventDefault();
+  if(!requireFB()) return false;
+  const btn = document.getElementById('af-newsSubmitBtn');
+  const id = document.getElementById('af-newsId').value;
+  const title = document.getElementById('af-newsTitle').value.trim();
+  const desc = document.getElementById('af-newsDesc').value.trim();
+  if(!title || !desc){ showToast('اكتب العنوان ونص الخبر'); return false; }
+  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+  try{
+    const DEL = firebase.firestore.FieldValue.delete();
+    const old = id ? (STATE.news.find(x=>x.id===id) || {}) : {};
+    const item = {
+      title, desc,
+      cat: document.getElementById('af-newsCat').value,
+      pinned: document.getElementById('af-newsPinned').checked,
+      breaking: document.getElementById('af-newsBreaking').checked
+    };
+    if(!id) item.date = new Date().toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+    if(item.breaking && !old.breaking && id) item.createdAt = Date.now();
+    const cover = document.getElementById('af-newsPhoto').files[0];
+    if(cover){ const u = await uploadImage(await resizeImage(cover,1400),'news'); if(u) item.photoURL = u; }
+    else if(id && document.getElementById('af-newsRmCover').checked) item.photoURL = DEL;
+    const gal = [...document.getElementById('af-newsGallery').files];
+    const keep = (id && !document.getElementById('af-newsRmImgs').checked) ? (old.images || []) : [];
+    if(gal.length){
+      const urls = [];
+      for(let i=0;i<gal.length;i++){
+        btn.textContent = `رفع الصور ${i+1} من ${gal.length}...`;
+        const u = await uploadImage(await resizeImage(gal[i],1400),'news'); if(u) urls.push(u);
+      }
+      item.images = [...keep, ...urls];
+    } else if(id && document.getElementById('af-newsRmImgs').checked){ item.images = DEL; }
+    if(id) await db.collection('news').doc(id).update(item);
+    else await db.collection('news').add({ ...item, likeUids:[], createdAt:Date.now() });
+    showToast(id ? 'تم حفظ التعديل ✔' : 'تم نشر الخبر ✔');
+    resetNewsForm();
+  }catch(e){
+    showToast('حصل خطأ في الحفظ، اتأكد إنك داخل بحساب الأدمن');
+  }finally{
+    btn.disabled = false; btn.textContent = document.getElementById('af-newsId').value ? 'حفظ التعديل' : 'نشر الخبر';
+  }
+  return false;
+}
+function renderAdminNews(){
+  const wrap = document.getElementById('admin-newsList'); if(!wrap) return;
   wrap.innerHTML='';
-  if(!STATE.news.length){ wrap.appendChild(el('<div class="empty-note">لسه مفيش أخبار</div>')); return; }
-  STATE.news.forEach(n=>{
-    const ph = n.photoURL
-      ? `<img src="${n.photoURL}" alt="${esc(n.title)}">`
-      : `<div class="ph" style="background:linear-gradient(135deg,#caa53d,#0d1836)">📰</div>`;
+  newsSorted().forEach(n=>{
+    const flags = (n.pinned?' · 📌 مثبّت':'') + (n.breaking?' · 🔴 عاجل':'') + ((n.likeUids||[]).length?' · ❤ '+n.likeUids.length:'');
     wrap.appendChild(el(`
-      <div class="card news-card">
-        ${ph}
-        <div class="news-body">
-          <b>${esc(n.title)}</b>
-          <div class="meta">📅 ${esc(n.date)}</div>
-          <p>${esc(n.desc)}</p>
+      <div class="admin-item-row">
+        <div class="ai-info"><b>${esc(n.title)}</b><span>${esc(newsDate(n))}${flags}</span></div>
+        <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
+          <button type="button" class="mini-btn" onclick="toggleNewsFlag('${n.id}','pinned')">${n.pinned?'إلغاء التثبيت':'تثبيت'}</button>
+          <button type="button" class="mini-btn" onclick="toggleNewsFlag('${n.id}','breaking')">${n.breaking?'إلغاء العاجل':'عاجل'}</button>
+          <button type="button" class="mini-btn" onclick="editNews('${n.id}')">تعديل</button>
+          <button type="button" class="mini-btn danger" onclick="deleteNews('${n.id}')">حذف</button>
         </div>
       </div>
     `));
@@ -3445,55 +3734,6 @@ function renderAdminMembers(){
 }
 
 /* --- الأخبار (بالصورة) --- */
-function editNews(id){
-  const n = STATE.news.find(x=>x.id===id); if(!n) return;
-  document.getElementById('af-newsId').value = id;
-  document.getElementById('af-newsTitle').value = n.title;
-  document.getElementById('af-newsDesc').value = n.desc;
-  document.getElementById('af-newsDate').value = n.date;
-  document.getElementById('af-newsSubmitBtn').textContent = 'حفظ التعديل';
-  openAdminSection('news');
-}
-function deleteNews(id){
-  if(!confirm('حذف الخبر ده؟')) return;
-  db.collection('news').doc(id).delete().then(()=>showToast('تم الحذف ✔'));
-}
-async function saveNews(ev){
-  ev.preventDefault();
-  if(!requireFB()) return false;
-  const title = document.getElementById('af-newsTitle').value.trim();
-  const desc = document.getElementById('af-newsDesc').value.trim();
-  const date = document.getElementById('af-newsDate').value.trim();
-  const fileInput = document.getElementById('af-newsPhoto');
-  if(!title||!desc||!date) return false;
-  const id = document.getElementById('af-newsId').value;
-  const item = {title, desc, date};
-  if(fileInput.files[0]) item.photoURL = await uploadImage(fileInput.files[0], 'news');
-  const p = id ? db.collection('news').doc(id).update(item)
-               : db.collection('news').add({...item, createdAt:Date.now()});
-  p.then(()=>{
-    showToast(id?'تم حفظ التعديل ✔':'تمت إضافة الخبر ✔');
-    ev.target.reset(); document.getElementById('af-newsId').value='';
-    document.getElementById('af-newsSubmitBtn').textContent='إضافة';
-  });
-  return false;
-}
-function renderAdminNews(){
-  const wrap = document.getElementById('admin-newsList'); if(!wrap) return;
-  wrap.innerHTML='';
-  STATE.news.forEach(n=>{
-    wrap.appendChild(el(`
-      <div class="admin-item-row">
-        <div class="ai-info"><b>${esc(n.title)}</b><span>${esc(n.date)}</span></div>
-        <div class="ai-actions">
-          <button type="button" class="mini-btn" onclick="editNews('${n.id}')">تعديل</button>
-          <button type="button" class="mini-btn danger" onclick="deleteNews('${n.id}')">حذف</button>
-        </div>
-      </div>
-    `));
-  });
-}
-
 /* ========================= التهيئة ========================= */
 function initApp(){
   renderHome();
