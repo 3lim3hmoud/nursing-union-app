@@ -931,3 +931,71 @@ body.guest .bottomnav, body.guest #openMenuBtn, body.guest #navFab{display:none 
 .gate-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;color:var(--muted);font-size:11px;}
 .gate-or::before,.gate-or::after{content:"";flex:1;height:1px;background:var(--line);}
 .gate-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#1f1f1f;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* =========================================================================
+   هوية جديدة: "النبض" — أخضر مستشفى عميق + خط نبض (ECG) كعنصر مميز وحيد
+   (طبقة تصميم فوق الستايل القديم: بتغيّر المتغيرات والمكونات الأساسية بس)
+   ========================================================================= */
+:root{
+  --pine:#0b3a3f;            /* أخضر مستشفى غامق: الشريط العلوي والبانرات */
+  --gold:#0f6b6b;            /* اللون الأساسي للأزرار والعناصر النشطة */
+  --gold-light:#1f9a92;
+  --pulse:#ff5a5f;           /* لون النبض: بيظهر في خط النبض والتبويب النشط بس */
+  --navy-950:#f2f7f7;
+  --navy-700:#e1eeee;
+  --navy-600:#cfe4e3;
+  --ink:#0a2a2e;
+  --muted:#506b6e;
+  --muted-dim:#84999b;
+  --line:rgba(11,58,63,.11);
+  --radius-lg:24px;
+  --radius-md:16px;
+}
+html,body,button,input,select,textarea{font-family:'IBM Plex Sans Arabic','Tajawal',sans-serif;}
+body{
+  background:
+    radial-gradient(800px 420px at 100% -8%, rgba(31,154,146,.10), transparent 60%),
+    var(--navy-950);
+}
+#appframe{box-shadow:0 0 60px rgba(11,58,63,.16);background:linear-gradient(180deg,#fff,var(--navy-950) 55%);}
+
+/* الشريط العلوي: غامق، والنص فاتح */
+.topbar{background:var(--pine);border-bottom:0;box-shadow:0 6px 22px rgba(11,58,63,.22);backdrop-filter:none;}
+.brand-text .t1{color:#fff;font-weight:700;letter-spacing:0;}
+.brand-text .t2{color:rgba(255,255,255,.66);}
+.icon-btn{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.2);color:#fff;}
+.dot-badge{border-color:var(--pine);background:var(--pulse);}
+
+/* خط النبض تحت كل عنوان قسم — العنصر المميز الوحيد */
+.section-title{position:relative;padding-bottom:13px;font-weight:700;font-size:16px;}
+.section-title::after{
+  content:"";position:absolute;right:0;bottom:0;width:70px;height:12px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 12' fill='none' stroke='%23ff5a5f' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M0 6h22l4-5 5 10 4-5h35'/></svg>") no-repeat right center/contain;
+}
+
+/* الأزرار والبطاقات */
+.btn-primary{background:linear-gradient(135deg,var(--pine),var(--gold));border-radius:14px;font-weight:700;box-shadow:0 8px 18px rgba(11,58,63,.22);}
+.card,.stat-box,.mini-event,.nw-card{box-shadow:0 1px 2px rgba(11,58,63,.05),0 10px 24px rgba(11,58,63,.07);}
+.card{border-radius:var(--radius-md);}
+.mini-event,.nw-card{border-radius:18px;}
+.pill-tab{border-radius:999px;font-weight:600;}
+.pill-tab.active{background:var(--pine);border-color:var(--pine);}
+
+/* بانر الحدث القادم */
+.event-strip{border-radius:var(--radius-lg);box-shadow:0 14px 30px rgba(11,58,63,.28);}
+.event-strip .tag{color:#7fe0d6;}
+.cd-cell{border-radius:12px;}
+
+/* الشريط السفلي: التبويب النشط بعلامة نبض صغيرة */
+.bottomnav{background:rgba(255,255,255,.95);box-shadow:0 -8px 24px rgba(11,58,63,.08);}
+.nav-item::before{content:"";width:18px;height:3px;border-radius:3px;background:transparent;transition:background .2s ease;}
+.nav-item.active::before{background:var(--pulse);}
+.nav-item.active{color:var(--gold);}
+.nav-fab{background:linear-gradient(135deg,var(--pine),var(--gold-light));box-shadow:0 8px 20px rgba(11,58,63,.38);}
+
+/* حملات: الظل والتدرج أنضف */
+.campaign-banner{border-radius:var(--radius-lg);box-shadow:0 12px 26px rgba(11,58,63,.2);}
+
+/* وصولية: تركيز واضح بالكيبورد وتقليل الحركة */
+:focus-visible{outline:2px solid var(--pulse);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
