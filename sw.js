@@ -1,6 +1,6 @@
 /* غيّر رقم النسخة مع كل تحديث (أو شغّل: sh scripts/bump-sw.sh) —
    ده اللي بيخلي المتصفح يستبدل الـ Service Worker ويمسح الكاش القديم ويظهر شريط "فيه تحديث". */
-const CACHE_NAME = 'union-app-202610252037';
+const CACHE_NAME = 'union-app-202610252053';
 const ASSETS = [
   './',
   './index.html',
@@ -20,6 +20,8 @@ const ASSETS = [
   './js/11-admin.js',
   './js/12-notifications.js',
   './js/14-students-insights.js',
+  './js/15-attendance.js',
+  './js/vendor/qrcode.min.js',
   './js/13-init.js',
   './images/logo.png',
   './images/building.jpg',

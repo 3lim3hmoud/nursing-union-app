@@ -137,7 +137,7 @@ function openActivityModal(id){
   document.getElementById('modalPlace').textContent = '📍 '+a.place;
   document.getElementById('modalDesc').textContent = a.desc || 'مفيش تفاصيل إضافية للنشاط ده لسه.';
   document.getElementById('modalHeroWrap').innerHTML = a.photoURL
-    ? `<img class="modal-hero" src="${esc(a.photoURL)}" alt="${esc(a.title)}">`
+    ? `<img loading="lazy" decoding="async" class="modal-hero" src="${esc(a.photoURL)}" alt="${esc(a.title)}">`
     : `<div class="modal-hero-fallback" style="background:linear-gradient(135deg, ${c.color}, #0d1836)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>`;
   let extra = '';
   const aImgs = mediaList(a);
@@ -188,6 +188,7 @@ function refreshRegBox(a){
   else if(a.registrationClosed){ btn.textContent = 'التسجيل مقفول'; btn.disabled = true; }
   else if(left===0){ btn.textContent = 'اكتمل العدد'; btn.disabled = true; }
   else { btn.textContent = 'سجّل حضورك ✅'; btn.disabled = false; }
+  const tb = document.getElementById('ticketBtn'); if(tb) tb.style.display = mine ? '' : 'none';
 }
 async function toggleRegistration(){
   if(!STUDENT.uid){ showToast('لازم تسجل دخولك الأول من صفحة حسابي'); closeActivityModal(); goPage('profile'); return; }
