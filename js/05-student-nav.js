@@ -11,7 +11,7 @@ function gateErrorMsg(err){
   if(code.includes('weak-password')) return 'كلمة السر لازم تكون 6 أحرف على الأقل.';
   if(code.includes('invalid-email')) return 'الإيميل مش صحيح.';
   if(code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) return 'الإيميل أو كلمة السر غلط.';
-  return 'حصل خطأ، جرّب تاني.';
+  return (typeof authErrMsg==='function') ? authErrMsg(err) : 'حصل خطأ، جرّب تاني.';
 }
 function studentLogin(ev){
   ev.preventDefault();
@@ -84,6 +84,7 @@ async function loadStudentProfile(user){
 /* ========================= التنقل بين الصفحات ========================= */
 let CUR_PAGE = 'home';
 function goPage(name, fromPop){
+  if(document.body.classList.contains('guest') && name!=='profile') name = 'profile';   /* الزائر مالوش غير صفحة الدخول */
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.nav===name));

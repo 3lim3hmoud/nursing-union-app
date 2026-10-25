@@ -150,6 +150,7 @@ let adminLoginAttempted = false;
 function authErrMsg(err){
   const c = (err && err.code) || '';
   if(c.includes('unauthorized-domain')) return 'الدومين ده ('+location.hostname+') مش مضاف في Firebase: Authentication ← Settings ← Authorized domains ← Add domain.';
+  if(c.includes('requests-from-referer') || c.includes('api-key-not-valid') || c.includes('invalid-api-key')) return 'مفتاح Firebase (API key) مقفول على دومينات معينة والدومين ده ('+location.hostname+') مش منهم: Google Cloud Console ← APIs & Services ← Credentials ← Browser key ← Website restrictions ← ضيف '+location.hostname+'/* .';
   if(c.includes('operation-not-allowed')) return 'طريقة الدخول دي مش مفعّلة في Firebase: Authentication ← Sign-in method ← فعّل Google (أو Email/Password).';
   if(c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) return 'نافذة جوجل اتقفلت قبل ما تكمّل الدخول.';
   if(c.includes('popup-blocked')) return 'المتصفح منع نافذة جوجل — هجرّب طريقة تانية تلقائي.';
@@ -174,24 +175,32 @@ function adminLogin(ev){
   auth.signInWithEmailAndPassword(email, pass).catch(adminLoginShowErr);
   return false;
 }
-async function adminLoginGoogle(){
+/* دخول جوجل (للطلاب والأدمن): نافذة منبثقة الأول — لأن الـ redirect بيرجّعك للصفحة الرئيسية من غير ما يكمّل الدخول
+   في المتصفحات اللي بتمنع التخزين بين المواقع (كروم/سفاري الجداد). الـ redirect احتياطي بس لو النافذة اتمنعت. */
+async function googleSignIn(onErr){
   if(!fbReady){ showToast('لازم تحط بيانات Firebase الأول في firebase-config.js'); return; }
-  document.getElementById('adminLoginError').textContent = '';
-  adminLoginAttempted = true;
   const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt:'select_account' });   /* يخليه يسألك تختار الإيميل بدل ما يدخل بحساب قديم */
-  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  provider.setCustomParameters({ prompt:'select_account' });
   try{
-    /* التطبيق المثبّت على الموبايل بيبوّظ النوافذ المنبثقة، فبنستخدم التحويل (redirect) فيه مباشرة */
-    if(standalone){ await auth.signInWithRedirect(provider); return; }
     await auth.signInWithPopup(provider);
   }catch(err){
     const c = (err && err.code) || '';
     if(c.includes('popup-blocked') || c.includes('operation-not-supported') || c.includes('web-storage-unsupported')){
+      try{ sessionStorage.setItem('nuAuthRedirect','1'); }catch(_){}
       try{ await auth.signInWithRedirect(provider); return; }catch(e2){ err = e2; }
     }
-    adminLoginShowErr(err);
+    onErr(err);
   }
+}
+function adminLoginGoogle(){
+  document.getElementById('adminLoginError').textContent = '';
+  adminLoginAttempted = true;
+  try{ sessionStorage.setItem('nuAdminTry','1'); }catch(_){}
+  googleSignIn(adminLoginShowErr);
+}
+function studentLoginGoogle(){
+  const box = document.getElementById('gateError'); if(box) box.textContent = '';
+  googleSignIn(err=>{ if(box) box.textContent = authErrMsg(err); console.error('Student Google login error:', err); });
 }
 /* نتيجة الدخول بالتحويل (redirect): لازم نلتقط الخطأ لو حصل */
 if(fbReady){ auth.getRedirectResult().catch(adminLoginShowErr); }
@@ -220,8 +229,8 @@ if(fbReady){
       document.getElementById('adminUserEmail').textContent = user.email || '';
     }else{
       /* المستخدم مسجل دخول كطالب عادي (مش أدمن) — منسيبه في التطبيق، بس ملوش صلاحية يشوف لوحة التحكم */
-      if(user && adminLoginAttempted){
-        document.getElementById('adminLoginError').textContent = 'الحساب ده ('+(user.email||'بدون إيميل')+') مش من ضمن حسابات الأدمن. لو ده إيميلك: ضيفه في ADMIN_EMAILS و firestore.rules، أو اعمل وثيقة admins/'+user.uid+' من Firebase Console.';
+      if(user){
+        document.getElementById('adminLoginError').textContent = 'إنت داخل بحساب ('+(user.email||'بدون إيميل')+') وهو مش أدمن. لو ده إيميلك: ضيفه في ADMIN_EMAILS و firestore.rules، أو اعمل وثيقة admins/'+user.uid+' من Firebase Console.';
       }
       loginBox.style.display='block'; panel.style.display='none';
     }
