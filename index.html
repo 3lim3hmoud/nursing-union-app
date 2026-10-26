@@ -51,7 +51,8 @@
       </div>
     </div>
     <div class="top-actions">
-      <div class="icon-btn" onclick="showToast('لا إشعارات جديدة حالياً')">
+      <div class="icon-btn bell-btn" id="bellBtn" role="button" aria-label="الإعلانات" onclick="openAnnouncements()">
+        <i class="bell-n" id="bellN" style="display:none">0</i>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
       </div>
     </div>
@@ -797,6 +798,15 @@
   </div>
 </div>
 
+<div class="pe-overlay" id="annModal" onclick="if(event.target===this)closeAnnouncements()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3>🔔 إعلانات الاتحاد</h3>
+    <div id="annList"></div>
+    <div class="pe-actions"><button type="button" class="btn-ghost" onclick="closeAnnouncements()">إغلاق</button></div>
+  </div>
+</div>
+
 <div class="pe-overlay" id="liveAdminModal" onclick="if(event.target===this)closeLiveAdmin()">
   <div class="pe-sheet">
     <div class="pe-handle"></div>
@@ -874,6 +884,7 @@
 <script src="js/15-attendance.js" defer></script>
 <script src="js/16-live.js" defer></script>
 <script src="js/17-certificate.js" defer></script>
+<script src="js/18-extras.js" defer></script>
 <script src="js/13-init.js" defer></script>
 </body>
 </html>

@@ -264,6 +264,7 @@ function renderAdminActivities(){
     const pin = a.pinnedNext ? '<span class="adm-pin">📌 الحدث القادم</span>' : '';
     wrap.appendChild(el(`
       <div class="admin-item-row ${a.pinnedNext?'is-pinned':''}">
+        ${admThumb(a.photoURL,'🗓️')}
         <div class="ai-info"><b>${esc(a.title)}</b>${pin}<span>${esc(k)} · ${esc(a.date||'')}${reg}</span></div>
         <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
           <button type="button" class="mini-btn ${a.pinnedNext?'on':''}" onclick="toggleNextPin('${a.id}')">${a.pinnedNext?'إلغاء التثبيت':'📌 حدث قادم'}</button>
@@ -381,6 +382,7 @@ function renderAdminCampaigns(){
   STATE.campaigns.forEach(c=>{
     wrap.appendChild(el(`
       <div class="admin-item-row">
+        ${admThumb(c.photoURL,'📢')}
         <div class="ai-info"><b>${esc(c.title)}</b><span>${esc(c.status)} · ${esc(c.date)}</span></div>
         <div class="ai-actions">
           <button type="button" class="mini-btn" onclick="editCampaign('${c.id}')">تعديل</button>
