@@ -77,7 +77,7 @@ function certBuildPdf(jpeg, iw, ih, title){
   const add = b=>{ const u = typeof b === 'string' ? enc.encode(b) : b; parts.push(u); len += u.length; };
   const obj = (n, body)=>{ offs[n] = len; add(`${n} 0 obj\n`); add(body); add('\nendobj\n'); };
   const PW = iw >= ih ? 842 : 595, PH = Math.round(PW*ih/iw*100)/100;          /* A4 بالنقاط، أفقي أو رأسي حسب القالب */
-  const hex = Array.from(title).map(ch=>ch.charCodeAt(0).toString(16).padStart(4,'0')).join('').toUpperCase();
+  const hex = Array.from({length:title.length}, (_,i)=>title.charCodeAt(i).toString(16).padStart(4,'0')).join('').toUpperCase();   /* UTF-16 صح حتى مع الإيموجي */
   add('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
   obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
   obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
