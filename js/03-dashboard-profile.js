@@ -10,6 +10,7 @@ const ADMIN_SECTIONS = [
   {k:'insights',ic:'📊',t:'التفاعل والإحصائيات',g:'الطلاب',c:null},
   {k:'rating',ic:'⚙️',t:'التقييم التلقائي',g:'الطلاب',c:null},
   {k:'sow',ic:'⭐',t:'طالب الأسبوع',g:'الطلاب',c:null},
+  {k:'certificates',ic:'📜',t:'شهادات الحضور',g:'الطلاب',c:null},
   {k:'ranking',ic:'🏆',t:'ترتيب الطلاب',g:'الطلاب',c:()=>STATE.leaderboard.length},
   {k:'president',ic:'🏛️',t:'رئيس ونائب الاتحاد',g:'الاتحاد والكلية',c:null},
   {k:'members',ic:'🧑‍🤝‍🧑',t:'أعضاء الاتحاد',g:'الاتحاد والكلية',c:()=>STATE.members.length},

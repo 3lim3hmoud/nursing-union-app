@@ -1391,3 +1391,21 @@ html,body{overflow-x:hidden;}
 .la-bar{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:12.5px;} .la-bar span{flex:0 0 96px;} .la-bar b{flex:0 0 30px;text-align:left;}
 .la-bar div{flex:1;height:8px;border-radius:8px;background:var(--navy-700);overflow:hidden;} .la-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));}
 .la-cm{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;} .la-cm em{color:#f5a623;font-style:normal;} .la-cm p{margin:4px 0 0;overflow-wrap:anywhere;}
+
+/* ===== شهادة الحضور ===== */
+.cert-btn{margin-top:8px;background:linear-gradient(135deg,#8a6a1e,#c9a24a) !important;color:#fff !important;}
+.cert-sheet{max-width:560px;}
+.cert-prev{display:block;width:100%;height:auto;border-radius:10px;background:#fdf9ee;border:1px solid var(--line);box-shadow:0 10px 26px rgba(12,47,107,.16);}
+.cert-hint{font-size:11px;color:var(--muted);text-align:center;margin:10px 0 2px;}
+
+.ce-stage{position:relative;width:100%;margin-top:10px;border-radius:10px;overflow:hidden;background:#e9eef7;border:1px solid var(--line);touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair;min-height:120px;}
+.ce-stage img{display:none;width:100%;height:auto;pointer-events:none;}
+.ce-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12.5px;font-weight:700;}
+.ce-name{position:absolute;white-space:nowrap;pointer-events:none;line-height:1;text-shadow:0 0 0 currentColor;}
+.ce-box{position:absolute;border:1.5px dashed rgba(19,96,210,.75);background:rgba(19,96,210,.06);pointer-events:none;border-radius:4px;}
+.ce-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-top:12px;}
+.ce-grid label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:700;color:var(--muted);}
+.ce-grid input[type=text],.ce-grid select{width:100%;padding:9px 10px;border-radius:10px;border:1.5px solid var(--line);font:inherit;font-size:13px;color:var(--ink);background:#fff;}
+.ce-grid input[type=range]{width:100%;}
+.ce-grid input[type=color]{width:100%;height:38px;padding:2px;border-radius:10px;border:1.5px solid var(--line);background:#fff;}
+[data-theme="dark"] .ce-grid input[type=text],[data-theme="dark"] .ce-grid select,[data-theme="dark"] .ce-grid input[type=color]{background:#0b1730;color:var(--ink);}
