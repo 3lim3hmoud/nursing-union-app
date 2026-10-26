@@ -748,10 +748,14 @@
       <div class="ce-box" id="ceBox"></div>
       <div class="ce-name" id="ceName">Student Name</div>
     </div>
+    <div class="ce-fields">
+      <label>الحقل اللي بتظبطه (اختار وبعدين اسحب على الصورة)<select id="ceField" onchange="certEdField(this.value)"></select></label>
+      <label class="adm-chk"><input type="checkbox" id="ceFieldOn" onchange="certEdUpdate()"> إظهار الحقل ده في الشهادة</label>
+    </div>
     <div class="ce-grid">
       <label>اسم تجريبي<input type="text" id="ceSample" value="Sara Ahmed" maxlength="60" oninput="certEdUpdate()"></label>
       <label>الخط<select id="ceFont" onchange="certEdUpdate()"></select></label>
-      <label>حجم الخط<input type="range" id="ceSize" min="1.5" max="14" step="0.1" oninput="certEdUpdate()"></label>
+      <label>حجم الخط<input type="range" id="ceSize" min="0.8" max="14" step="0.1" oninput="certEdUpdate()"></label>
       <label>أقصى عرض للاسم<input type="range" id="ceMaxW" min="15" max="95" step="1" oninput="certEdUpdate()"></label>
       <label>المكان أفقي (X)<input type="range" id="ceX" min="0" max="100" step="0.1" oninput="certEdUpdate()"></label>
       <label>المكان رأسي (Y)<input type="range" id="ceY" min="0" max="100" step="0.1" oninput="certEdUpdate()"></label>
@@ -761,6 +765,16 @@
     <label class="adm-chk" style="margin-top:8px;"><input type="checkbox" id="ceUpper" onchange="certEdUpdate()"> كل الحروف كابيتال (للأسماء الإنجليزي)</label>
     <div class="pe-actions"><button type="button" class="btn-primary" id="ceSave" onclick="certEdSave()">💾 حفظ القالب</button><button type="button" class="btn-ghost" onclick="certEdPreview()">👁️ معاينة PDF</button></div>
     <div class="pe-actions" style="margin-top:8px;"><button type="button" class="btn-ghost" id="ceRemove" onclick="certEdRemove()">مسح القالب</button><button type="button" class="btn-ghost" onclick="certEdClose()">إغلاق</button></div>
+  </div>
+</div>
+
+<!-- ============ التحقق من الشهادة ============ -->
+<div class="pe-overlay" id="certVerifyModal" onclick="if(event.target===this)closeCertVerify()">
+  <div class="pe-sheet">
+    <div class="pe-handle"></div>
+    <h3>🔎 التحقق من الشهادة</h3>
+    <div id="cvBody"></div>
+    <div class="pe-actions"><button type="button" class="btn-ghost" onclick="closeCertVerify()">إغلاق</button></div>
   </div>
 </div>
 

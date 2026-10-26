@@ -15,7 +15,29 @@ const CERT_FONTS = {
   'Montserrat':       { w:600, label:'Montserrat — عصري' },
   'Amiri':            { w:700, label:'Amiri — للأسماء العربي' }
 };
-const CERT_DEF = { nameX:.5, nameY:.5, nameSize:.06, nameMaxW:.7, nameColor:'#1a2b52', nameFont:'Playfair Display', nameAlign:'center', nameUpper:false };
+const CERT_DEF_BASE = { nameX:.5, nameY:.5, nameSize:.06, nameMaxW:.7, nameColor:'#1a2b52', nameFont:'Playfair Display', nameAlign:'center', nameUpper:false };
+/* حقول إضافية بيحدد الأدمن مكانها وشكلها: اسم الفعالية، التاريخ، رقم الشهادة، وكود QR للتحقق من صحتها */
+const CERT_DEF = Object.assign({}, CERT_DEF_BASE, {
+  titleOn:false,  titleX:.5,  titleY:.62, titleSize:.03,  titleMaxW:.8, titleColor:'#1a2b52', titleFont:'Amiri',      titleAlign:'center',
+  dateOn:false,   dateX:.5,   dateY:.72,  dateSize:.022,  dateMaxW:.5,  dateColor:'#4a5878',  dateFont:'Amiri',       dateAlign:'center',
+  serialOn:false, serialX:.86,serialY:.95,serialSize:.016,serialMaxW:.3,serialColor:'#4a5878',serialFont:'Montserrat', serialAlign:'right',
+  qrOn:false,     qrX:.1,     qrY:.86,    qrSize:.09
+});
+const CE_FIELDS = [
+  { k:'name',   label:'اسم الطالب',    sample:()=>ceEl('ceSample').value.trim() || 'Student Name' },
+  { k:'title',  label:'اسم الفعالية',  sample:()=>'Annual Nursing Conference' },
+  { k:'date',   label:'التاريخ',       sample:()=>'15 November 2026' },
+  { k:'serial', label:'رقم الشهادة',   sample:()=>'NU-7K2M9QX' },
+  { k:'qr',     label:'كود QR للتحقق', qr:true }
+];
+/* رقم ثابت لكل (فعالية + طالب): نفس الرقم كل مرة */
+function certSerial(aid, uid){
+  let h = 2166136261; const t = aid+'|'+uid;
+  for(let i=0;i<t.length;i++){ h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return 'NU-' + h.toString(36).toUpperCase().padStart(7,'0').slice(0,7);
+}
+function certVerifyUrl(aid, uid){ return location.origin + location.pathname + '#verify=' + aid + '.' + uid; }
+
 
 /* ---------- خطوط (من Google Fonts أول مرة بس) ---------- */
 const certFontP = {};
@@ -49,9 +71,26 @@ function certImage(src){
 }
 
 /* ---------- رسم الشهادة: صورة القالب + الاسم بس ---------- */
-async function certRender(tpl, name){
-  const t = Object.assign({}, CERT_DEF, tpl);
-  await certFonts([t.nameFont, 'Amiri']);
+function certDrawField(x, W, H, t, f, txt){
+  txt = String(txt||'').replace(/\s+/g,' ').trim(); if(!txt) return;
+  const fo = CERT_FONTS[t[f+'Font']] || CERT_FONTS[CERT_DEF[f+'Font']] || CERT_FONTS.Amiri, fam = certFontStack(t[f+'Font'] || CERT_DEF[f+'Font']);
+  x.textBaseline = 'middle'; x.textAlign = t[f+'Align'] || 'center'; x.direction = certHasArabic(txt) ? 'rtl' : 'ltr'; x.fillStyle = t[f+'Color'];
+  let px = Math.max(14, Math.round(t[f+'Size']*W)); const maxW = t[f+'MaxW']*W;
+  for(; px > 14; px -= 2){ x.font = `${fo.w} ${px}px ${fam}`; if(x.measureText(txt).width <= maxW) break; }
+  x.font = `${fo.w} ${px}px ${fam}`;
+  x.fillText(txt, t[f+'X']*W, t[f+'Y']*H);
+}
+async function certDrawQr(x, W, H, t, url){
+  await loadScriptOnce('js/vendor/qrcode.min.js');
+  const qr = qrcode(0, 'M'); qr.addData(url); qr.make();
+  const n = qr.getModuleCount(), size = Math.round(t.qrSize*W), left = t.qrX*W - size/2, top = t.qrY*H - size/2, pad = size*0.07, cell = (size-pad*2)/n;
+  x.fillStyle = '#ffffff'; x.fillRect(left, top, size, size);
+  x.fillStyle = '#111111';
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(qr.isDark(r,c)) x.fillRect(left+pad+c*cell, top+pad+r*cell, Math.ceil(cell), Math.ceil(cell));
+}
+async function certRender(tpl, name, extra){
+  const t = Object.assign({}, CERT_DEF, tpl); extra = extra || {};
+  await certFonts([t.nameFont, 'Amiri', t.titleFont, t.dateFont, t.serialFont]);
   const img = await certImage(t.templateURL);
   if(!img) throw new Error('template-load');
   const k = Math.min(1, CERT_MAX_PX / Math.max(img.naturalWidth, img.naturalHeight));
@@ -62,12 +101,11 @@ async function certRender(tpl, name){
   x.drawImage(img, 0, 0, W, H);
   let txt = String(name||'').replace(/\s+/g,' ').trim();
   if(t.nameUpper) txt = txt.toUpperCase();
-  const f = CERT_FONTS[t.nameFont] || CERT_FONTS[CERT_DEF.nameFont];
-  x.textBaseline = 'middle'; x.textAlign = t.nameAlign; x.direction = certHasArabic(txt) ? 'rtl' : 'ltr'; x.fillStyle = t.nameColor;
-  let px = Math.max(14, Math.round(t.nameSize*W)); const maxW = t.nameMaxW*W;
-  for(; px > 14; px -= 2){ x.font = `${f.w} ${px}px ${certFontStack(t.nameFont)}`; if(x.measureText(txt).width <= maxW) break; }
-  x.font = `${f.w} ${px}px ${certFontStack(t.nameFont)}`;
-  x.fillText(txt, t.nameX*W, t.nameY*H);
+  certDrawField(x, W, H, t, 'name', txt);
+  if(t.titleOn)  certDrawField(x, W, H, t, 'title',  extra.title);
+  if(t.dateOn)   certDrawField(x, W, H, t, 'date',   extra.date);
+  if(t.serialOn) certDrawField(x, W, H, t, 'serial', extra.serial);
+  if(t.qrOn && extra.verifyUrl){ try{ await certDrawQr(x, W, H, t, extra.verifyUrl); }catch(e){ console.warn('cert qr', e); } }
   return c;
 }
 
@@ -96,8 +134,8 @@ function certBuildPdf(jpeg, iw, ih, title){
 }
 
 /* ---------- توليد + معاينة + تنزيل ---------- */
-async function certMake(tpl, name, title){
-  const cv = await certRender(tpl, name);
+async function certMake(tpl, name, title, extra){
+  const cv = await certRender(tpl, name, Object.assign({ title:title }, extra||{}));
   const jpegBlob = await new Promise(r=>cv.toBlob(r,'image/jpeg',.93));
   if(!jpegBlob) throw new Error('encode');
   const jpeg = new Uint8Array(await jpegBlob.arrayBuffer());
@@ -109,10 +147,10 @@ async function certMake(tpl, name, title){
   prev.dataset.u = prev.src = URL.createObjectURL(jpegBlob);
   prev.style.aspectRatio = cv.width+'/'+cv.height;
 }
-async function certMakeShow(tpl, name, title, btn){
+async function certMakeShow(tpl, name, title, btn, extra){
   if(CERT.busy) return; CERT.busy = true; if(btn) btn.disabled = true;
   showToast('بجهّز الشهادة...');
-  try{ await certMake(tpl, name, title); document.getElementById('certModal').classList.add('show'); }
+  try{ await certMake(tpl, name, title, extra); document.getElementById('certModal').classList.add('show'); }
   catch(e){ console.error('certificate error', e); showToast(e && e.message==='template-load' ? 'مقدرتش أحمّل صورة القالب — اتأكد من النت وجرّب تاني' : 'مقدرتش أجهّز الشهادة — جرّب تاني'); }
   CERT.busy = false; if(btn) btn.disabled = false;
 }
@@ -159,13 +197,14 @@ function openCertificate(){
   const a = STATE.activities.find(x=>x.id===modalActivityId);
   if(!a || !STUDENT.uid){ showToast('سجّل دخولك الأول'); return; }
   const tpl = certTplFor(a); if(!tpl){ showToast('الشهادة لسه ما اتجهزتش'); return; }
-  certMakeShow(tpl, STUDENT.name || 'Student', a.title, document.getElementById('certBtn'));
+  certMakeShow(tpl, STUDENT.name || 'Student', a.title, document.getElementById('certBtn'),
+    { date:a.date||'', serial:certSerial(a.id, STUDENT.uid), verifyUrl:certVerifyUrl(a.id, STUDENT.uid) });
 }
 
 /* =========================================================================
    جانب الأدمن: قايمة القوالب + محرر مكان الاسم
    ========================================================================= */
-const CE = { target:'default', tpl:null, file:null, obj:'', url:'', drag:false, busy:false };
+const CE = { field:'name', target:'default', tpl:null, file:null, obj:'', url:'', drag:false, busy:false };
 const ceEl = id=>document.getElementById(id);
 
 async function certAdminRender(force){
@@ -202,34 +241,56 @@ async function certPrepTemplate(file){
   } finally { URL.revokeObjectURL(url); }
 }
 
-function certEdFill(){            /* من الحالة للعناصر */
-  const t = CE.tpl;
-  ceEl('ceFont').value = t.nameFont; ceEl('ceSize').value = (t.nameSize*100).toFixed(1); ceEl('ceMaxW').value = Math.round(t.nameMaxW*100);
-  ceEl('ceColor').value = t.nameColor; ceEl('ceAlign').value = t.nameAlign; ceEl('ceX').value = (t.nameX*100).toFixed(1); ceEl('ceY').value = (t.nameY*100).toFixed(1);
+function certEdFill(){            /* من الحالة للعناصر (الحقل المختار) */
+  const t = CE.tpl, f = CE.field, isQ = f==='qr', isN = f==='name';
+  ceEl('ceFieldOn').checked = isN || !!t[f+'On']; ceEl('ceFieldOn').disabled = isN;
+  if(!isQ){ ceEl('ceFont').value = t[f+'Font']; ceEl('ceMaxW').value = Math.round(t[f+'MaxW']*100); ceEl('ceColor').value = t[f+'Color']; ceEl('ceAlign').value = t[f+'Align']; }
+  ceEl('ceSize').value = (t[f+'Size']*100).toFixed(1); ceEl('ceX').value = (t[f+'X']*100).toFixed(1); ceEl('ceY').value = (t[f+'Y']*100).toFixed(1);
   ceEl('ceUpper').checked = !!t.nameUpper;
+  ['ceFont','ceMaxW','ceColor','ceAlign'].forEach(id=>{ ceEl(id).parentNode.style.display = isQ ? 'none' : ''; });
+  ceEl('ceUpper').parentNode.style.display = isN ? '' : 'none';
 }
 function certEdRead(){            /* من العناصر للحالة */
-  const n = (id,d)=>{ const v = parseFloat(ceEl(id).value); return isNaN(v) ? d : v; };
-  Object.assign(CE.tpl, { nameFont:ceEl('ceFont').value, nameSize:n('ceSize',6)/100, nameMaxW:n('ceMaxW',70)/100, nameColor:ceEl('ceColor').value,
-    nameAlign:ceEl('ceAlign').value, nameX:n('ceX',50)/100, nameY:n('ceY',50)/100, nameUpper:ceEl('ceUpper').checked });
+  const n = (id,d)=>{ const v = parseFloat(ceEl(id).value); return isNaN(v) ? d : v; }, t = CE.tpl, f = CE.field;
+  t[f+'Size'] = n('ceSize',6)/100; t[f+'X'] = n('ceX',50)/100; t[f+'Y'] = n('ceY',50)/100;
+  if(f !== 'qr'){ t[f+'Font'] = ceEl('ceFont').value; t[f+'MaxW'] = n('ceMaxW',70)/100; t[f+'Color'] = ceEl('ceColor').value; t[f+'Align'] = ceEl('ceAlign').value; }
+  if(f === 'name') t.nameUpper = ceEl('ceUpper').checked; else t[f+'On'] = ceEl('ceFieldOn').checked;
 }
-function certEdPaint(){           /* رسم الاسم فوق الصورة في المحرر */
+function certEdField(v){ if(!CE.tpl) return; certEdRead(); CE.field = v; certEdFill(); certEdPaint(); }
+function certEdPaint(){           /* رسم كل الحقول فوق الصورة في المحرر */
   const st = ceEl('ceStage'), w = st.clientWidth, t = CE.tpl; if(!w || !t) return;
-  const nm = ceEl('ceName'), bx = ceEl('ceBox'), f = CERT_FONTS[t.nameFont] || CERT_FONTS[CERT_DEF.nameFont];
-  let s = ceEl('ceSample').value.trim() || 'Student Name'; if(t.nameUpper) s = s.toUpperCase();
-  const tx = t.nameAlign==='left' ? '0' : t.nameAlign==='right' ? '-100%' : '-50%', maxW = t.nameMaxW*w;
-  nm.textContent = s; nm.style.direction = certHasArabic(s) ? 'rtl' : 'ltr'; nm.style.color = t.nameColor;
-  nm.style.left = (t.nameX*100)+'%'; nm.style.top = (t.nameY*100)+'%'; nm.style.transform = `translate(${tx},-50%)`;
-  let px = Math.max(8, t.nameSize*w);
-  for(; px > 8; px -= 2){ nm.style.font = `${f.w} ${px}px ${certFontStack(t.nameFont)}`; if(nm.offsetWidth <= maxW) break; }
-  nm.style.font = `${f.w} ${px}px ${certFontStack(t.nameFont)}`;
-  bx.style.width = maxW+'px'; bx.style.height = (t.nameSize*w*1.4)+'px'; bx.style.left = (t.nameX*100)+'%'; bx.style.top = (t.nameY*100)+'%'; bx.style.transform = `translate(${tx},-50%)`;
+  CE_FIELDS.forEach(F=>{
+    const k = F.k, on = k==='name' || !!t[k+'On'];
+    let node = k==='name' ? ceEl('ceName') : ceEl('ceF_'+k);
+    if(!node){ node = document.createElement('div'); node.id = 'ceF_'+k; node.className = F.qr ? 'ce-qr' : 'ce-name'; st.appendChild(node); }
+    node.style.display = on ? '' : 'none'; if(!on) return;
+    if(F.qr){
+      const sz = t.qrSize*w; node.textContent = 'QR';
+      Object.assign(node.style, { width:sz+'px', height:sz+'px', left:(t.qrX*100)+'%', top:(t.qrY*100)+'%', transform:'translate(-50%,-50%)', fontSize:Math.max(9, sz*0.28)+'px' });
+      return;
+    }
+    const fo = CERT_FONTS[t[k+'Font']] || CERT_FONTS.Amiri, al = t[k+'Align'];
+    let s2 = F.sample(); if(k==='name' && t.nameUpper) s2 = s2.toUpperCase();
+    const tx = al==='left' ? '0' : al==='right' ? '-100%' : '-50%', maxW = t[k+'MaxW']*w;
+    node.textContent = s2; node.style.direction = certHasArabic(s2) ? 'rtl' : 'ltr'; node.style.color = t[k+'Color'];
+    node.style.left = (t[k+'X']*100)+'%'; node.style.top = (t[k+'Y']*100)+'%'; node.style.transform = `translate(${tx},-50%)`;
+    let px = Math.max(8, t[k+'Size']*w);
+    for(; px > 8; px -= 2){ node.style.font = `${fo.w} ${px}px ${certFontStack(t[k+'Font'])}`; if(node.offsetWidth <= maxW) break; }
+    node.style.font = `${fo.w} ${px}px ${certFontStack(t[k+'Font'])}`;
+  });
+  /* مربع التحديد حوالين الحقل المختار */
+  const bx = ceEl('ceBox'), f = CE.field, activeOn = f==='name' || !!t[f+'On'];
+  bx.style.display = activeOn ? '' : 'none'; if(!activeOn) return;
+  if(f==='qr'){ const sz = t.qrSize*w; Object.assign(bx.style, { width:sz+'px', height:sz+'px', left:(t.qrX*100)+'%', top:(t.qrY*100)+'%', transform:'translate(-50%,-50%)' }); return; }
+  const al = t[f+'Align'], tx = al==='left' ? '0' : al==='right' ? '-100%' : '-50%';
+  Object.assign(bx.style, { width:(t[f+'MaxW']*w)+'px', height:(t[f+'Size']*w*1.4)+'px', left:(t[f+'X']*100)+'%', top:(t[f+'Y']*100)+'%', transform:`translate(${tx},-50%)` });
 }
 function certEdUpdate(){ if(!CE.tpl) return; certEdRead(); certEdPaint(); }
 function certEdPoint(e){          /* ضغطة/سحب على الصورة بيحط الاسم هناك */
   const r = ceEl('ceStage').getBoundingClientRect(); if(!r.width || !r.height) return;
-  CE.tpl.nameX = Math.min(1, Math.max(0, (e.clientX-r.left)/r.width)); CE.tpl.nameY = Math.min(1, Math.max(0, (e.clientY-r.top)/r.height));
-  ceEl('ceX').value = (CE.tpl.nameX*100).toFixed(1); ceEl('ceY').value = (CE.tpl.nameY*100).toFixed(1); certEdPaint();
+  const f = CE.field;
+  CE.tpl[f+'X'] = Math.min(1, Math.max(0, (e.clientX-r.left)/r.width)); CE.tpl[f+'Y'] = Math.min(1, Math.max(0, (e.clientY-r.top)/r.height));
+  ceEl('ceX').value = (CE.tpl[f+'X']*100).toFixed(1); ceEl('ceY').value = (CE.tpl[f+'Y']*100).toFixed(1); certEdPaint();
 }
 (function bindStage(){
   const st = ceEl('ceStage'); if(!st) return;
@@ -245,7 +306,7 @@ function certEdPoint(e){          /* ضغطة/سحب على الصورة بيح�
 
 async function certEdOpen(target){
   if(!requireFB()) return;
-  CE.target = target; CE.file = null; CE.drag = false; if(CE.obj){ URL.revokeObjectURL(CE.obj); CE.obj = ''; }
+  CE.target = target; CE.file = null; CE.drag = false; CE.field = 'name'; if(CE.obj){ URL.revokeObjectURL(CE.obj); CE.obj = ''; }
   const def = await certLoadDefault(true);
   let own = null, title = 'القالب الافتراضي';
   if(target !== 'default'){
@@ -257,6 +318,7 @@ async function certEdOpen(target){
   const cur = target==='default' ? def : own;
   CE.tpl = Object.assign({}, CERT_DEF, base || {}); CE.url = cur && cur.templateURL ? cur.templateURL : '';
   ceEl('ceTitle').textContent = '📜 '+title;
+  ceEl('ceField').innerHTML = CE_FIELDS.map(F=>`<option value="${F.k}">${F.label}</option>`).join(''); ceEl('ceField').value = 'name';
   ceEl('ceFont').innerHTML = Object.keys(CERT_FONTS).map(n=>`<option value="${n}">${CERT_FONTS[n].label}</option>`).join('');
   ceEl('ceFile').value = ''; ceEl('ceRemove').textContent = target==='default' ? 'مسح القالب' : 'استخدام الافتراضي';
   certEdFill();
@@ -304,5 +366,42 @@ async function certEdRemove(){
 function certEdPreview(){
   certEdRead();
   const url = CE.file ? CE.obj : CE.url; if(!url){ showToast('ارفع صورة القالب الأول'); return; }
-  certMakeShow(Object.assign({}, CE.tpl, { templateURL:url }), ceEl('ceSample').value.trim() || 'Student Name', 'Preview');
+  certMakeShow(Object.assign({}, CE.tpl, { templateURL:url }), ceEl('ceSample').value.trim() || 'Student Name', 'Annual Nursing Conference', null,
+    { date:'15 November 2026', serial:'NU-7K2M9QX', verifyUrl:location.origin+location.pathname+'#verify=sample.sample' });
 }
+
+
+/* =========================================================================
+   التحقق من الشهادة: الـ QR اللي على الشهادة بيفتح رابط #verify=<فعالية>.<طالب>
+   الأدمن بيشوف ✅ لو الطالب سُجّل حضوره فعلاً (القواعد بتسمح بالقراءة للأدمن وصاحب الشهادة بس)
+   ========================================================================= */
+function cvHtml(state, title, lines){
+  const ic = state===true ? '✅' : state===false ? '❌' : '🔒';
+  return `<div class="cv ${state===true?'ok':state===false?'bad':'warn'}"><i>${ic}</i><b>${esc(title)}</b>${(lines||[]).map(l=>`<p>${esc(l)}</p>`).join('')}</div>`;
+}
+async function certVerifyRun(aid, uid){
+  const m = ceEl('certVerifyModal'), body = ceEl('cvBody'); if(!m) return;
+  body.innerHTML = '<div class="empty-note">جاري التحقق...</div>'; m.classList.add('show');
+  try{
+    const act = db.collection('activities').doc(aid);
+    const [r, a] = await Promise.all([ act.collection('registrations').doc(uid).get(), act.get() ]);
+    if(!r.exists || !a.exists){ body.innerHTML = cvHtml(false, 'الشهادة دي غير صحيحة', ['مفيش سجل بالبيانات دي.']); return; }
+    const d = r.data(), ad = a.data();
+    if(!d.attended){ body.innerHTML = cvHtml(false, 'الشهادة غير صحيحة', ['الطالب مسجّل في الفعالية لكن حضوره ماتسجّلش.']); return; }
+    body.innerHTML = cvHtml(true, 'شهادة صحيحة', [d.name||'', ad.title||'', [ad.date, ad.place].filter(Boolean).join(' · '), 'رقم الشهادة: '+certSerial(aid, uid)].filter(Boolean));
+  }catch(e){
+    body.innerHTML = e && e.code==='permission-denied'
+      ? cvHtml(null, 'التحقق للإدارة بس', ['سجّل دخول بحساب الأدمن وامسح الكود تاني.'])
+      : cvHtml(null, 'مقدرتش أتحقق', ['اتأكد من النت وجرّب تاني.']);
+  }
+}
+function closeCertVerify(){ ceEl('certVerifyModal').classList.remove('show'); }
+function certVerifyFromHash(){
+  const m = /^#verify=([^.]+)\.(.+)$/.exec(location.hash || '');
+  if(!m || !fbReady || !auth || !auth.currentUser) return;
+  try{ history.replaceState(null, '', location.pathname + location.search); }catch(_){}
+  certVerifyRun(decodeURIComponent(m[1]), decodeURIComponent(m[2]));
+}
+const _certDefLis = initDeferredListeners;
+initDeferredListeners = function(){ _certDefLis(); certVerifyFromHash(); };
+window.addEventListener('hashchange', certVerifyFromHash);
