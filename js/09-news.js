@@ -223,6 +223,7 @@ function renderAdminNews(){
     const flags = (n.pinned?' · 📌 مثبّت':'') + (n.breaking?' · 🔴 عاجل':'') + ((n.likeUids||[]).length?' · ❤ '+n.likeUids.length:'');
     wrap.appendChild(el(`
       <div class="admin-item-row">
+        ${admThumb(n.photoURL,'📰')}
         <div class="ai-info"><b>${esc(n.title)}</b><span>${esc(newsDate(n))}${flags}</span></div>
         <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
           <button type="button" class="mini-btn" onclick="toggleNewsFlag('${n.id}','pinned')">${n.pinned?'إلغاء التثبيت':'تثبيت'}</button>

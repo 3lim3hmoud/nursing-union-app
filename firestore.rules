@@ -167,6 +167,9 @@ service cloud.firestore {
     match /media/{id}       { allow read: if isSignedIn(); allow write: if isAdmin(); }
     match /config/{id}      { allow read: if isSignedIn(); allow write: if isAdmin(); }
 
+    // إعلانات الاتحاد للطلاب: القراءة للمسجّلين، والنشر والحذف للأدمن
+    match /announcements/{id} { allow read: if isSignedIn(); allow write: if isAdmin(); }
+
     // التصويت
     match /polls/{pollId} {
       allow read: if isSignedIn();
