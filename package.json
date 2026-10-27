@@ -1,0 +1,7 @@
+{
+  "name": "nursing-union-app",
+  "private": true,
+  "description": "تطبيق اتحاد طلاب كلية التمريض — الاختبارات التلقائية بتشتغل في CI مع كل Pull Request",
+  "scripts": { "test": "node tests/smoke.js" },
+  "devDependencies": { "jsdom": "^24.1.0" }
+}

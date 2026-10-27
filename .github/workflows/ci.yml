@@ -26,3 +26,7 @@ jobs:
           if(missing.length){console.error('Missing:',missing);process.exit(1)}
           console.log('ok',files.length,'assets');
           "
+      - name: Smoke + race tests (بتحمّل التطبيق زي المتصفح وتتأكد إن مفيش حاجة بتنكسر)
+        run: |
+          npm install --no-audit --no-fund
+          npm test
