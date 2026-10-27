@@ -190,8 +190,11 @@ function renderAdminPolls(){
   });
 }
 resetPollForm();
-setTimeout(()=>{ try{ actKindChanged(); toggleMediaType(); }catch(e){} },0);
-if(fbReady){
+/* بتتنادى من initApp() (13-init.js) بعد ما كل ملفات الـ js تتحمل.
+   لو اتسجّل المستمع هنا مباشرة وFirebase رد بدري، كان بينادي دوال لسه متحمّلتش (renderAdminDash / renderActivities...) ويطلع ReferenceError. */
+function startPollsAuthWatch(){
+  try{ actKindChanged(); toggleMediaType(); }catch(e){}
+  if(!fbReady) return;
   auth.onAuthStateChanged(async user=>{
     IS_ADMIN = await resolveIsAdmin(user);
     document.body.classList.toggle('is-admin', IS_ADMIN);
