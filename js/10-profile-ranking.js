@@ -53,7 +53,7 @@ function renderRanking(){
   const listCard = document.getElementById('rankListCard');
   if(!sorted.length){
     podium.innerHTML='';
-    listCard.innerHTML = '<div class="empty-note">لسه مفيش طلاب في الترتيب</div>';
+    listCard.innerHTML = `<div class="empty-note">${STATE.ldBoard?'لسه مفيش طلاب في الترتيب':'جاري التحميل...'}</div>`;
     return;
   }
   const pod = (s, cls, rank, crown)=> s ? `<div class="pod ${cls}" data-i="${rank-1}" style="cursor:pointer;">${crown?'<div class="crown">👑</div>':''}${rankRowAv('rank-avatar', s)}<b>${esc(s.name)}</b><div class="pts">${esc(s.points||0)} نقطة</div></div>` : '';
@@ -63,8 +63,10 @@ function renderRanking(){
     const i = Number(n.dataset.i); const s = sorted[i]; if(s) openStuCard({ name:s.name, level:s.level, photoURL:s.photoURL, points:s.points, rank:i+1 });
   }));
   listCard.innerHTML='';
-  sorted.forEach((s,i)=>{
-    const isMe = !!STUDENT.uid && (s.uid===STUDENT.uid || s.id===STUDENT.uid);
+  /* بنرسم أول 50 بس (+ صفّك لو برّا الـ 50) — الصفحة أخف بكتير */
+  const meIdx = sorted.findIndex(s=>!!STUDENT.uid && (s.uid===STUDENT.uid || s.id===STUDENT.uid));
+  sorted.map((s,i)=>[s,i]).filter(([s,i])=>i<50 || i===meIdx).forEach(([s,i])=>{
+    const isMe = i===meIdx;
     const row = el(`
       <div class="rank-list-row ${isMe?'me':''}" style="cursor:pointer;">
         <div class="rank-num">${i+1}</div>

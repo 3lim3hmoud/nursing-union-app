@@ -24,9 +24,13 @@ function makeWindow(withFirebase){
   w.requestAnimationFrame = cb => setTimeout(cb, 0); w.TextEncoder = TextEncoder; w.confirm = () => true;
   const authCbs = [];
   if(withFirebase){
-    const col = () => ({ doc:col, collection:col, orderBy:col, limit:col, where:col, onSnapshot:()=>()=>{}, get:async()=>({exists:false,docs:[],data:()=>({})}), set:async()=>{}, update:async()=>{}, delete:async()=>{} });
-    w.firebase = { initializeApp(){}, auth:()=>({ onAuthStateChanged:cb=>{ authCbs.push(cb); setTimeout(()=>cb({uid:'u1',email:'a@b.c',emailVerified:true,getIdTokenResult:async()=>({claims:{}})}), 5); return ()=>{}; }, getRedirectResult:async()=>({}), signOut:async()=>{} }),
-      firestore:()=>Object.assign(col(), { batch:()=>({set(){},update(){},delete(){},commit:async()=>{}}) }) };
+    const chain = (name, limit) => ({
+      doc:id=>chain(name+'/'+id, 1), collection:n=>chain(n), orderBy:()=>chain(name, limit), limit:k=>chain(name, k), where:()=>chain(name, limit),
+      onSnapshot:()=>{ w.__listeners.push({ name, limit: limit||1 }); return ()=>{}; },
+      get:async()=>({exists:false,docs:[],data:()=>({})}), set:async()=>{}, update:async()=>{}, delete:async()=>{} });
+    w.__listeners = []; w.__persist = 0;
+    w.firebase = { initializeApp(){}, auth:()=>({ currentUser:{uid:'u1',email:'a@b.c'}, onAuthStateChanged:cb=>{ authCbs.push(cb); setTimeout(()=>cb({uid:'u1',email:'a@b.c',emailVerified:true,getIdTokenResult:async()=>({claims:{}})}), 5); return ()=>{}; }, getRedirectResult:async()=>({}), signOut:async()=>{} }),
+      firestore:()=>Object.assign(chain(''), { batch:()=>({set(){},update(){},delete(){},commit:async()=>{}}), enablePersistence:async()=>{ w.__persist++; } }) };
     w.firebase.firestore.FieldValue = { delete:()=>null, increment:n=>n, arrayUnion:x=>x, arrayRemove:x=>x };
     w.firebase.auth.GoogleAuthProvider = function(){ this.setCustomParameters = ()=>{}; };
   }
@@ -81,8 +85,14 @@ async function renderSmoke(){
     step('renderCamps', ()=>{ campFilter='current'; renderCamps(); }); step('openActivityModal', ()=>openActivityModal('a1'));
     step('renderAdminDash', renderAdminDash); step('renderAdminActivities', renderAdminActivities); step('renderAdminCampaigns', renderAdminCampaigns);
     step('renderRanking', renderRanking); step('renderProfile', renderProfile);
+    IS_ADMIN = true; renderAllAdmin();   /* الأدمن اتعرّف بعد وصول البيانات */
     R.guestGuard = document.body.classList.contains('guest') ? (goPage('news'), document.querySelector('.page.active').id) : 'not-guest';
     return R; })()`);
+  await sleep(60);
+  const rows = id => E.run("document.querySelectorAll('#" + id + " .admin-item-row').length");
+  ok('الأدمن اللي اتعرّف متأخر: قايمة الفعاليات بتتملي', rows('admin-actList')>0, 'rows='+rows('admin-actList'));
+  ok('الأدمن اللي اتعرّف متأخر: قايمة الأخبار بتتملي', rows('admin-newsList')>0, 'rows='+rows('admin-newsList'));
+  ok('الأدمن اللي اتعرّف متأخر: قايمة الحملات بتتملي', rows('admin-campList')>0, 'rows='+rows('admin-campList'));
   Object.keys(out).forEach(k=>{ if(k==='guestGuard') ok('الزائر (من غير دخول) بيتحوّل لصفحة الدخول', out[k]==='page-profile', out[k]); else ok('رسم: '+k, out[k]==='ok', out[k]); });
   await sleep(50);
   ok('مفيش أخطاء وقت التشغيل أثناء الرسم', !E.errors.filter(e=>!/Firebase init|Not implemented/.test(e)).length, E.errors.join(' | '));
@@ -99,8 +109,36 @@ async function raceTest(){
   ok('نت بطيء: مفيش ReferenceError لما Firebase يرد قبل باقي الملفات', !bad.length, [...new Set(bad)].join(' | '));
 }
 
+
+/* ---------- 4) ميزانية الأداء: كام وثيقة بتتقرا في الفتحة، وإيه اللي بيتحمّل بس لما الصفحة تتفتح ---------- */
+async function budgetTest(){
+  const E = makeWindow(true);
+  try{ for(const f of SCRIPTS) E.loadFile(f); await sleep(1700); }catch(e){ E.errors.push('LOAD '+e.message); }
+  const L = () => E.w.__listeners, docs = list => list.filter(x=>x.limit>1).reduce((a,x)=>a+x.limit,0);
+  const names = () => L().map(x=>x.name);
+  const lazy = ['members','committees','magazines','leaderboard'];
+  const boot = docs(L());
+  ok('فتحة الطالب: أقصى وثائق ممكن تتقرا ≤ 450 (كان 1200 + 1400 بعد ثواني)', boot <= 450, 'الحالي: '+boot);
+  ok('الأعضاء/اللجان/المجلات/الترتيب مش بتتحمّل في أول فتحة', !lazy.some(n=>names().includes(n)), lazy.filter(n=>names().includes(n)).join(', '));
+  ok('الكاش الدائم على الجهاز متفعّل', E.w.__persist === 1, 'enablePersistence اتنادت '+E.w.__persist+' مرة');
+  E.run("goPage('ranking')"); await sleep(30);
+  const lb = L().filter(x=>x.name==='leaderboard');
+  ok('صفحة الترتيب بتحمّل أعلى 100 بس (مرة واحدة)', lb.length===1 && lb[0].limit<=100, JSON.stringify(lb));
+  E.run("goPage('ranking'); goPage('profile')"); await sleep(30);
+  ok('فتح الصفحة تاني مش بيكرر المستمع', L().filter(x=>x.name==='leaderboard').length===1);
+  E.run("goPage('leadership')"); await sleep(30);
+  ok('صفحة اللجان بتحمّل اللجان والأعضاء', names().includes('committees') && names().includes('members'));
+  E.run("goPage('magazines')"); await sleep(30);
+  ok('صفحة المجلات بتحمّل المجلات', names().includes('magazines'));
+  const bad = E.errors.concat(PROC_ERRORS.splice(0)).filter(e=>!/Firebase init|Not implemented/.test(e));
+  ok('مفيش أخطاء أثناء فتح الصفحات', !bad.length, bad.join(' | '));
+}
+
+setTimeout(()=>{ console.log('  ✗ الاختبارات اتأخرت أكتر من دقيقتين (اتوقفت)'); process.exit(1); }, 120000);   /* أمان: ما يعلّقش الـ CI أبداً */
 (async()=>{
-  await renderSmoke(); await raceTest();
+  for(const t of [renderSmoke, raceTest, budgetTest]){
+    try{ await t(); }catch(e){ ok('تشغيل '+t.name, false, 'خطأ غير متوقع: '+(e && e.message || e)); }   /* أي انهيار بيتسجّل كفشل بدل ما يوقف التقرير */
+  }
   let failed = 0;
   results.forEach(r=>{ console.log((r.pass?'  ✓ ':'  ✗ ')+r.n+(r.pass?'':'\n      → '+r.why)); if(!r.pass) failed++; });
   console.log('\n'+(failed ? failed+' اختبار فشل ❌' : 'كل الاختبارات نجحت ('+results.length+') ✅'));

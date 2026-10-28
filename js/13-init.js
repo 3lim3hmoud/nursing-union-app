@@ -41,7 +41,7 @@ function bootAuthGate(){
 bootAuthGate();
 
 window.addEventListener('load', ()=>{
-  setTimeout(()=>{ document.getElementById('splash').classList.add('hide'); }, 1400);
+  setTimeout(()=>{ document.getElementById('splash').classList.add('hide'); }, 500);
 });
 
 /* شريط "فيه تحديث جديد" — بيظهر لما نسخة جديدة من الـ Service Worker تتفعل والتطبيق مفتوح */

@@ -85,6 +85,7 @@ async function loadStudentProfile(user){
 let CUR_PAGE = 'home';
 function goPage(name, fromPop){
   if(document.body.classList.contains('guest') && name!=='profile') name = 'profile';   /* الزائر مالوش غير صفحة الدخول */
+  ensurePageData(name);   /* بيحمّل بيانات الصفحة دي بس لو لسه ما اتحملتش */
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.nav===name));
