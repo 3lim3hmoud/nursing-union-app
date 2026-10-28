@@ -44,6 +44,8 @@ try{
     firebase.initializeApp(FIREBASE_CONFIG);
     auth = firebase.auth();
     db = firebase.firestore();
+    /* كاش دائم على الجهاز: الفتحة التانية بتظهر فوراً من الكاش وبتقرا من السيرفر اللي اتغيّر بس (أسرع + أرخص) */
+    try{ if(typeof db.enablePersistence === 'function') db.enablePersistence({ synchronizeTabs:true }).catch(()=>{}); }catch(_){}
     fbReady = true;
   }
 }catch(e){ console.error('Firebase init error:', e); }
@@ -59,6 +61,51 @@ const STATE = {
 };
 
 function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
+
+/* ---------- أداء: حدود القراءة + تجميع الرسم + تحميل كسول ---------- */
+/* أحدث N عنصر بس: بيقلل القراءات والبطء. (الأقدم مش بيظهر في التطبيق) */
+const LIM = { activities:120, campaigns:60, news:100, polls:40, media:80, magazines:60, committees:60, members:150, leaderboard:100 };
+/* رسم واحد بس لكل دالة في الفريم الواحد — بدل ما الرئيسية تتبني 6 مرات وقت التحميل */
+const _rqSet = new Set();
+function rq(fn){
+  if(_rqSet.has(fn)) return; _rqSet.add(fn);
+  const run = ()=>{ _rqSet.delete(fn); try{ fn(); }catch(e){ console.error('render error:', e); } };
+  if(typeof requestAnimationFrame === 'function') requestAnimationFrame(run); else setTimeout(run, 16);
+}
+const _isAdm = ()=> typeof IS_ADMIN !== 'undefined' && IS_ADMIN;
+/* مجموعات مش بتتحمّل غير لما صاحبها يفتح الصفحة (أو لما الأدمن يدخل) */
+const LAZY_ON = {};
+const LAZY_DEF = {
+  magazines(){ db.collection('magazines').orderBy('createdAt','desc').limit(LIM.magazines).onSnapshot(snap=>{
+    STATE.magazines = snap.docs.map(docToItem); STATE.ldMags = true; rq(renderMags); if(_isAdm()) rq(renderAdminMagazines);
+  }, ()=>{}); },
+  committees(){ db.collection('committees').orderBy('createdAt','desc').limit(LIM.committees).onSnapshot(snap=>{
+    STATE.committees = snap.docs.map(docToItem); STATE.ldComm = true;
+    if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
+    if(_isAdm()) rq(renderAdminCommittees);
+  }, ()=>{}); },
+  members(){ db.collection('members').orderBy('createdAt','desc').limit(LIM.members).onSnapshot(snap=>{
+    STATE.members = snap.docs.map(docToItem);
+    if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
+    if(_isAdm()) rq(renderAdminMembers);
+  }, ()=>{}); },
+  leaderboard(){ db.collection('leaderboard').orderBy('points','desc').limit(LIM.leaderboard).onSnapshot(snap=>{
+    STATE.leaderboard = snap.docs.map(docToItem); STATE.ldBoard = true;
+    rq(renderRanking); if(_isAdm()) rq(renderAdminLeaderboard); rq(renderProfile);
+  }, ()=>{}); }
+};
+const LAZY_PAGES = { leadership:['committees','members'], magazines:['magazines'], ranking:['leaderboard'], profile:['leaderboard'] };
+function startLazy(name){
+  if(LAZY_ON[name] || !fbReady || !auth || !auth.currentUser || !LAZY_DEF[name]) return;
+  LAZY_ON[name] = true; LAZY_DEF[name]();
+}
+function startAllLazy(){ Object.keys(LAZY_DEF).forEach(startLazy); }
+/* لحظة ما الأدمن يتعرّف: نرسم قوايم الإدارة بالبيانات اللي وصلت قبل كده (القوايم الكسولة بترسم نفسها لما بياناتها توصل) */
+function renderAllAdmin(){
+  [renderAdminActivities, renderAdminCampaigns, renderAdminNews, renderAdminMedia, adminDashRefresh].forEach(f=>rq(f));
+  startAllLazy();
+}
+function ensurePageData(page){ if(page === 'admin') startAllLazy(); else (LAZY_PAGES[page]||[]).forEach(startLazy); }
 
 function initFirestoreListeners(){
   if(!fbReady){
@@ -101,54 +148,43 @@ function initFirestoreListeners(){
       document.getElementById('af-viceQuote').value = STATE.viceDean.quote||'';
     }
   });
-  db.collection('activities').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
-    STATE.activities = snap.docs.map(docToItem);
+  db.collection('activities').orderBy('createdAt','desc').limit(LIM.activities).onSnapshot(snap=>{
+    STATE.activities = snap.docs.map(docToItem); STATE.ldAct = true;
     if(typeof notifCheck==='function') notifCheck('activities', STATE.activities);
-    renderActivities(); renderHome(); renderAdminActivities(); startCountdown(); adminDashRefresh();
+    rq(renderActivities); rq(renderHome); rq(startCountdown);
+    if(_isAdm()){ rq(renderAdminActivities); rq(adminDashRefresh); }
   }, ()=>{});
-  db.collection('campaigns').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
+  db.collection('campaigns').orderBy('createdAt','desc').limit(LIM.campaigns).onSnapshot(snap=>{
     STATE.campaigns = snap.docs.map(docToItem);
-    renderCamps(); renderHome(); renderAdminCampaigns();
+    rq(renderCamps); rq(renderHome);
+    if(_isAdm()) rq(renderAdminCampaigns);
   }, ()=>{});
-  db.collection('news').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
-    STATE.news = snap.docs.map(docToItem); adminDashRefresh();
+  db.collection('news').orderBy('createdAt','desc').limit(LIM.news).onSnapshot(snap=>{
+    STATE.news = snap.docs.map(docToItem); STATE.ldNews = true;
     if(typeof notifCheck==='function') notifCheck('news', STATE.news);
-    renderNews(); renderAdminNews();
+    rq(renderNews); rq(renderHome);
+    if(_isAdm()){ rq(adminDashRefresh); rq(renderAdminNews); }
   }, ()=>{});
-  db.collection('polls').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
+  db.collection('polls').orderBy('createdAt','desc').limit(LIM.polls).onSnapshot(snap=>{
     STATE.pollErr = '';
     STATE.polls = snap.docs.map(docToItem);
-    syncPollVotes(); renderPolls(); renderAdminPolls(); adminDashRefresh();
+    syncPollVotes(); rq(renderPolls);
+    if(_isAdm()){ rq(renderAdminPolls); rq(adminDashRefresh); }
   }, err=>pollLoadError(err));
-  db.collection('media').orderBy('createdAt','desc').limit(300).onSnapshot(snap=>{
+  db.collection('media').orderBy('createdAt','desc').limit(LIM.media).onSnapshot(snap=>{
     STATE.media = snap.docs.map(docToItem);
-    renderMediaCarousel(); renderMediaPage(); renderAdminMedia(); adminDashRefresh();
+    rq(renderMediaCarousel); rq(renderMediaPage);
+    if(_isAdm()){ rq(renderAdminMedia); rq(adminDashRefresh); }
   }, ()=>{});
   const later = ()=>initDeferredListeners();
   if('requestIdleCallback' in window) requestIdleCallback(later, { timeout:2000 }); else setTimeout(later, 1200);
 }
 
-/* مجموعات مش لازمة للصفحة الرئيسية: بتبدأ بعد ما الرئيسية تظهر (بتخفف الطلبات في أول تحميل) */
+/* بعد الدخول: بنبدأ بس المجموعات اللي الصفحة الحالية محتاجاها. الباقي بيتحمّل لما الطالب يفتح صفحته (goPage → ensurePageData). */
 function initDeferredListeners(){
-  db.collection('magazines').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
-    STATE.magazines = snap.docs.map(docToItem);
-    renderMags(); renderAdminMagazines();
-  }, ()=>{});
-  db.collection('committees').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
-    STATE.committees = snap.docs.map(docToItem);
-    if(['committees','members'].includes(document.querySelector('.lead-tab.active')?.dataset.lt)) switchLead(document.querySelector('.lead-tab.active').dataset.lt);
-    renderAdminCommittees();
-  }, ()=>{});
-  db.collection('members').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
-    STATE.members = snap.docs.map(docToItem);
-    if(document.querySelector('.lead-tab.active')?.dataset.lt==='members') switchLead('members');
-    renderAdminMembers();
-  }, ()=>{});
-  db.collection('leaderboard').orderBy('createdAt','desc').limit(500).onSnapshot(snap=>{
-    STATE.leaderboard = snap.docs.map(docToItem);
-    renderRanking(); renderAdminLeaderboard(); renderProfile();
-  }, ()=>{});
+  ensurePageData(typeof CUR_PAGE !== 'undefined' ? CUR_PAGE : 'home');
 }
+
 
 /* ========================= تسجيل دخول الأدمن ========================= */
 let adminLoginAttempted = false;

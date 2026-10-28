@@ -198,7 +198,7 @@ function startPollsAuthWatch(){
   auth.onAuthStateChanged(async user=>{
     IS_ADMIN = await resolveIsAdmin(user);
     document.body.classList.toggle('is-admin', IS_ADMIN);
-    if(IS_ADMIN){ loadAdminStats(); if(typeof admOnLogin==='function') admOnLogin(); }
+    if(IS_ADMIN){ loadAdminStats(); if(typeof admOnLogin==='function') admOnLogin(); renderAllAdmin(); }
     STATE.myRegs = {}; Object.keys(myRegPending).forEach(k=>delete myRegPending[k]);
     syncPollVotes(true); renderPolls(); renderAdminPolls(); renderAdminDash(); renderActivities();
   });

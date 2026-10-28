@@ -12,7 +12,7 @@ function switchLead(which){
   /* ----- اللجان ----- */
   if(which==='committees'){
     const list = byCreated(STATE.committees);
-    if(!list.length){ wrap.innerHTML = '<div class="empty-note">لسه مفيش لجان مضافة</div>'; return; }
+    if(!list.length){ wrap.innerHTML = `<div class="empty-note">${STATE.ldComm?'لسه مفيش لجان مضافة':'جاري التحميل...'}</div>`; return; }
     wrap.innerHTML = `<div class="ld-grid">${list.map(c=>`
       <div class="ld-com">
         ${ldAvatar(c.head, c.photoURL, 'ld-com-av')}
@@ -33,7 +33,7 @@ function switchLead(which){
     const coms = byCreated(STATE.committees);
     const comsHtml = coms.length
       ? `<div class="org-committees-row">${coms.map(c=>node(c.head, c.photoURL, c.name, 'committee')).join('')}</div>`
-      : '<div class="empty-note">لسه مفيش لجان مضافة</div>';
+      : `<div class="empty-note">${STATE.ldComm?'لسه مفيش لجان مضافة':'جاري التحميل...'}</div>`;
     const mem = byCreated(STATE.members);
     const memHtml = mem.length ? `
       <div class="section-title" style="margin-top:22px;">أعضاء الاتحاد</div>
@@ -80,7 +80,7 @@ function renderMags(){
   const wrap = document.getElementById('magList');
   wrap.innerHTML='';
   const list = STATE.magazines.filter(m=>m.type===magFilter);
-  if(!list.length){wrap.appendChild(el('<div class="empty-note">لا توجد مقالات هنا حالياً</div>'));return;}
+  if(!list.length){wrap.appendChild(el(`<div class="empty-note">${STATE.ldMags?'لا توجد مقالات هنا حالياً':'جاري التحميل...'}</div>`));return;}
   list.forEach(m=>{
     wrap.appendChild(el(`
       <div class="card mag-card">
