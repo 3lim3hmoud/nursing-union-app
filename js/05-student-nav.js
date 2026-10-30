@@ -34,6 +34,7 @@ async function studentSignup(ev){
   const email = document.getElementById('gateSignupEmail').value.trim();
   const pass = document.getElementById('gateSignupPass').value;
   if(!studentId){ document.getElementById('gateError').textContent = 'الرقم الجامعي (ID) إجباري.'; return false; }
+  if(!document.getElementById('gateConsent').checked){ document.getElementById('gateError').textContent = 'لازم توافق على سياسة الخصوصية الأول.'; return false; }
   try{
     const cred = await auth.createUserWithEmailAndPassword(email, pass);
     await db.collection('students').doc(cred.user.uid).set({

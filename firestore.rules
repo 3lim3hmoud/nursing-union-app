@@ -98,11 +98,20 @@ service cloud.firestore {
 
       match /registrations/{uid} {
         allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        // التسجيل بيتعمل بالحقول دي بس، و attended لازم false — الحضور بيسجّله الأدمن (QR أو يدوي) مش الطالب
         allow create: if isSignedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['uid','name','studentId','level','createdAt','attended'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.attended == false
+          && request.resource.data.name is string && request.resource.data.name.size() <= 60
+          && request.resource.data.get('studentId', '') is string && request.resource.data.get('studentId', '').size() <= 30
+          && request.resource.data.get('level', '') is string && request.resource.data.get('level', '').size() <= 40
           && getAfter(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0)
              == get(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0) + 1;
         allow update: if isAdmin();
+        // الطالب يلغي تسجيله قبل الحضور بس (بعد الحضور السجل ثابت)
         allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == uid
+          && resource.data.get('attended', false) == false
           && getAfter(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0)
              == get(/databases/$(database)/documents/activities/$(id)).data.get('registeredCount', 0) - 1);
       }

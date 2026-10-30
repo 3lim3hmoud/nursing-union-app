@@ -1,7 +1,7 @@
 /* اختبارات تلقائية للتطبيق (بتشتغل في CI): بتحمّل كل ملفات js بنفس ترتيب index.html زي المتصفح بالظبط
    (نفس النطاق العام للـ const/let) وبتتأكد إن مفيش حاجة بتنكسر.  تشغيل محلي:  npm i && npm test */
 const fs = require('fs'), path = require('path'), vm = require('vm');
-const { JSDOM } = require('jsdom');
+const { JSDOM, ResourceLoader } = require('jsdom');
 const ROOT = path.resolve(process.argv[2] || path.join(__dirname, '..'));
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const html = read('index.html');
@@ -14,8 +14,8 @@ process.on('unhandledRejection', e=>PROC_ERRORS.push(String(e && e.message || e)
 process.on('uncaughtException', e=>PROC_ERRORS.push(String(e && e.message || e)));
 
 /* ---------- بيئة المتصفح الوهمية ---------- */
-function makeWindow(withFirebase){
-  const dom = new JSDOM(html.replace(/<script[^>]*\ssrc=[^>]*><\/script>/g, ''), { runScripts:'outside-only', url:'https://example.github.io/nursing-union-app/' });
+function makeWindow(withFirebase, ua){
+  const dom = new JSDOM(html.replace(/<script[^>]*\ssrc=[^>]*><\/script>/g, ''), Object.assign({ runScripts:'outside-only', url:'https://example.github.io/nursing-union-app/' }, ua ? { resources:new ResourceLoader({ userAgent:ua }) } : {}));   /* jsdom بياخد الـ User-Agent من ResourceLoader */
   const w = dom.window, errors = [];
   w.addEventListener('error', e=>errors.push(String(e.message||e)));
   w.addEventListener('unhandledrejection', e=>errors.push('unhandled: '+String(e.reason&&e.reason.message||e.reason)));
@@ -29,7 +29,7 @@ function makeWindow(withFirebase){
       onSnapshot:()=>{ w.__listeners.push({ name, limit: limit||1 }); return ()=>{}; },
       get:async()=>({exists:false,docs:[],data:()=>({})}), set:async()=>{}, update:async()=>{}, delete:async()=>{} });
     w.__listeners = []; w.__persist = 0;
-    w.firebase = { initializeApp(){}, auth:()=>({ currentUser:{uid:'u1',email:'a@b.c'}, onAuthStateChanged:cb=>{ authCbs.push(cb); setTimeout(()=>cb({uid:'u1',email:'a@b.c',emailVerified:true,getIdTokenResult:async()=>({claims:{}})}), 5); return ()=>{}; }, getRedirectResult:async()=>({}), signOut:async()=>{} }),
+    w.firebase = { initializeApp(){}, auth:()=>({ currentUser:{uid:'u1',email:'a@b.c'}, onAuthStateChanged:cb=>{ authCbs.push(cb); setTimeout(()=>cb({uid:'u1',email:'a@b.c',emailVerified:true,getIdTokenResult:async()=>({claims:{}})}), 5); return ()=>{}; }, getRedirectResult:async()=>({}), signOut:async()=>{}, sendPasswordResetEmail:async e=>{ w.__reset = e; } }),
       firestore:()=>Object.assign(chain(''), { batch:()=>({set(){},update(){},delete(){},commit:async()=>{}}), enablePersistence:async()=>{ w.__persist++; } }) };
     w.firebase.firestore.FieldValue = { delete:()=>null, increment:n=>n, arrayUnion:x=>x, arrayRemove:x=>x };
     w.firebase.auth.GoogleAuthProvider = function(){ this.setCustomParameters = ()=>{}; };
@@ -64,6 +64,16 @@ function makeWindow(withFirebase){
     });
   });
   ok('مفيش كود بيتنفّذ وقت التحميل وبينادي دالة لسه متحمّلتش', !hazards.length, hazards.join(' | '));
+  /* قواعد التسجيل لازم تتطابق مع اللي الكود بيكتبه، وتمنع الطالب يكتب attended:true لنفسه */
+  const rules = read('firestore.rules'), act = read('js/07-activities.js');
+  const regBlock = (rules.match(/match \/registrations\/\{uid\} \{[\s\S]*?\n      \}/)||[''])[0];
+  const createRule = (regBlock.match(/allow create:[\s\S]*?;\n/)||[''])[0], delRule = (regBlock.match(/allow delete:[\s\S]*?;\n/)||[''])[0];
+  const ruleKeys = ((createRule.match(/hasOnly\(\[([^\]]*)\]\)/)||[,''])[1].match(/'([^']+)'/g)||[]).map(x=>x.replace(/'/g,''));
+  const clientKeys = ((act.match(/batch\.set\(regRef,\s*\{([^}]*)\}/)||[,''])[1].match(/(\w+)\s*:/g)||[]).map(x=>x.replace(/\s*:/,''));
+  ok('قاعدة التسجيل: بتمنع الطالب يكتب attended:true لنفسه', /request\.resource\.data\.attended == false/.test(createRule), 'مفيش شرط attended == false');
+  ok('قاعدة التسجيل: حقول الكود كلها مسموحة في القاعدة (وإلا التسجيل هيتمنع)', clientKeys.length>0 && clientKeys.every(k=>ruleKeys.includes(k)), 'الكود: '+clientKeys+' | القاعدة: '+ruleKeys);
+  ok('الطالب مش بيقدر يلغي تسجيله بعد الحضور', /attended', false\) == false/.test(delRule), 'مفيش شرط على الحذف');
+
 })();
 
 /* ---------- 2) تحميل كل الملفات + رسم الشاشات الأساسية ببيانات تجريبية ---------- */
@@ -134,9 +144,41 @@ async function budgetTest(){
   ok('مفيش أخطاء أثناء فتح الصفحات', !bad.length, bad.join(' | '));
 }
 
+/* ---------- 5) تجهيزات الإطلاق: نسيت كلمة السر، المتصفح المدمج، الخصوصية ---------- */
+const FB_UA = 'Mozilla/5.0 (Linux; Android 12; SM-G991B Build/SP1A.210812.016; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.0.0 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/420.0.0.0;]';
+async function launchTest(){
+  const E = makeWindow(true);
+  try{ for(const f of SCRIPTS) E.loadFile(f); await sleep(150); }catch(e){ E.errors.push('LOAD '+e.message); }
+  const $ = (c)=>E.run(c);
+  $("document.getElementById('gateLoginEmail').value='  a@b.com '"); await $("studentForgotPassword()");
+  ok('نسيت كلمة السر: بيبعت لينك للإيميل المكتوب', E.w.__reset === 'a@b.com', 'اتبعت: '+E.w.__reset);
+  E.w.__reset = null; $("document.getElementById('gateLoginEmail').value=''"); await $("studentForgotPassword()");
+  ok('نسيت كلمة السر: من غير إيميل بيطلب كتابته ومبيبعتش', E.w.__reset === null && /اكتب إيميلك/.test($("document.getElementById('gateError').textContent")));
+  const names = $(`[${JSON.stringify(FB_UA)}, 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/430.0]',
+    'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'].map(u=>inAppBrowserName(u))`);
+  ok('كشف المتصفح المدمج: فيسبوك أندرويد + فيسبوك آيفون + WebView آيفون = نعم', !!names[0] && !!names[1] && names[4] === 'iOS-WebView', JSON.stringify(names));
+  ok('كشف المتصفح المدمج: Chrome أندرويد و Safari آيفون = لأ', names[2] === '' && names[3] === '', JSON.stringify(names));
+  const chrome = makeWindow(false, 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36');
+  SCRIPTS.forEach(f=>chrome.loadFile(f));
+  ok('متصفح عادي: مفيش بانر تحذير', chrome.run("!document.getElementById('inAppBanner')"));
+  const fb = makeWindow(false, FB_UA); SCRIPTS.forEach(f=>fb.loadFile(f));
+  ok('فيسبوك: بانر "افتح في Chrome/Safari" بيظهر في بوابة الدخول', fb.run("!!document.querySelector('#profileLoggedOut .gate-card #inAppBanner')"));
+  ok('فيسبوك على أندرويد: زرار فتح Chrome بيظهر برابط intent', fb.run("(function(){const a=document.getElementById('inAppChrome');return a.style.display!=='none' && a.href.startsWith('intent://')})()"));
+  $("openPrivacy()");
+  ok('سياسة الخصوصية: بتفتح وفيها أقسامها', $("document.getElementById('privacyModal').classList.contains('show') && document.querySelectorAll('#privacyModal h4').length>=6"));
+  ok('التسجيل: خانة الموافقة على الخصوصية إجبارية', $("document.getElementById('gateConsent').required === true"));
+  $("['gateSignupName','gateSignupId','gateSignupLevel','gateSignupEmail','gateSignupPass'].forEach(i=>document.getElementById(i).value='x1'); document.getElementById('gateConsent').checked=false");
+  await $("studentSignup({preventDefault(){}})");
+  ok('التسجيل من غير موافقة بيتمنع برسالة واضحة', /سياسة الخصوصية/.test($("document.getElementById('gateError').textContent")));
+  const bad = E.errors.concat(fb.errors, chrome.errors, PROC_ERRORS.splice(0)).filter(e=>!/Firebase init|Not implemented/.test(e));
+  ok('مفيش أخطاء وقت التشغيل في تجهيزات الإطلاق', !bad.length, bad.join(' | '));
+}
+
 setTimeout(()=>{ console.log('  ✗ الاختبارات اتأخرت أكتر من دقيقتين (اتوقفت)'); process.exit(1); }, 120000);   /* أمان: ما يعلّقش الـ CI أبداً */
 (async()=>{
-  for(const t of [renderSmoke, raceTest, budgetTest]){
+  for(const t of [renderSmoke, raceTest, budgetTest, launchTest]){
     try{ await t(); }catch(e){ ok('تشغيل '+t.name, false, 'خطأ غير متوقع: '+(e && e.message || e)); }   /* أي انهيار بيتسجّل كفشل بدل ما يوقف التقرير */
   }
   let failed = 0;
