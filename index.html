@@ -212,6 +212,7 @@
         <div class="section-title">إنجازاتي</div>
         <div class="card" id="achievCard" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
         <button type="button" class="btn-primary" style="background:transparent;border:1px solid var(--line);color:#d1435b;margin-top:18px;" onclick="studentLogout()">تسجيل الخروج</button>
+        <p class="gate-note" style="margin-top:12px;"><a href="#" onclick="openPrivacy();return false;">سياسة الخصوصية</a></p>
       </div>
 
       <!-- الحالة: مش مسجّل دخول -->
@@ -231,6 +232,7 @@
             <input required type="email" id="gateLoginEmail" placeholder="الإيميل">
             <input required type="password" id="gateLoginPass" placeholder="كلمة السر">
             <button class="btn-primary" type="submit">دخول</button>
+            <button type="button" class="gate-link" onclick="studentForgotPassword()">نسيت كلمة السر؟</button>
           </form>
           <form class="gate-form" id="gateSignupForm" style="display:none;" onsubmit="return studentSignup(event)">
             <input required id="gateSignupName" placeholder="الاسم بالكامل">
@@ -238,6 +240,7 @@
             <input required id="gateSignupLevel" placeholder="المستوى / الفرقة (مثال: مستوى 3)">
             <input required type="email" id="gateSignupEmail" placeholder="الإيميل">
             <input required type="password" id="gateSignupPass" placeholder="كلمة السر (6 أحرف على الأقل)">
+            <label class="gate-consent"><input type="checkbox" id="gateConsent" required> أوافق على <a href="#" onclick="openPrivacy();return false;">سياسة الخصوصية</a> واستخدام بياناتي في أنشطة الاتحاد</label>
             <button class="btn-primary" type="submit">إنشاء الحساب</button>
           </form>
           <div class="gate-or"><span>أو</span></div>
@@ -245,6 +248,7 @@
             <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.5-4.1 7-10.2 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 019.5 24c0-1.6.3-3.2.9-4.7l-7.9-6.1A24 24 0 000 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
             الدخول بحساب Google
           </button>
+          <p class="gate-note">بالدخول بحساب Google أنت موافق على <a href="#" onclick="openPrivacy();return false;">سياسة الخصوصية</a>.</p>
           <p class="gate-error" id="gateError"></p>
         </div>
       </div>
@@ -812,6 +816,41 @@
   </div>
 </div>
 
+<!-- ============ سياسة الخصوصية ============ -->
+<div class="pe-overlay" id="privacyModal" onclick="if(event.target===this)closePrivacy()">
+  <div class="pe-sheet priv-sheet">
+    <div class="pe-handle"></div>
+    <h3>🔒 سياسة الخصوصية</h3>
+    <div class="priv-body">
+      <p class="priv-date">آخر تحديث: أكتوبر 2026</p>
+      <h4>مين بيدير التطبيق؟</h4>
+      <p>التطبيق ده بيديره اتحاد طلاب الكلية لتنظيم الفعاليات والأنشطة. أي سؤال عن بياناتك: <span id="privContact">تواصل مع إدارة الاتحاد في الكلية</span>.</p>
+      <h4>إيه البيانات اللي بنجمعها؟</h4>
+      <ul>
+        <li>اسمك ورقمك الجامعي ومستواك الدراسي وإيميلك (وصورتك ونبذتك لو ضفتهم).</li>
+        <li>نشاطك في التطبيق: تسجيلك في الفعاليات وحضورك، والتصويت، والإعجاب، والتقييمات، وأسئلة القاعة، ونقاطك.</li>
+        <li>كلمة السر بتتحفظ مشفّرة عند Firebase، ومفيش حد في الاتحاد بيشوفها.</li>
+      </ul>
+      <h4>ليه بنستخدمها؟</h4>
+      <p>عشان نسجّل حضورك ونديك شهادات ونقاط وترتيب، ونتواصل معاك بإعلانات الاتحاد، ونحسّن الفعاليات. مش بنبيع بياناتك ومفيش إعلانات في التطبيق.</p>
+      <h4>مين يقدر يشوف بياناتك؟</h4>
+      <ul>
+        <li><b>باقي الطلاب المسجّلين:</b> اسمك وصورتك ومستواك ونقاطك في صفحة الترتيب.</li>
+        <li><b>أدمن الاتحاد:</b> بياناتك الكاملة وتسجيلاتك وحضورك وأسئلتك وتقييماتك.</li>
+        <li><b>الأسئلة المجهولة:</b> مجهولة على الطلاب في الشاشة، لكن أدمن الاتحاد بيقدر يعرف صاحبها.</li>
+        <li><b>التصويت:</b> النتيجة بتتعرض مجمّعة، لكن اختيارك مش سري بالكامل تقنياً.</li>
+      </ul>
+      <h4>بنخزّنها فين؟</h4>
+      <p>على خدمات Google Firebase (الحسابات وقاعدة البيانات)، والصور على Cloudinary، والخطوط من Google Fonts، والموقع على استضافة GitHub Pages / Vercel. بنخزّن على جهازك إعدادات بسيطة (زي الوضع الداكن) ونسخة مؤقتة من البيانات عشان التطبيق يفتح أسرع.</p>
+      <h4>لحد إمتى؟</h4>
+      <p>طول فترة دراستك واستخدامك للتطبيق، وتقدر تطلب حذف حسابك وبياناتك في أي وقت من إدارة الاتحاد.</p>
+      <h4>حقوقك</h4>
+      <p>تقدر تعدّل اسمك ومستواك ونبذتك وصورتك من صفحة حسابي، وتطلب نسخة من بياناتك أو حذفها من إدارة الاتحاد.</p>
+    </div>
+    <div class="pe-actions"><button type="button" class="btn-primary" onclick="closePrivacy()">تمام</button></div>
+  </div>
+</div>
+
 <div class="pe-overlay" id="annModal" onclick="if(event.target===this)closeAnnouncements()">
   <div class="pe-sheet">
     <div class="pe-handle"></div>
@@ -899,6 +938,7 @@
 <script src="js/16-live.js" defer></script>
 <script src="js/17-certificate.js" defer></script>
 <script src="js/18-extras.js" defer></script>
+<script src="js/19-launch.js" defer></script>
 <script src="js/13-init.js" defer></script>
 </body>
 </html>

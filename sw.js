@@ -24,6 +24,7 @@ const ASSETS = [
   './js/16-live.js',
   './js/17-certificate.js',
   './js/18-extras.js',
+  './js/19-launch.js',
   './js/vendor/qrcode.min.js',
   './js/13-init.js',
   './images/logo.png',

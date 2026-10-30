@@ -213,7 +213,7 @@ async function toggleRegistration(){
     showToast(mine ? 'تم إلغاء تسجيلك' : 'تم تسجيلك ✔ نشوفك هناك!');
     renderActivities();
   }catch(e){
-    showToast(mine ? 'مقدرتش ألغي التسجيل، جرّب تاني' : 'مقدرتش أسجلك — يمكن العدد اكتمل أو التسجيل اتقفل');
+    showToast(mine ? (e && e.code==='permission-denied' ? 'مش ممكن تلغي تسجيلك بعد ما حضورك اتسجّل' : 'مقدرتش ألغي التسجيل، جرّب تاني') : 'مقدرتش أسجلك — يمكن العدد اكتمل أو التسجيل اتقفل');
   }
   refreshRegBox(STATE.activities.find(x=>x.id===a.id) || a);
 }
