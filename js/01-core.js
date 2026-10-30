@@ -57,7 +57,7 @@ const STATE = {
   studentOfWeek:{name:'—', initial:'-', level:'—', points:0, photoURL:'', uid:''},
   leadership:{presidentName:'—', presidentPhoto:'', vpName:'—', vpPhoto:''},
   dean:{...DEFAULT_DEAN}, viceDean:{...DEFAULT_VICE},
-  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}, media:[], myRegs:{}
+  activities:[], magazines:[], campaigns:[], committees:[], leaderboard:[], members:[], news:[], polls:[], pollVotes:{}, pollTally:{}, myVote:{}, myVoteLoaded:{}, media:[], myRegs:{}
 };
 
 function docToItem(doc){ const d=doc.data(); d.id=doc.id; return d; }
@@ -105,7 +105,10 @@ function renderAllAdmin(){
   [renderAdminActivities, renderAdminCampaigns, renderAdminNews, renderAdminMedia, adminDashRefresh].forEach(f=>rq(f));
   startAllLazy();
 }
-function ensurePageData(page){ if(page === 'admin') startAllLazy(); else (LAZY_PAGES[page]||[]).forEach(startLazy); }
+function ensurePageData(page){
+  if(page === 'admin') startAllLazy(); else (LAZY_PAGES[page]||[]).forEach(startLazy);
+  if(page === 'polls' && typeof loadClosedPollTallies === 'function') loadClosedPollTallies();   /* نتايج التصويتات المنتهية: مرة واحدة */
+}
 
 function initFirestoreListeners(){
   if(!fbReady){

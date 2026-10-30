@@ -26,6 +26,15 @@ service cloud.firestore {
       return !(k in d) || (d[k] is int && d[k] >= 1 && d[k] <= 5);
     }
 
+    // العدّاد بيتزوّد بس لو نفس العملية بتنشئ صوتك أنت لنفس الاختيار والتصويت لسه شغال
+    function tallyVoteOk(pollId, opt) {
+      let v = /databases/$(database)/documents/polls/$(pollId)/votes/$(request.auth.uid);
+      let poll = get(/databases/$(database)/documents/polls/$(pollId)).data;
+      return !exists(v) && existsAfter(v)
+        && string(getAfter(v).data.option) == opt
+        && (!('endsAt' in poll) || poll.endsAt > request.time);
+    }
+
     // قايمة الأدمنز: الشخص يقدر يقرا وثيقته هو بس (عشان الواجهة تعرف)، والكتابة من الـ Console بس.
     match /admins/{uid} {
       allow read: if isSignedIn() && request.auth.uid == uid;
@@ -183,6 +192,20 @@ service cloud.firestore {
     match /polls/{pollId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
+
+      // عدّاد لكل اختيار (0,1,2…): الطالب بيزوّده +1 وهو بيصوّت بس، والأدمن يصلّحه. القراءة للمسجلين.
+      match /tally/{opt} {
+        allow read: if isSignedIn();
+        allow write: if isAdmin();
+        allow create: if isSignedIn()
+          && request.resource.data.keys().hasOnly(['n'])
+          && request.resource.data.n == 1
+          && tallyVoteOk(pollId, opt);
+        allow update: if isSignedIn()
+          && request.resource.data.keys().hasOnly(['n'])
+          && request.resource.data.n == resource.data.n + 1
+          && tallyVoteOk(pollId, opt);
+      }
 
       match /votes/{uid} {
         allow read: if isSignedIn();
