@@ -72,6 +72,10 @@ function makeWindow(withFirebase, ua){
   const clientKeys = ((act.match(/batch\.set\(regRef,\s*\{([^}]*)\}/)||[,''])[1].match(/(\w+)\s*:/g)||[]).map(x=>x.replace(/\s*:/,''));
   ok('قاعدة التسجيل: بتمنع الطالب يكتب attended:true لنفسه', /request\.resource\.data\.attended == false/.test(createRule), 'مفيش شرط attended == false');
   ok('قاعدة التسجيل: حقول الكود كلها مسموحة في القاعدة (وإلا التسجيل هيتمنع)', clientKeys.length>0 && clientKeys.every(k=>ruleKeys.includes(k)), 'الكود: '+clientKeys+' | القاعدة: '+ruleKeys);
+  const pollJs = read('js/02-polls.js');
+  const tallyBlock = (rules.match(/match \/tally\/\{opt\} \{[\s\S]*?\n      \}/)||[''])[0];
+  ok('عدّاد التصويت: القاعدة بتسمح بحقل n بس وبتربطه بصوتك أنت', /hasOnly\(\['n'\]\)/.test(tallyBlock) && /tallyVoteOk\(pollId, opt\)/.test(tallyBlock) && /string\(getAfter\(v\)\.data\.option\) == opt/.test(rules), 'tally block ناقص');
+  ok('عدّاد التصويت: الكود بيكتب n بس (يتطابق مع القاعدة)', /tally'\)\.doc\(String\(idx\)\), \{ n: firebase\.firestore\.FieldValue\.increment\(1\) \}/.test(pollJs));
   ok('الطالب مش بيقدر يلغي تسجيله بعد الحضور', /attended', false\) == false/.test(delRule), 'مفيش شرط على الحذف');
 
 })();
@@ -176,9 +180,65 @@ async function launchTest(){
   ok('مفيش أخطاء وقت التشغيل في تجهيزات الإطلاق', !bad.length, bad.join(' | '));
 }
 
+/* ---------- 6) التصويت بالعدّادات: الطالب مبيقراش كل الأصوات ---------- */
+function fakeDb(){
+  const F = { listeners:[], cbs:{}, writes:[], docs:{}, batchFail:null };
+  const mk = path => {
+    const seg = path.split('/'), isDoc = seg.length % 2 === 0;
+    const r = { path };
+    if(isDoc){
+      r.collection = n => mk(path+'/'+n); r.get = async()=>({ exists:!!F.docs[path], data:()=>F.docs[path] });
+      r.set = async(d,o)=>{ F.writes.push({ path, data:d, opt:o, single:true }); };
+    }else{
+      r.doc = id => mk(path+'/'+id); r.orderBy = ()=>r; r.limit = ()=>r;
+      r.onSnapshot = (cb,err)=>{ F.listeners.push(path); F.cbs[path] = { cb, err }; return ()=>{ F.listeners = F.listeners.filter(x=>x!==path); }; };
+      r.get = async()=>{ const kids = Object.keys(F.docs).filter(k=>k.startsWith(path+'/') && k.split('/').length===seg.length+1); return { empty:!kids.length, docs:kids.map(k=>({ id:k.split('/').pop(), data:()=>F.docs[k] })), forEach(f){ this.docs.forEach(f); } }; };
+    }
+    return r;
+  };
+  F.db = { collection:n=>mk(n), batch:()=>{ const ops = []; return { set:(ref,data,opt)=>ops.push({ path:ref.path, data, opt }), commit:async()=>{ if(F.batchFail) throw F.batchFail; F.writes.push(...ops.map(o=>Object.assign({ batch:true }, o))); } }; } };
+  F.snap = (docs)=>({ docs:docs.map(d=>({ id:d.id, data:()=>d.data })), forEach(f){ this.docs.forEach(f); } });
+  return F;
+}
+async function pollsTest(){
+  const E = makeWindow(false);
+  try{ SCRIPTS.forEach(f=>E.loadFile(f)); }catch(e){ ok('تحميل الملفات (التصويت)', false, e.message); return; }
+  const F = fakeDb(); E.w.__F = F;
+  E.run(`db = __F.db; fbReady = true; auth = { currentUser:{ uid:'u1' } }; IS_ADMIN = false; STUDENT = { uid:'u1', name:'طالب' };
+    firebase = { firestore:{ FieldValue:{ increment:n=>({ __inc:n }) } } };
+    STATE.polls = [{ id:'p1', question:'تحب إيه؟', options:['أ','ب'], endsAt:{ toDate:()=>new Date(Date.now()+864e5), toMillis:()=>Date.now()+864e5 }, createdAt:Date.now() }];`);
+  E.run("syncPollVotes(true)"); await sleep(20);
+  ok('الطالب: بيسمع عدّادات التصويت مش الأصوات كلها', F.listeners.includes('polls/p1/tally') && !F.listeners.includes('polls/p1/votes'), F.listeners.join(','));
+  F.cbs['polls/p1/tally'].cb(F.snap([{ id:'0', data:{ n:3 } }, { id:'1', data:{ n:1 } }]));
+  ok('الطالب: العدّاد بيوصل للحالة', E.run("JSON.stringify(STATE.pollTally.p1)") === '{"0":3,"1":1}');
+  E.run("castVote('p1', 0)"); await sleep(30);
+  const wr = F.writes.filter(w=>w.batch);
+  ok('التصويت: الصوت والعدّاد في عملية واحدة', wr.some(w=>w.path==='polls/p1/votes/u1' && w.data.option===0) && wr.some(w=>w.path==='polls/p1/tally/0' && w.data.n && w.data.n.__inc===1 && w.opt && w.opt.merge), JSON.stringify(wr.map(w=>w.path)));
+  const txt = E.run("document.getElementById('pollList').textContent.replace(/\\s+/g,' ')");
+  ok('بعد التصويت: النتيجة بتظهر فوراً (5 أصوات، 80%)', /5 صوت/.test(txt) && /80%/.test(txt), txt.slice(0,160));
+  ok('صوتي بيتحفظ على الجهاز (مفيش قراءة تانية)', E.run("readMyVote('p1')") === 0);
+  /* قواعد قديمة: العدّاد ممنوع → نرجع للأصوات الكاملة */
+  E.run("syncPollVotes(true)"); await sleep(10);
+  F.cbs['polls/p1/tally'].err({ code:'permission-denied' }); await sleep(10);
+  ok('قواعد قديمة: بيرجع تلقائي لقراءة الأصوات', F.listeners.includes('polls/p1/votes'), F.listeners.join(','));
+  /* قواعد قديمة عند التصويت: الصوت لوحده */
+  E.run("POLL_LEGACY = false; STATE.myVote = {}; STATE.myVoteLoaded = {}; STATE.pollVotes = {}; localStorage.clear()");
+  F.writes.length = 0; F.batchFail = { code:'permission-denied' }; E.run("castVote('p1', 1)"); await sleep(30);
+  ok('قواعد قديمة: لو العدّاد اتمنع، الصوت بيتسجّل لوحده', F.writes.some(w=>w.single && w.path==='polls/p1/votes/u1' && w.data.option===1), JSON.stringify(F.writes.map(w=>w.path)));
+  F.batchFail = null;
+  /* الأدمن: بيصلّح العدّاد لو مش مطابق للأصوات */
+  E.run("IS_ADMIN = true; POLL_LEGACY = false; localStorage.clear(); STATE.myVote = {}; syncPollVotes(true)"); await sleep(20);
+  F.cbs['polls/p1/votes'].cb(F.snap([{ id:'a', data:{ option:0 } }, { id:'b', data:{ option:0 } }, { id:'c', data:{ option:0 } }, { id:'d', data:{ option:1 } }]));
+  F.cbs['polls/p1/tally'].cb(F.snap([{ id:'0', data:{ n:1 } }, { id:'1', data:{ n:1 } }]));
+  F.writes.length = 0; await sleep(2300);
+  ok('الأدمن: بيصلّح العدّاد من الأصوات الفعلية (1 → 3) من غير ما يلمس الصح', F.writes.some(w=>w.path==='polls/p1/tally/0' && w.data.n===3) && !F.writes.some(w=>w.path==='polls/p1/tally/1'), JSON.stringify(F.writes.map(w=>[w.path,w.data])));
+  const bad = E.errors.concat(PROC_ERRORS.splice(0)).filter(e=>!/Firebase init|Not implemented/.test(e));
+  ok('مفيش أخطاء وقت التشغيل في التصويت', !bad.length, bad.join(' | '));
+}
+
 setTimeout(()=>{ console.log('  ✗ الاختبارات اتأخرت أكتر من دقيقتين (اتوقفت)'); process.exit(1); }, 120000);   /* أمان: ما يعلّقش الـ CI أبداً */
 (async()=>{
-  for(const t of [renderSmoke, raceTest, budgetTest, launchTest]){
+  for(const t of [renderSmoke, raceTest, budgetTest, launchTest, pollsTest]){
     try{ await t(); }catch(e){ ok('تشغيل '+t.name, false, 'خطأ غير متوقع: '+(e && e.message || e)); }   /* أي انهيار بيتسجّل كفشل بدل ما يوقف التقرير */
   }
   let failed = 0;
