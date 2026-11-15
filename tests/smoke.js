@@ -51,6 +51,9 @@ function makeWindow(withFirebase, ua){
   /* دوال معرّفة مرتين في ملفات مختلفة = واحدة بتلغي التانية بصمت */
   const defs = {}, dupFn = [];
   SCRIPTS.forEach(f=>{ for(const mm of read(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z0-9_$]+)/gm)){ if(defs[mm[1]] && defs[mm[1]]!==f) dupFn.push(mm[1]+' ('+defs[mm[1]]+' / '+f+')'); defs[mm[1]] = f; } });
+  const cssAll = read('css/style.css');
+  ok('مفيش blur على الشريط السفلي والنوافذ (بيسبّب تقطيع في السكرول)', /\.bottomnav,[^{]*\.pe-overlay[^{]*\{[^}]*backdrop-filter:none !important/.test(cssAll), 'قاعدة إلغاء الـ blur ناقصة');
+  ok('قوايم الفعاليات بترسم اللي ظاهر بس (content-visibility)', /#actList > \*\{content-visibility:auto/.test(cssAll));
   ok('مفيش دالة معرّفة في ملفين', !dupFn.length, dupFn.join(', '));
   /* سباق التحميل: كود على مستوى الملف بينادي دالة معرّفة في ملف بيتحمّل بعده */
   const idx = {}; SCRIPTS.forEach((f,i)=>idx[f]=i); const hazards = [];

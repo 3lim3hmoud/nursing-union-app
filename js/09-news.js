@@ -15,7 +15,7 @@ function newsDate(n){
 }
 function newsTag(n){ const c = NEWS_CATS[n.cat]; return c ? `<span class="nw-tag">${c.icon} ${c.label}</span>` : ''; }
 function newsFlags(n){ return (n.breaking && Date.now()-(n.createdAt||0) < 3*86400000 ? '<span class="nw-tag brk">🔴 عاجل</span>' : '') + (n.pinned ? '<span class="nw-tag pin">📌 مثبّت</span>' : ''); }
-function newsThumb(n,w,h){ return n.photoURL ? `<img src="${esc(cld(n.photoURL,'c_fill,w_'+w+',h_'+h+',q_auto,f_auto'))}" alt="" loading="lazy">` : '📰'; }
+function newsThumb(n,w,h){ return n.photoURL ? `<img src="${esc(cld(n.photoURL,'c_fill,w_'+w+',h_'+h+',q_auto,f_auto'))}" alt="" loading="lazy" decoding="async">` : '📰'; }
 function renderNews(){
   const chips = document.getElementById('newsChips'), feat = document.getElementById('newsFeatured'), wrap = document.getElementById('newsList');
   if(chips && feat && wrap){
@@ -88,7 +88,7 @@ document.getElementById('newsChips').addEventListener('click', e=>{
 });
 function fillNewsReader(n){
   const likes = n.likeUids || [], liked = !!(STUDENT.uid && likes.includes(STUDENT.uid));
-  const gal = (n.images||[]).length ? `<div class="nr-gal">${n.images.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy">`).join('')}</div>` : '';
+  const gal = (n.images||[]).length ? `<div class="nr-gal">${n.images.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy" decoding="async">`).join('')}</div>` : '';
   document.getElementById('nrBody').innerHTML = `
     ${n.photoURL ? `<img loading="lazy" decoding="async" class="nr-hero" src="${esc(cld(n.photoURL,'c_fill,w_1000,h_690,q_auto,f_auto'))}" alt="">` : '<div class="nr-hero-ph">📰</div>'}
     <div class="nr-body">

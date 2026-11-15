@@ -13,7 +13,7 @@ function photoBg(url, top){
 }
 function galleryHtml(list, cls){
   if(!list || list.length<2) return '';
-  return '<div class="'+(cls||'nr-gal')+'">'+list.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy">`).join('')+'</div>';
+  return '<div class="'+(cls||'nr-gal')+'">'+list.map((u,i)=>`<img src="${esc(cld(u,'c_fill,w_300,h_220,q_auto,f_auto'))}" alt="" data-i="${i}" loading="lazy" decoding="async">`).join('')+'</div>';
 }
 function bindGallery(root, list, title){
   if(!root) return;
@@ -181,7 +181,7 @@ function mcGo(i){
 function mcMove(dir){ mcGo(mcIndex + (dir>0?-1:1)); }
 function mcAutoplay(){
   clearInterval(mcTimer);
-  mcTimer = setInterval(()=>mcGo(mcIndex-1), 4000);
+  mcTimer = setInterval(()=>{ if(document.hidden || (typeof CUR_PAGE!=='undefined' && CUR_PAGE!=='home')) return; mcGo(mcIndex-1); }, 4000);
 }
 
 let cdTimer=null;
@@ -207,6 +207,6 @@ function startCountdown(){
     document.getElementById('cdSec').textContent = String(s).padStart(2,'0');
   }
   tick();
-  cdTimer = setInterval(tick, 1000);
+  cdTimer = setInterval(()=>{ if(document.hidden || (typeof CUR_PAGE!=='undefined' && CUR_PAGE!=='home')) return; tick(); }, 1000);
 }
 

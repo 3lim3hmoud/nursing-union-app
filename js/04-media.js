@@ -53,7 +53,7 @@ function renderMediaPage(){
   grid.style.display='';
   list.slice(0, MEDIA_SHOWN).forEach(m=>{
     const th = mediaThumb(m);
-    const img = th ? `<img src="${esc(cld(th,'c_fill,w_500,h_500,q_auto,f_auto'))}" alt="" loading="lazy">` : '<div class="mg-ph"></div>';
+    const img = th ? `<img src="${esc(cld(th,'c_fill,w_500,h_500,q_auto,f_auto'))}" alt="" loading="lazy" decoding="async">` : '<div class="mg-ph"></div>';
     const play = m.type==='video' ? '<div class="mg-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>' : '';
     const t = m.title || '';
     const cap = (t || m.album) ? `<div class="mg-cap">${esc(t || m.album)}${t && m.album ? `<small>${esc(m.album)}</small>` : ''}</div>` : '';

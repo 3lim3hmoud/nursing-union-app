@@ -128,7 +128,7 @@ function renderPolls(){
         const canSee = !!me;
         const showBars = canSee && (mine!==undefined || closed || IS_ADMIN);
         const opts = p.options.map((o,i)=>{
-          const img = optImg(o) ? `<img class="poi" src="${esc(optImg(o))}" alt="" loading="lazy">` : '';
+          const img = optImg(o) ? `<img class="poi" src="${esc(optImg(o))}" alt="" loading="lazy" decoding="async">` : '';
           const pct = total ? Math.round(counts[i]*100/total) : 0;
           const win = closed && showBars && max>0 && counts[i]===max;
           const bar = showBars ? `<span class="pbar" style="width:${pct}%"></span>` : '';
@@ -142,7 +142,7 @@ function renderPolls(){
         const status = closed ? '<span class="poll-status closed">انتهى التصويت</span>' : '<span class="poll-status live"><i></i>مباشر</span>';
         const note = (closed && !canSee) ? '<div class="poll-note">سجّل دخولك من صفحة حسابي علشان تشوف النتيجة</div>' : '';
         wrap.appendChild(el(`<div class="card poll-card">
-          ${p.imageURL ? `<img class="poll-cover" src="${esc(p.imageURL)}" alt="" loading="lazy">` : ''}
+          ${p.imageURL ? `<img class="poll-cover" src="${esc(p.imageURL)}" alt="" loading="lazy" decoding="async">` : ''}
           <div class="poll-body">
             ${status}
             <div class="poll-q">${esc(p.question)}</div>
