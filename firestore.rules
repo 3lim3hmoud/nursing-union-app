@@ -188,6 +188,20 @@ service cloud.firestore {
     // إعلانات الاتحاد للطلاب: القراءة للمسجّلين، والنشر والحذف للأدمن
     match /announcements/{id} { allow read: if isSignedIn(); allow write: if isAdmin(); }
 
+    // اشتراكات إشعارات الموبايل: الطالب بيحفظ/يمسح اشتراك جهازه هو بس، والأدمن بس اللي يقرا القايمة (لدالة الإرسال)
+    match /pushSubs/{id} {
+      allow list: if isAdmin();
+      allow get: if isAdmin() || (isSignedIn() && id.matches(request.auth.uid + '_.*'));
+      allow create, update: if isSignedIn() && id.matches(request.auth.uid + '_.*')
+        && request.resource.data.keys().hasOnly(['uid','level','endpoint','p256dh','auth','createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.level is string && request.resource.data.level.size() <= 40
+        && request.resource.data.endpoint is string && request.resource.data.endpoint.size() < 700 && request.resource.data.endpoint.matches('https://.*')
+        && request.resource.data.p256dh is string && request.resource.data.p256dh.size() < 200
+        && request.resource.data.auth is string && request.resource.data.auth.size() < 100;
+      allow delete: if isAdmin() || (isSignedIn() && id.matches(request.auth.uid + '_.*'));
+    }
+
     // التصويت
     match /polls/{pollId} {
       allow read: if isSignedIn();

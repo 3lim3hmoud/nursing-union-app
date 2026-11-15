@@ -228,6 +228,7 @@ function renderAdminNews(){
         <div class="ai-actions" style="flex-wrap:wrap;justify-content:flex-end;">
           <button type="button" class="mini-btn" onclick="toggleNewsFlag('${n.id}','pinned')">${n.pinned?'إلغاء التثبيت':'تثبيت'}</button>
           <button type="button" class="mini-btn" onclick="toggleNewsFlag('${n.id}','breaking')">${n.breaking?'إلغاء العاجل':'عاجل'}</button>
+          ${typeof PUSH_READY==='function'&&PUSH_READY()?`<button type="button" class="mini-btn" onclick="adminPushAbout('news','${n.id}')">🔔 إشعار</button>`:''}
           <button type="button" class="mini-btn" onclick="editNews('${n.id}')">تعديل</button>
           <button type="button" class="mini-btn danger" onclick="deleteNews('${n.id}')">حذف</button>
         </div>

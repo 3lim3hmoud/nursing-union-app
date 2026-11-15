@@ -202,6 +202,7 @@ function annEnsureAdminSection(){
       <input required id="af-annTitle" maxlength="80" placeholder="عنوان الإعلان">
       <textarea required id="af-annBody" rows="3" maxlength="400" placeholder="نص الإعلان"></textarea>
       <input id="af-annLevel" maxlength="40" placeholder="لمين؟ سيبه فاضي = كل الطلاب، أو اكتب المستوى زي: مستوى 3">
+      ${typeof PUSH_READY==='function'&&PUSH_READY()?'<label class="adm-chk"><input type="checkbox" id="af-annPush" checked> 🔔 ابعت كمان إشعار على موبايلات الطلاب</label>':''}
       <button class="btn-primary" type="submit">إرسال الإعلان</button>
       <p class="adm-sub" style="margin:6px 0 0;">الطلاب بيشوفوه في 🔔 وعلى الرئيسية أول ما يفتحوا التطبيق (وإشعار لو مفعّلينه).</p>
     </form>
@@ -213,9 +214,11 @@ function annEnsureAdminSection(){
     const f = ev.currentTarget, btn = f.querySelector('button[type=submit]'); btn.disabled = true;
     try{
       const v = id=>f.querySelector('#'+id).value.trim();
-      await db.collection('announcements').add({ title:v('af-annTitle'), body:v('af-annBody'),
-        level:v('af-annLevel') || 'all', createdAt:Date.now(), by:(auth.currentUser&&auth.currentUser.email)||'' });
+      const pushBox = f.querySelector('#af-annPush'), pushOn = !!(pushBox && pushBox.checked);
+      const ann = { title:v('af-annTitle'), body:v('af-annBody'), level:v('af-annLevel') || 'all' };
+      await db.collection('announcements').add(Object.assign({}, ann, { createdAt:Date.now(), by:(auth.currentUser&&auth.currentUser.email)||'' }));
       f.reset(); showToast('اتبعت الإعلان للطلاب ✔');
+      if(pushOn && typeof adminSendPush==='function') adminSendPush({ title:'📢 '+ann.title, body:ann.body.slice(0,120), url:'./', level:ann.level, tag:'nu-ann' });
     }catch(e){ showToast('مقدرتش أبعت الإعلان — اتأكد إنك أدمن وإن القواعد منشورة'); }
     btn.disabled = false;
   });
